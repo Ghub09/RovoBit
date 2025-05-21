@@ -1,0 +1,120 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary/80 text-white;
+}
+
+.btn-success {
+  @apply bg-success hover:bg-success/80 text-white;
+}
+
+.btn-danger {
+  @apply bg-danger hover:bg-danger/80 text-white;
+}
+
+.card {
+  @apply bg-dark/50 backdrop-blur-sm rounded-xl p-6 border border-light/10;
+}
+
+.input {
+  @apply bg-dark/50 border border-light/10 rounded-lg px-4 py-2 focus:outline-none focus:border-primary;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4;
+}
+
+.modal-content {
+  @apply relative bg-transparent outline-none;
+}
+/* Add this CSS to your styles */
+
+.dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+}
+/* Custom CSS for Loader */
+
+@keyframes spin-slow {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 2s linear infinite;
+}
+
+@media (max-width: 1024px) {
+  .trade-page {
+    flex-direction: column;
+  }
+
+  .trade-chart {
+    width: 100%;
+  }
+
+  .order-form {
+    width: 100%;
+  }
+}

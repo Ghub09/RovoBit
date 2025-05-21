@@ -1,0 +1,88 @@
+@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+/* Core CSS required for Ionic components to work properly */
+
+/* Define the colors as CSS custom properties */
+:root {
+  --primary-color: #1e90ff;
+  --secondary-color: #00c853;
+  --tertiary1-color: #d32f2f;
+  --tertiary2-color: #1c1c1c;
+  --tertiary3-color: #eaeaea;
+  --background-gradient: linear-gradient(to bottom, #000000, #181818);
+  --background-gradient-reverse: linear-gradient(to top, #000000, #181818);
+}
+
+.text-primary {
+  color: var(--primary-color);
+}
+
+.bg-primary {
+  background-color: var(--primary-color);
+}
+
+.text-secondary {
+  color: var(--secondary-color);
+}
+
+.bg-secondary {
+  background-color: var(--secondary-color);
+}
+
+.text-tertiary1 {
+  color: var(--tertiary1-color);
+}
+
+.bg-tertiary1 {
+  background-color: var(--tertiary1-color);
+}
+
+.text-tertiary2 {
+  color: var(--tertiary2-color);
+}
+
+.bg-tertiary2 {
+  background-color: var(--tertiary2-color);
+}
+
+.text-tertiary3 {
+  color: var(--tertiary3-color);
+}
+
+.bg-tertiary3 {
+  background-color: var(--tertiary3-color);
+}
+
+.bg-gradient {
+  background-image: var(--background-gradient);
+}
+
+.bg-gradient-reverse {
+  background-image: var(--background-gradient-reverse);
+}
+
+@keyframes up-down {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.animate-up-down {
+  animation: up-down 3s ease-in-out infinite;
+}
+.smooth-transition {
+  transition: all 0.2s ease-in-out;
+}
+.shadow-top {
+  box-shadow: 0 -4px 6px -1px #1e90ff, 0 -2px 4px -1px #1e90ff;
+}
+
+.border-primary {
+  border: 1px solid var(--primary-color);
+}
