@@ -17,6 +17,7 @@ import walletRouter from "./routers/walletRoutes.js";
 import kycRouter from "./routers/kycRoutes.js";
 import newsRouter from "./routers/newsRoutes.js";
 import { safariCompatibilityMiddleware } from "./middlewares/safariCompatibility.js";
+import User from "./models/User.js";
 
 const app = express();
 
@@ -28,9 +29,10 @@ const envPath = join(__dirname, "/config/config.env");
 config({ path: envPath });
 
 // Enhanced CORS configuration for Safari compatibility
+
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL, "https://cryptonexus.live"],
+    origin: [process.env.FRONTEND_URL,"http://localhost:5173"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
@@ -66,7 +68,6 @@ app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
 
 // Apply Safari compatibility middleware before routes
 app.use(safariCompatibilityMiddleware);
-
 app.use("/api/user", userRouter);
 app.use("/api/trade", tradeRouter);
 app.use("/api/admin", adminRouter);

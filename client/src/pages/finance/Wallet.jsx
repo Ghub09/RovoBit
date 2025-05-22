@@ -266,7 +266,7 @@ const Wallet = () => {
     localStorage.removeItem("selectedWalletType");
     localStorage.removeItem("showAssets");
   };
-
+console.log(showAssets)
   return (
     <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div

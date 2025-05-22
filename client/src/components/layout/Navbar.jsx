@@ -23,10 +23,13 @@ const Navbar = () => {
   const { t } = useTranslation();
   const { user } = useSelector((state) => state.user);
   const [openMenu, setOpenMenu] = useState(false);
-  const [openTradeMenu, setOpenTradeMenu] = useState(false);
+  const [tradeMenu, setTradeMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrollDirection, setScrollDirection] = useState("up");
+  let lastScrollY = 0;
+
   const dispatch = useDispatch((state) => state.user);
   const location = useLocation();
   const navigate = useNavigate();
@@ -35,6 +38,25 @@ const Navbar = () => {
   const showSelectOption = ["/trade", "/futures", "/perpetual"].includes(
     location.pathname
   );
+
+  useEffect(() => {
+  let lastY = window.scrollY;
+
+  const handleScroll = () => {
+    const currentY = window.scrollY;
+
+    if (currentY > lastY && currentY > 50) {
+      setScrollDirection("down");
+    } else if (currentY < lastY) {
+      setScrollDirection("up");
+    }
+
+    lastY = currentY;
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,7 +91,7 @@ const Navbar = () => {
     <header
       className={`fixed w-full top-0 z-10  smooth-transition ${
         isScrolled ? "bg-opacity-50 backdrop-blur-lg" : "bg-transparent"
-      }`}
+      } ${scrollDirection === "down" ? "-translate-y-full" : "translate-y-0"} ${window.scrollY > 0 ? "bg-opacity-50 backdrop-blur-lg" : "bg-transparent"}`}
     >
       <nav className="container mx-auto flex justify-between items-center p-4">
         <div className="logo-container flex items-center">
@@ -79,7 +101,7 @@ const Navbar = () => {
             </i>
           </Link>
           {showSelectOption && (
-            <div className="flex md:hidden items-center ml-auto">
+            <div className="flex md:hidden border border-[#fffff] items-center ml-auto">
               <select
                 id="tradingPair"
                 value={location.pathname.slice(1)}
@@ -105,82 +127,86 @@ const Navbar = () => {
             </div>
           )}
         </div>
-        <div className="w-full hidden sm:flex">
-          <div className="w-full flex justify-center space-x-4">
+        <div className=" hidden sm:flex justify-center w-[60%]">
+           <div className="flex w-[70%] justify-between items-center" >
             {user?.role === "admin" && (
               <Link
                 to={"/admin/dashboard"}
-                className="text-white hover:text-[#00FF7F]"
+                className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}
               >
-                {t("admin_panel")}
+                {t("Admin")}
               </Link>
             )}
 
-            <Link to={"/"} className="text-white hover:text-[#00FF7F]">
+            <Link to={"/"} className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}>
               {t("home")}
             </Link>
-            <Link to={"/market"} className="text-white hover:text-[#00FF7F]">
+            <Link to={"/market"} className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}>
               {t("market")}
             </Link>
             <Menu
-              open={openTradeMenu}
-              handler={setOpenTradeMenu}
-              allowHover
-              className="relative px-2"
+              open={tradeMenu}
+              handler={setTradeMenu}
+               allowHover
+              className="relative "
             >
-              <MenuHandler>
-                <Button
+              <MenuHandler
+              >
+                <Link
                   variant="text"
-                  className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
+                  className={`flex items-center justify-center gap-2 text-white hover:text-secondary font-normal capitalize m-0 p-0  pr-1 ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}
                 >
-                  <span className="text-[16px]">{t("trade")}</span>
+                  <span className="text-[16px]">{t("trade")} </span>
+
                   <VscChevronDown
-                    strokeWidth={2.5}
-                    className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
-                      openMenu ? "rotate-180" : ""
-                    }`}
+                   strokeWidth={1.5}
+                   className={`h-3.5 w-3.5 p-0 m-0 transform transition-transform duration-400 ease-in-out ${
+                   tradeMenu ? "rotate-180" : ""
+                   }`}
                   />
-                </Button>
+                </Link>
               </MenuHandler>
               <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
                 <MenuItem>
                   <Link
                     to={"/trade"}
-                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                    className="flex justify-between m-0 px-4 py-2 text-sm w-full text-tertiary hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    {t("spot")}
+                   <span>{t("spot")}</span> <span>🎯</span>
                   </Link>
                 </MenuItem>
                 <MenuItem>
                   <Link
                     to={"/futures"}
-                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                    className="flex m-0  justify-between px-4 py-2 text-sm w-full text-tertiary hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    {t("trading")}
+                    <span>{t("trading")}</span><span>📈</span>
                   </Link>
                 </MenuItem>
                 <MenuItem>
                   <Link
                     to={"/perpetual"}
-                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                    className="flex justify-between m-0 px-4 py-2 text-sm w-full text-tertiary hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    {t("perpetual")}
+                    <span>{t("perpetual")}</span> <span>♾️</span>
                   </Link>
                 </MenuItem>
               </MenuList>
             </Menu>
-            <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
+            <Link to={"/wallet"} className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}>
               {t("wallet")}
             </Link>
-            <Link to={"/about"} className="text-white hover:text-[#00FF7F]">
-              {t("about")}
+            <Link to={"/about"} className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}>
+              {t("About")}
             </Link>
           </div>
-
+ 
+        </div>
+        <div className="flex items-center gap-4">
           {!user ? (
-            <div className="w-fit flex items-center space-x-4">
+            <div className="w-fit flex items-center space-x-4 border">
               <Link to={"/login"}>
-                <div className="min-w-[10vw] sm:w-[7vw] px-3 py-1 flex justify-center cursor-pointer rounded-full bg-transparent border-2 border-[#1E90FF]">
+                <div className="min-w-[10vw] sm:w-[7vw] px-3 py-1 flex justify-center cursor-pointer rounded-full bg-transparent border-2 border-[#1E90FF]" >
                   <button className="text-[#1E90FF]">{t("login")}</button>
                 </div>
               </Link>
@@ -199,39 +225,40 @@ const Navbar = () => {
                 className="relative"
               >
                 <MenuHandler>
-                  <Button
+                  <Link
                     variant="text"
-                    className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
+                    className="flex items-center gap-2 text-white hover:text-secondary font-normal capitalize m-0 p-0 justify-center pr-1 bg-none border-none outline-none focus:outline-none shadow-none"
                   >
                     <span className="text-[16px]">{t("profile")}</span>
                     <VscChevronDown
-                      strokeWidth={2.5}
-                      className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
+                      strokeWidth={1.5}
+                      className={`h-3.5 w-3.5 p-0 m-0 transform transition-transform duration-400 ease-in-out ${
                         openMenu ? "rotate-180" : ""
                       }`}
                     />
-                  </Button>
+                  </Link>
                 </MenuHandler>
-                <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
+                <MenuList className="absolute rounded-md shadow-lg bg-white ring-1 ring-black 
+                ring-opacity-5 p-0">
                   <MenuItem>
-                    <p className="block m-0  px-4 py-2 text-sm max-w-[100%] overflow-hidden line-wrap  text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]">
+                    <p className="block m-0  px-4 py-2  text-sm max-w-[100%] overflow-hidden line-wrap  text-bolder">
                       {user.email}
                     </p>
                   </MenuItem>
                   <MenuItem>
                     <Link
                       to={"/wallet"}
-                      className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                      className="flex justify-between m-0 px-4 py-2 text-sm w-full text-tertiary hover:bg-gray-300 hover:text-[#00FF7F]"
                     >
-                      {t("assets_wallet")}
+                       <span>{t("assets_wallet")}</span><span>💼</span>
                     </Link>
                   </MenuItem>
                   <MenuItem>
                     <p
                       onClick={handleLogoutDialog}
-                      className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                      className="flex justify-between m-0 px-4 py-2 text-sm w-full text-tertiary hover:bg-gray-300 hover:text-[#00FF7F]"
                     >
-                      {t("logout")}
+                    <span>{t("logout")}</span><span>🚶‍♀️</span> 
                     </p>
                   </MenuItem>
                 </MenuList>
@@ -243,8 +270,6 @@ const Navbar = () => {
               </div>
             </>
           )}
-        </div>
-        <div className="flex items-center gap-4">
           {!user && (
             <div className="sm:hidden">
               <button onClick={toggleMenu} className="text-white text-2xl">
@@ -256,12 +281,12 @@ const Navbar = () => {
             <NavLink
               to="/profile"
               className={({ isActive }) =>
-                `flex items-center pb-2 ${
+                `flex items-center ${
                   isActive ? "text-blue-400" : "text-gray-400"
                 }`
               }
             >
-              <MdOutlinePersonOutline className="text-3xl" />
+              <MdOutlinePersonOutline className="text-3xl text-[#fff] size-6" />
             </NavLink>
           )}
         </div>

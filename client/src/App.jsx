@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -35,6 +35,7 @@ import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
+import axios from "axios";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -46,6 +47,8 @@ const App = () => {
       dispatch(setUser(user));
     }
   }, [dispatch]);
+
+
   return (
     <TranslationWrapper>
       <div className="bg-gradient text-white overflow-hidden">

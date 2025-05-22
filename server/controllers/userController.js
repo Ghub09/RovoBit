@@ -4,7 +4,6 @@ import Transaction from "../models/Transaction.js";
 import { validationResult } from "express-validator";
 import { generateToken } from "../utils/jwtToken.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
-import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 /**
  * @desc Register a new user
@@ -15,7 +14,9 @@ export const register = catchAsyncErrors(async (req, res) => {
 
   // Check if user already exists
   let user = await User.findOne({ email });
-  if (user) {
+  console.log(user)
+
+   if (user) {
     return res
       .status(400)
       .json({ success: false, message: "User already exists" });
@@ -44,19 +45,17 @@ export const register = catchAsyncErrors(async (req, res) => {
  */
 export const login = catchAsyncErrors(async (req, res) => {
   const { email, password } = req.body;
-
   const user = await User.findOne({ email });
+  console.log(email, password)
   if (!user)
-    return res
-      .status(400)
-      .json({ success: false, message: "Invalid credentials" });
-
+  return res.status(400).json({ success: false, message:"Invalid credentials" });
   const isMatch = await user.comparePasswords(password);
   if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
   // Generate JWT token
   const token = generateToken(user, "User logged in successfully", 200, res);
 });
+
 
 export const logoutUser = catchAsyncErrors(async (req, res, next) => {
   res

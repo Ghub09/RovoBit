@@ -1,8 +1,6 @@
-import React from "react";
 import { useTranslation } from "react-i18next";
 import CountUp from "react-countup";
 import HeroImgSrc from "../../assets/hero.png";
-import PropTypes from "prop-types";
 
 const Hero = () => {
   const { t } = useTranslation();
@@ -27,32 +25,35 @@ const Hero = () => {
       text: t("users"),
     },
   ];
+
   return (
-    <section className="heroSection min-h-[98vh] bg-gradient flex flex-col justify-center items-center">
-      <div className="wrapper flex flex-col md:flex-row justify-center items-center">
-        <div className="first text-center md:text-left md:mr-8">
-          <div className="heading flex flex-col items-end">
-            <h1 className="text-4xl md:text-6xl font-bold text-white">
+    <section className="heroSection min-h-screen bg-gradient border px-6 py-12 flex flex-col justify-center items-center font-sans">
+      <div className="wrapper flex flex-col md:flex-row justify-center items-center w-full max-w-7xl">
+        <div className="first text-center md:text-left md:mr-12 mb-10 md:mb-0">
+          <div className="heading space-y-4">
+            <h1 className="text-4xl md:text-6xl ml-10 font-extrabold text-white leading-tight">
               {t("trusted_trading")}
             </h1>
-            <p className="text-4xl md:text-5xl text-primary mt-4">
+            <p className="text-3xl md:text-4xl ml-10 text-primary">
               {t("trade_safely")}
             </p>
           </div>
         </div>
-        <div className="second mt-8 md:mt-0">
-          <div className="heroImage w-[50vw] md:w-[25vw] rotate-[-27deg] animate-up-down">
-            <img src={HeroImgSrc} alt={t("hero")} />
+
+        <div className="second">
+          <div className="heroImage w-[70vw] md:w-[30vw] rotate-[-27deg] animate-up-down">
+            <img src={HeroImgSrc} alt={t("hero")} className="w-full h-auto" />
           </div>
         </div>
       </div>
-      <div className="overView mt-14 w-full flex flex-col md:flex-row justify-evenly items-center text-center md:text-left">
+
+      <div className="overView mt-16 w-full flex flex-col md:flex-row justify-evenly items-center text-center gap-8">
         {counts.map((count) => (
-          <div className="first mb-8 md:mb-0" key={count.index}>
-            <p className="count text-2xl text-primary">
+          <div className="stat flex flex-col items-center" key={count.index}>
+            <p className="count text-3xl font-semibold text-primary">
               <CountUp end={count.end} duration={2} /> {count.symbol}
             </p>
-            <p className="text-tertiary3">{count.text}</p>
+            <p className="text-base text-tertiary3 mt-2">{count.text}</p>
           </div>
         ))}
       </div>

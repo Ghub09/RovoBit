@@ -11,6 +11,7 @@ export const loginUser = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.post("/user/login", { email, password });
+      console.log(response)
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
       toast.success(response.data.message);
