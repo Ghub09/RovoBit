@@ -5,6 +5,11 @@ import { validationResult } from "express-validator";
 import { generateToken } from "../utils/jwtToken.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import { v4 as uuidv4 } from "uuid";
+
+
+
+
+
 /**
  * @desc Register a new user
  * @route POST /api/users/register
