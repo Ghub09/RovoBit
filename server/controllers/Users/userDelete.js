@@ -36,6 +36,16 @@ export const deleteUserAndArchive = async (req, res) => {
   }
 };
 
+export const getArchivedUsers = async (req, res) => {
+  try {
+    const archivedUsers = await DeletedUser.find();
+    return res.status(200).json(archivedUsers);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
 // REACTIVATE USER
 export const reactivateUser = async (req, res) => {
   const { deletedUserId } = req.params;

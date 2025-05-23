@@ -28,8 +28,7 @@ const Navbar = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollDirection, setScrollDirection] = useState("up");
-  let lastScrollY = 0;
-
+ 
   const dispatch = useDispatch((state) => state.user);
   const location = useLocation();
   const navigate = useNavigate();

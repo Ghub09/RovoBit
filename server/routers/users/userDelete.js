@@ -1,6 +1,6 @@
 // routes/userRoutes.js
 import express from "express";
-import { deleteUserAndArchive, reactivateUser } from "../../controllers/Users/userDelete.js";
+import { deleteUserAndArchive, getArchivedUsers, reactivateUser } from "../../controllers/Users/userDelete.js";
  
 
 const router = express.Router();
@@ -8,7 +8,6 @@ const router = express.Router();
 // Admin Delete User and Save History
 router.delete("/delete/:_id", deleteUserAndArchive);
 
-// Admin Reactivate Deleted User
-router.post("/reactivate/:deletedUserId", reactivateUser);
-
+router.get('/users/archived', getArchivedUsers);
+router.post('/users/reactivate/:deletedUserId', reactivateUser);
 export default router;
