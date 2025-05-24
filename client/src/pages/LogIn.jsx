@@ -28,12 +28,12 @@ const LogIn = () => {
       const res = await dispatch(loginUser({ email, password })).unwrap();
       toast.success(res.msg);
       console.log(res)
-      // if (res.user.role === "user") {
-      //     navigate(-1); // Redirect to the previous page
-      // } else if (res.user.role === "admin") {
-      //   navigate("/admin/dashboard");
-      //   window.location.reload();
-      // }
+      if (res.user.role === "user") {
+          navigate(-1); // Redirect to the previous page
+      } else if (res.user.role === "admin") {
+        navigate("/admin/dashboard");
+        window.location.reload();
+      }
     } catch (err) {
       toast.error(err.message);
     }

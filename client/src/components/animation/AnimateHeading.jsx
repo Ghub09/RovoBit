@@ -7,13 +7,15 @@ const AnimatedHeading = ({ children }) => {
 
   return (
     <motion.h2
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
-      transition={{ duration: 0.5, ease: "easeOut" }}
-    >
-      {children}
-    </motion.h2>
+    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 100 }}
+  initial={{ opacity: 0, y: 50 }}
+  whileInView={{ opacity: 1, y: 0 }}
+  viewport={{ once: false, amount: 0.3 }}
+  transition={{ duration: 0.5, ease: "easeOut" }}
+>
+  {children}
+</motion.h2>
+
   );
 };
 

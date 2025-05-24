@@ -6,7 +6,7 @@ const API = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-  },
+   },
 });
 
 console.log(import.meta.env.VITE_API_URL);

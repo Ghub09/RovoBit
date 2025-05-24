@@ -51,14 +51,17 @@ export const register = catchAsyncErrors(async (req, res) => {
 export const login = catchAsyncErrors(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
-  console.log(email, password)
   if (!user)
-  return res.status(400).json({ success: false, message:"Invalid credentials" });
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid credentials" });
+
   const isMatch = await user.comparePasswords(password);
   if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
   // Generate JWT token
   const token = generateToken(user, "User logged in successfully", 200, res);
+  console.log(token)
 });
 
 

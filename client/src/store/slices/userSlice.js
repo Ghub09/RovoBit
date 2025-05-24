@@ -11,8 +11,8 @@ export const loginUser = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.post("/user/login", { email, password });
-      console.log(response)
-      // Store user data in local storage
+      console.log(response);
+
       localStorage.setItem("user", JSON.stringify(response.data.user));
       toast.success(response.data.message);
 
@@ -21,10 +21,11 @@ export const loginUser = createAsyncThunk(
       toast.error(JSON.stringify(error.response.data.message));
       return rejectWithValue(error.response.data);
     } finally {
-      dispatch(setLoading(false)); // Stop loading after request
+      dispatch(setLoading(false));
     }
   }
 );
+
 
 // Async thunk for registering
 export const registerUser = createAsyncThunk(

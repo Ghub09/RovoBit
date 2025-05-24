@@ -20,7 +20,7 @@ import { setShowChart } from "../../store/slices/globalSlice";
 import { LuMessageCircleQuestion } from "react-icons/lu";
 
 const Navbar = () => {
-  const { t } = useTranslation();
+const { t } = useTranslation();
   const { user } = useSelector((state) => state.user);
   const [openMenu, setOpenMenu] = useState(false);
   const [tradeMenu, setTradeMenu] = useState(false);
@@ -128,14 +128,15 @@ const Navbar = () => {
         </div>
         <div className=" hidden sm:flex justify-center w-[60%]">
            <div className="flex w-[70%] justify-between items-center" >
-            {user?.role === "admin" && (
-              <Link
-                to={"/admin/dashboard"}
-                className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}
-              >
-                {t("Admin")}
-              </Link>
-            )}
+           {user?.role === "admin" && (
+  <Link
+    to="/admin/dashboard"
+    className="text-white hover:text-[#00FF7F] text-center"
+  >
+    {t("admin")}
+  </Link>
+)}
+
 
             <Link to={"/"} className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}>
               {t("home")}
@@ -196,7 +197,7 @@ const Navbar = () => {
               {t("wallet")}
             </Link>
             <Link to={"/about"} className={`text-white hover:text-[#00FF7F] text-center ${user?.role !== "admin"? 'min-w-[60px] max-w-[70px]':''}`}>
-              {t("About")}
+              {t("about")}
             </Link>
           </div>
  
@@ -372,12 +373,12 @@ const Navbar = () => {
               >
                 <span>{t("cancel")}</span>
               </Button>
-              <button
+              <Button
                 onClick={handleLogout}
                 className="bg-green-500 hover:bg-green-400 rounded-md px-3 py-1"
               >
                 <span>{t("confirm")}</span>
-              </button>
+              </Button>
             </div>
           </div>
         </Modal>

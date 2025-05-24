@@ -22,20 +22,20 @@ const CustomModel = ({
     >
       <div className="rounded-lg bg-[#1A1A1A] p-5 text-white shadow-lg">
         <div className="mb-4 text-center">
-          <p className="text-lg font-medium">{t(label)}</p>
+          <p className="text-lg font-medium">{label}</p>
         </div>
         <div className="flex justify-end gap-2">
           <Button
             color="failure"
             onClick={handleDialog}
           >
-            {t(cancel)}
+             { cancel}
           </Button>
           <Button
             color="success"
             onClick={handleAction}
           >
-            {t(action)}
+            { action}
           </Button>
         </div>
       </div>

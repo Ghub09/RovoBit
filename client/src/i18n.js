@@ -65,7 +65,7 @@ const resources = {
       perpetual: "Perpetual",
       login: "Login",
       register: "Register",
-      admin_panel: "Admin Panel",
+      admin: "Admin",
       assets_wallet: "Assets Wallet",
       logout: "Logout",
       sign_out_of_your_account: "Sign out of your account",

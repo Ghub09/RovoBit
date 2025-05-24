@@ -26,7 +26,7 @@ export const isAdminAuthenticated = catchAsyncErrors(async (req, res, next) => {
 
   try {
     const decodedTokenData = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const user = await User.findById(decodedTokenData.id);
+    const user = await User.findById(decodedTokenData._id);
 
     if (!user) {
       return next(new ErrorHandler("You Need To Register As Admin First", 403));
@@ -51,7 +51,7 @@ export const isUserAuthenticated = catchAsyncErrors(async (req, res, next) => {
 
   try {
     const decodedTokenData = jwt.verify(token, process.env.JWT_SECRET_KEY);
-    const user = await User.findById(decodedTokenData.id);
+    const user = await User.findById(decodedTokenData._id);
 
     if (!user) {
       return next(new ErrorHandler("You Need To Register As User First", 403));
