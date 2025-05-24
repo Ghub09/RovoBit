@@ -3,13 +3,10 @@ export const generateToken = (user, message, statusCode, res) => {
   const token = user.generateJWTToken();
   const cookieName = user.role === "admin" ? "adminToken" : "userToken";
 
-  const domain =
-    process.env.NODE_ENV === "production" ? ".cryptonexus.live" : "localhost";
-
+  const domain = process.env.NODE_ENV === "production" ? ".cryptonexus.live" : "localhost";
   const cookieExpiryDays = Number(process.env.COOKIE_EXPIRY) || 7;
   const expiresDate = new Date(Date.now() + cookieExpiryDays * 24 * 60 * 60 * 1000);
 
-  // Debug logs
   console.log("COOKIE_EXPIRY:", process.env.COOKIE_EXPIRY);
   console.log("Parsed cookieExpiryDays:", cookieExpiryDays);
   console.log("Expires Date:", expiresDate);
