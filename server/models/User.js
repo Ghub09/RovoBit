@@ -9,6 +9,7 @@ const UserSchema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: false, enum: [false, true] },
     verificationCode: { type: String }, // OTP for email/phone verification
     role: { type: String, enum: ["user", "admin"], default: "user" },
     balanceUSDT: { type: Number, default: 0 }, // Wallet balance in USDT
@@ -34,7 +35,7 @@ const UserSchema = new mongoose.Schema(
 );
 UserSchema.pre("save", async function () {
   if (!this.isModified("password")) {
-    next();
+    return;
   }
   this.password = await bcrypt.hash(this.password, 14);
 });

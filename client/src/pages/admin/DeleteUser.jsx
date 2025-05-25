@@ -10,3 +10,16 @@ export const deleteUser = async (id) => {
   }
 };
  
+// Toggle user isActive status
+export const profitUser = async (userId) => {
+  try {
+    const response = await API.put(
+      `/account/user/${userId}/toggle`);
+
+    console.log("User toggled:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Toggle error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Server error" };
+  }
+};

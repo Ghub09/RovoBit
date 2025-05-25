@@ -35,8 +35,6 @@ import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
-import axios from "axios";
-
 const App = () => {
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.global);

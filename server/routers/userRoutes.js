@@ -11,8 +11,8 @@ import {
   logoutUser,
   swapCrypto,
 } from "../controllers/userController.js";
-import { isUserAuthenticated } from "../middlewares/auth.js";
-const router = express.Router();
+import {  isUserAuthenticated } from "../middlewares/auth.js";
+ const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
