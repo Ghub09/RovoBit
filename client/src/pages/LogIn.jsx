@@ -24,10 +24,10 @@ const LogIn = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      console.log(email, password)
+      // console.log(email, password)
       const res = await dispatch(loginUser({ email, password })).unwrap();
       toast.success(res.msg);
-      console.log(res)
+      // console.log(res)
       if (res.user.role === "user") {
           navigate(-1); // Redirect to the previous page
       } else if (res.user.role === "admin") {

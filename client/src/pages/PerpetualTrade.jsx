@@ -102,7 +102,7 @@ const PerpetualTrade = () => {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <div className="flex justify-between md:px-0 px-4">
+        <div className="flex justify-between md:px-0 px-4 border-b border-[#ffff]">
           <AnimatedHeading>
             <h3 className="text-2xl font-semibold text-white">
               Perpetual Trading

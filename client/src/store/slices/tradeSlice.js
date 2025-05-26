@@ -34,7 +34,7 @@ export const placeOrder = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
-      console.log(error.response.data);
+      // console.log(error.response.data);
       
       return rejectWithValue(error.response.data);
     } finally {
@@ -113,7 +113,7 @@ export const fetchSpotTradesHistory = createAsyncThunk(
       const response = await API.get("/trade/history", {
         withCredentials: true,
       });
-
+      // console.log(response.data);
       return response.data.trades;
     } catch (error) {
       return rejectWithValue(error.response?.data);

@@ -13,7 +13,6 @@ const ManageTransactions = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { transactions } = useSelector((state) => state.admin);
-
   useEffect(() => {
     dispatch(fetchRequests());
   }, [dispatch]);

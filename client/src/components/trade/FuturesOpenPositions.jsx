@@ -15,8 +15,10 @@ function FuturesOpenPosition({ showBtn = false }) {
   const [pnlData, setPnlData] = useState({});
   const [marketPrice, setMarketPrice] = useState(null);
   const [countdowns, setCountdowns] = useState({});
+  const [arr,setarr]=useState([])
   const { openPositions, status } = useSelector((state) => state.futures);
   const dispatch = useDispatch();
+  // console.log(openPositions)
 
   useEffect(() => {
     dispatch(fetchOpenPositions());
@@ -76,7 +78,7 @@ function FuturesOpenPosition({ showBtn = false }) {
 
       newPnlData[trade._id] = pnl;
     });
-
+     
     setPnlData(newPnlData);
   }, [marketPrice, openPositions]);
 
@@ -232,6 +234,7 @@ function FuturesOpenPosition({ showBtn = false }) {
 
       {/* for mobile screens */}
       <div className="md:hidden">
+        {status === "loading" && <span className="ml-2 animate-spin">⏳</span>}
         {openPositions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openPositions.map((trade) => (

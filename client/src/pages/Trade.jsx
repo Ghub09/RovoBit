@@ -144,7 +144,7 @@ function Trade() {
         </div>
         <div className="flex flex-col lg:flex-row">
           <div
-            className={`w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r md:p-4 ${
+            className={`w-full lg:w-3/5 bg-transparent  border-y border-[#2f2f2f] lg:border-r md:p-4 ${
               !showChart ? "hidden md:block" : ""
             }`}
           >
@@ -174,8 +174,8 @@ function Trade() {
             </div>
           </div>
         </div>
-        <div>
-          <OrdersRecord type={"spot"} />
+        <div className="border">
+          <OrdersRecord type={"spot"}  />
         </div>
       </motion.div>
     </div>

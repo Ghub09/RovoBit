@@ -61,7 +61,6 @@ const Wallet = () => {
   const [amount, setAmount] = useState(1);
   const { wallet, exchangeRate } = useSelector((state) => state.assets);
   const { coins } = useSelector((state) => state.market);
-
   // Handle Fund Transfer
   const [transferOpen, setTransferOpen] = useState(false);
   const [fromWallet, setFromWallet] = useState("");
@@ -266,7 +265,8 @@ const Wallet = () => {
     localStorage.removeItem("selectedWalletType");
     localStorage.removeItem("showAssets");
   };
-console.log(showAssets)
+// console.log(wallet)
+// console.log(showAssets)
   return (
     <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
@@ -432,7 +432,7 @@ console.log(showAssets)
               {/* Deposit & Withdrawal History */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Deposit History */}
-                <Card className="bg-[#242424] p-6 rounded-lg">
+                <Card className="bg-[#242424] p-6 rounded-lg border border-gray-100">
                   <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
                     Deposit History
                   </h2>

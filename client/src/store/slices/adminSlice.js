@@ -54,7 +54,7 @@ export const addTokens = createAsyncThunk(
       return response.data;
     } catch (error) {
       toast.error(error.response.data.message);
-      console.log(error.response.data);
+      // console.log(error.response.data);
       
       return rejectWithValue(error.response.data);
     } finally {

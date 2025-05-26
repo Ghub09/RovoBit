@@ -2,21 +2,33 @@
   import { fetchUsers } from "../../store/slices/adminSlice";
   import { useDispatch, useSelector } from "react-redux";
   import { useNavigate } from "react-router-dom";
-  import { deleteUser, profitUser } from "./DeleteUser";
+  import { deleteUser, profitUser, userHistory } from "./DeleteUser";
   import { RiDeleteBin5Line } from "react-icons/ri";
   import CustomModel from "../../components/mini/Model";
   import BooleanToggle from "../../components/toggle/Toggle";
-import axios from "axios";
-
+import HistoryModel from "../../components/mini/HistoryModel";
+  
   const ManageUser = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { users } = useSelector((state) => state.admin);
+      // const { wallet } = useSelector((state) => state.assets);
+    
     const [update, setUpdate] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
- 
-    // Fetch users on mount
+    const [history, setHistory] = useState([]);
+    // console.log(wallet?.transferHistory)
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleDialog = () => setIsModalOpen(!isModalOpen);
+
+  const handleAction = () => {
+    // console.log('Action Confirmed');
+    handleDialog(); // close modal
+  };
+
     useEffect(() => {
       dispatch(fetchUsers());
     }, [dispatch]);
@@ -38,22 +50,33 @@ import axios from "axios";
       }
     };
   const handleToggle = async (user) => {
+    console.log(user)
   try {
+    await profitUser(user._id);
     const updatedUsers = update.map((item) =>
       item._id === user._id ? { ...item, isActive: !item.isActive } : item
     );
     setUpdate(updatedUsers);
     console.log( `Toggled user status: ${user._id} to ${!user.isActive}`);
-     await axios.put(`http://localhost:5000/api/account/${user._id}/toggle`,{
-  withCredentials: true
-});
      
   } catch (err) {
     console.log(err.message || "Failed to update user status");
   }
 };
 
-    // Utility to truncate long strings (like user IDs)
+  const handleHistory = async (userId) => {
+    try {
+      setIsModalOpen(true)
+      const response = await userHistory(userId);
+      // console.log("User history fetched:", response.data);
+      setHistory(response.data);
+      // Handle the response data as needed
+    } catch (error) {
+      console.error("Fetch history error:", error.response?.data || error.message);
+      throw error.response?.data || { message: "Server error" };
+    }
+  }
+
     const truncateString = (str, num) => {
       if (str.length > num) {
         return str.slice(0, num) + "...";
@@ -71,37 +94,38 @@ import axios from "axios";
               <tr className="border">
                 <th className="  p-2 text-center">User ID</th>
                 <th className="  p-2 text-center">Email</th>
-                <th className="  p-2 text-center border">Actions</th>
-                <th className="  p-2 text-center">Profit/Loss</th>
+                <th className="  p-2 text-center border">Token</th>
+                <th className="  p-2 text-center">Profit</th>
                 <th className="  p-2 text-center">Delete</th>
+                <th className="  p-2 text-center">History</th>
               </tr>
             </thead>
             <tbody>
               {update.length > 0 ? (
                 update.map((user) => (
                   <tr key={user._id} className="hover:bg-gray-500 border-b transition-colors duration-300">
-                    <td className="  p-2 text-center" title={user._id}>
+                    <td className=" h-[100px]  p-2 text-center" title={user._id}>
                       {truncateString(user._id, 10)}
                     </td>
-                    <td className="  p-2 text-center" title={user.email}>
+                    <td className=" h-[100px]  p-2 text-center" title={user.email}>
                       {truncateString(user.email, 15)}
                     </td>
-                    <td className="">
+                    <td className=" h-[100px] ">
                       <button
                         onClick={() =>
                           navigate(`/admin/users/add-tokens/${user._id}`)
                         }
-                        className="bg-green-400 hover:bg-green-600  text-white p-2 rounded-full">
-                        Add Tokens
+                        className="bg-green-400 w-[60px] h-[30px]  hover:bg-green-600  text-white rounded-full">
+                        Add
                       </button>
                     </td>
-                    <td className="  py-5 flex justify-center items-center">
+                    <td className=" h-[100px]  py-5 flex justify-center items-center">
                       <BooleanToggle
                         value={user.isActive}
                         onChange={() => handleToggle(user)}
                       />
                     </td>
-                    <td className="  p-2 text-center">
+                    <td className=" h-[100px]  p-2 text-center">
                       <button
                         onClick={() => {
                           setSelectedUser(user);
@@ -112,6 +136,14 @@ import axios from "axios";
                         <RiDeleteBin5Line className="text-white" />
                       </button>
                     </td>
+                    <td className=" h-[100px]  p-2 text-center">
+                      <button
+        onClick={() =>  handleHistory(user._id)}
+        className="bg-blue-600 text-white px-4 py-2 rounded"
+      >
+      History
+      </button>
+                       </td>
                   
                   </tr>
                 ))
@@ -123,7 +155,14 @@ import axios from "axios";
                 </tr>
               )}
             </tbody>
-
+            <HistoryModel
+        openDialog={isModalOpen}
+        handleDialog={handleDialog}
+        labels={history}
+        handleAction={handleAction}
+        action="Confirm"
+        cancel="Cancel"
+      />
             <CustomModel
               openDialog={openDialog}
               handleDialog={() => setOpenDialog(false)}

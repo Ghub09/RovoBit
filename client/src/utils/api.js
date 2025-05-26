@@ -9,7 +9,7 @@ const API = axios.create({
    },
 });
 
-console.log(import.meta.env.VITE_API_URL);
+// console.log(import.meta.env.VITE_API_URL);
 
 // Helper to detect Safari browsers
 const isSafari = () => {

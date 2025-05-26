@@ -3,7 +3,7 @@ import API from "../../utils/api";
 export const deleteUser = async (id) => {
   try {
     const res = await API.delete(`/account/delete/${id}`);
-    console.log(res.data)
+    // console.log(res.data)
     return res.data;
   } catch (err) {
     throw err.response?.data || { message: "Server error" };
@@ -13,13 +13,35 @@ export const deleteUser = async (id) => {
 // Toggle user isActive status
 export const profitUser = async (userId) => {
   try {
-    const response = await API.put(
-      `/account/user/${userId}/toggle`);
-
-    console.log("User toggled:", response.data);
+  if (!userId) {
+      throw { message: "User ID is required" };
+    }
+    const response = await API.put(`http://localhost:5000/api/account/${userId}/toggle`,{
+         withCredentials: true
+         });
+    // console.log("User toggled:", response.data);
     return response.data;
   } catch (error) {
     console.error("Toggle error:", error.response?.data || error.message);
     throw error.response?.data || { message: "Server error" };
   }
 };
+ 
+export const userHistory = async (userId) => {
+  try {
+    if (!userId) {
+      throw { message: "User ID is required" };
+    }
+    const response = await API.get(`/admin/user-history/${userId}`, {
+      withCredentials: true
+    });
+    
+    // console.log("User history fetched:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Fetch history error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Server error" };
+  }
+};
+
+// userHistory("67c19fa4803f0a44361ca0ef")

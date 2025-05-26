@@ -17,13 +17,10 @@ const HistoryPage = () => {
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
   const { spotHistoryTrades } = useSelector((state) => state.trade);
-
-  // Main navigation state
-  const [mainTab, setMainTab] = useState("transactionHistory");
-
-  // Sub-navigation states
-  const [transactionTab, setTransactionTab] = useState("deposits");
-  const [tradeTab, setTradeTab] = useState("spot");
+  // console.log("spotHistoryTrades, futuresHistoryTrades, perpetualsHistoryTrades",spotHistoryTrades, futuresHistoryTrades, perpetualsHistoryTrades);
+   const [mainTab, setMainTab] = useState("transactionHistory");
+   const [transactionTab, setTransactionTab] = useState("deposits");
+   const [tradeTab, setTradeTab] = useState("spot");
 
   useEffect(() => {
     dispatch(getWallet());
@@ -35,17 +32,18 @@ const HistoryPage = () => {
   if (status === "loading") {
     return <Loader />;
   }
+  // console.log(wallet?.depositHistory)
 
   if (!wallet) {
     return (
-      <div className="text-gray-400 text-center p-4">
+      <div className="text-gray-400 border text-center p-4">
         No wallet data available.
       </div>
     );
   }
 
   return (
-    <div className="p-4 min-h-screen text-white">
+    <div className="p-4 min-h-screen  text-white border">
       {/* Main Navigation */}
       <div className="flex justify-around border-b-2 border-gray-700 mb-4">
         <button

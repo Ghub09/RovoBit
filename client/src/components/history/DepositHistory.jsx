@@ -10,11 +10,11 @@ const DepositHistory = ({ transactions }) => {
     }
   
     return (
-      <div className="space-y-3">
+      <div className="space-y-3  ">
         {transactions?.map((transaction) => (
           <div
             key={transaction.id}
-            className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md hover:shadow-md transition-shadow"
+            className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md hover:shadow-md transition-shadow border border-gray-100"
           >
             <div className="flex justify-between items-center">
               <div>

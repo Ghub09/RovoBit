@@ -67,7 +67,7 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
       toast.error("Please select a trade to close!");
       return;
     }
-    console.log(marketPrice);
+    // console.log(marketPrice);
     dispatch(closePerpetualTrade({ tradeId, closePrice: marketPrice }));
     dispatch(fetchOpenPerpetualTrades());
   };

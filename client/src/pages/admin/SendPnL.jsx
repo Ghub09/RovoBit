@@ -26,7 +26,7 @@ const SendPnL = () => {
   };
   return (
     <div className="w-full min-h-screen p-6 bg-gradient">
-      <div className="flex flex-col sm:flex-row gap-4 justify-evenly">
+      <div className="flex flex-col sm:flex-row gap-4 justify-evenly border border-[#ffff]">
         <form onSubmit={handleSubmit} className="space-y-6 sm:w-[40vw]">
           <div className="flex justify-between items-center mb-6">
             <AnimatedHeading>

@@ -16,7 +16,7 @@ export const openPerpetualTrade = createAsyncThunk(
       toast.success(response.data.message);
       return response.data.trade;
     } catch (error) {
-      console.log(error.response.data);
+      // console.log(error.response.data);
       
       toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response?.data);
