@@ -1,12 +1,63 @@
-import axios from "axios";
+import mongoose from "mongoose";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import FuturesTrade from "../models/FuturesTrade.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 import Trade from "../models/Trade.js";
-import Transaction from "../models/Transaction.js"; // Ensure you import the Transaction model
+import TradeHistory from "../models/TradeHistory.js";
+ import Transaction from "../models/Transaction.js"; // Ensure you import the Transaction model
 import User from "../models/User.js";
 import Wallet from "../models/Wallet.js";
 import { io } from "../server.js";
+
+export const getAllSpotHistories = async (req, res) => {
+  try {
+     if (!req.user || req.user.role !== 'admin') {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const trades = await Trade.find({
+      status: "approved",
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({ message: "All trade histories fetched successfully", trades });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching all trade histories", error });
+  }
+};
+
+export const getAllPerpetualTradesHistory = async (req, res) => {
+  try {
+     if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const trades = await PerpetualTrade.find({
+      status: { $in: ["closed", "liquidated"] },
+    })
+      .populate("userId", "name email") // populate user's name/email if needed
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ message: "All users' perpetual trades fetched", trades });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching perpetual trades", error });
+  }
+};
+export const getAllUsersTradeHistory = async (req, res) => {
+  try {
+     if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const trades = await TradeHistory.find()
+      .populate("userId", "name email")  
+      .sort({ createdAt: -1 });  
+
+  return  res.status(200).json({ message: "All user trades fetched successfully", trades });
+  } catch (error) {
+  return  res.status(500).json({ message: "Error fetching all user trades", error });
+  }
+};
+ 
 
 export const fetchUsers = async (req, res, next) => {
   try {

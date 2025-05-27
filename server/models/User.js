@@ -10,9 +10,9 @@ const UserSchema = new mongoose.Schema(
     password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     isActive: { type: Boolean, default: false, enum: [false, true] },
-    verificationCode: { type: String }, // OTP for email/phone verification
+    verificationCode: { type: String },
     role: { type: String, enum: ["user", "admin"], default: "user" },
-    balanceUSDT: { type: Number, default: 0 }, // Wallet balance in USDT
+    balanceUSDT: { type: Number, default: 0 },
     depositHistory: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
     ],
@@ -20,8 +20,8 @@ const UserSchema = new mongoose.Schema(
       { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
     ],
     kycDocuments: {
-      idFront: { type: String }, // URL to front ID image in Cloudinary
-      idBack: { type: String }, // URL to back ID image in Cloudinary
+      idFront: { type: String },
+      idBack: { type: String },
       uploadedAt: { type: Date },
       verificationStatus: {
         type: String,

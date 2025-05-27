@@ -44,4 +44,47 @@ export const userHistory = async (userId) => {
   }
 };
 
-// userHistory("67c19fa4803f0a44361ca0ef")
+export const allSportHistory = async () => {
+  try {
+    const response = await API.get(`/admin/all-spot`, {
+      withCredentials: true
+    });
+    
+    console.log("Sport history fetched:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Fetch sport history error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Server error" };
+  }
+}
+// allSportHistory()
+
+export const allPerpetualHistory = async () => {
+  try {
+    const response = await API.get(`/admin/all-perpetual`, {
+      withCredentials: true
+    });
+
+    console.log("Perpetual history fetched:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Fetch perpetual history error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Server error" };
+  }
+}
+//  allPerpetualHistory()
+
+export const alltradingHistory = async () => {
+  try {
+    const response = await API.get(`/admin/all-trades`, {
+      withCredentials: true
+    });
+    console.log("Trading history fetched:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Fetch trading history error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Server error" };
+  }
+
+}
+// alltradingHistory()

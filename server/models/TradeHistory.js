@@ -54,3 +54,4 @@ const TradeHistorySchema = new mongoose.Schema({
 });
 
 export default mongoose.model("TradeHistory", TradeHistorySchema);
+ 

@@ -18,6 +18,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [history, setHistory] = useState([]);
+    
     // console.log(wallet?.transferHistory)
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,19 +26,16 @@ import HistoryModel from "../../components/mini/HistoryModel";
   const handleDialog = () => setIsModalOpen(!isModalOpen);
 
   const handleAction = () => {
-    // console.log('Action Confirmed');
-    handleDialog(); // close modal
+     handleDialog(); // close modal
   };
 
     useEffect(() => {
       dispatch(fetchUsers());
     }, [dispatch]);
-
-    // Update local state when users in redux change
     useEffect(() => {
       setUpdate(users);
-    }, [users]);
-
+     }, [users]);
+     
     // Delete user and update local list without page reload
     const handleDelete = async (user) => {
       try {
@@ -160,7 +158,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
         handleDialog={handleDialog}
         labels={history}
         handleAction={handleAction}
-        action="Confirm"
+        action="Delete"
         cancel="Cancel"
       />
             <CustomModel

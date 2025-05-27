@@ -146,7 +146,7 @@ export const addTokens = async (req, res) => {
 
     res.status(200).json({ message: `Tokens added successfully`, wallet });
   } catch (error) {
-    console.log(error.message);
+    // console.log(error.message);
 
     res.status(500).json({ message: "Error adding tokens", error });
   }

@@ -8,3 +8,4 @@ const FundingRateSchema = new mongoose.Schema({
 });
 
 export default mongoose.model("FundingRate", FundingRateSchema);
+// console.log(FundingRateSchema.obj);

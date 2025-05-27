@@ -1,5 +1,6 @@
 // controllers/Users/userProfit.js
 import User from "../../models/User.js";
+import TradeHistorySchema from "../../models/TradeHistory.js";
 
 export const toggleUserStatus = async (req, res) => {
   try {
@@ -24,5 +25,7 @@ export const toggleUserStatus = async (req, res) => {
     }
   }
 };
+
+ 
 
 

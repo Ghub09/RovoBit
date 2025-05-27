@@ -21,8 +21,8 @@ const TransactionSchema = new mongoose.Schema(
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
-    amount: { type: Number }, // Used for deposits/withdrawals
-    currency: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] }, // For deposits/withdrawals
+    amount: { type: Number },
+    currency: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] }, 
 
     // Swap-specific fields
     fromAsset: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] },

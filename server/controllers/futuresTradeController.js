@@ -190,7 +190,7 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   trade.closedAt = new Date();
   trade.profitLoss = profitLoss;
   trade.closePrice = parsedClosePrice;
-  console.log("the trade is going to save", trade);
+  // console.log("the trade is going to save", trade);
   await trade.save();
 
   // Emit event for real-time updates

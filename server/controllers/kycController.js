@@ -44,7 +44,7 @@ export const uploadKycDocuments = async (req, res) => {
     );
 
     // Update user with KYC document info
-    console.log('the user id is',userId);
+    // console.log('the user id is',userId);
     const user = await User.findByIdAndUpdate(
       userId,
       {

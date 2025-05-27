@@ -8,7 +8,7 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
     const { type, orderType, price, usdtAmount, assetsAmount, coin } = req.body;
 
-    console.log("GOT A PLACE ORDER REQUEST \n" + JSON.stringify(req.body));
+    // console.log("GOT A PLACE ORDER REQUEST \n" + JSON.stringify(req.body));
     
 
     // Validate required fields
@@ -127,7 +127,6 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-
 // Get User Trade History
 export const getTradeHistory = async (req, res) => {
   try {
