@@ -22,9 +22,9 @@ router.get("/all-requests", getAllRequests);
 
 router.get('/all-users', isAdminAuthenticated, getAllUsers);
 
-router.get("/all-trades", isAdminAuthenticated, getAllUsersTradeHistory);
-router.get("/all-perpetual", isAdminAuthenticated, getAllPerpetualTradesHistory);
-router.get("/all-spot", isAdminAuthenticated, getAllSpotHistories);
+router.get("/all-trades/:userId", isAdminAuthenticated, getAllUsersTradeHistory);
+router.get("/all-perpetual/:userId", isAdminAuthenticated, getAllPerpetualTradesHistory);
+router.get("/all-spot/:userId", isAdminAuthenticated, getAllSpotHistories);
 
 router.get("/user-history/:userId", isAdminAuthenticated, getUserHistory);
 router.post("/user/add-tokens", isAdminAuthenticated, addTokens);

@@ -18,9 +18,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [history, setHistory] = useState([]);
-    
-    // console.log(wallet?.transferHistory)
-
+  
     const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleDialog = () => setIsModalOpen(!isModalOpen);
@@ -28,7 +26,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
   const handleAction = () => {
      handleDialog(); // close modal
   };
-
+  
     useEffect(() => {
       dispatch(fetchUsers());
     }, [dispatch]);
@@ -48,8 +46,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
       }
     };
   const handleToggle = async (user) => {
-    console.log(user)
-  try {
+   try {
     await profitUser(user._id);
     const updatedUsers = update.map((item) =>
       item._id === user._id ? { ...item, isActive: !item.isActive } : item
@@ -62,10 +59,11 @@ import HistoryModel from "../../components/mini/HistoryModel";
   }
 };
 
-  const handleHistory = async (userId) => {
+  const handleHistory = async (userId,user) => {
     try {
-      setIsModalOpen(true)
       const response = await userHistory(userId);
+      setSelectedUser(user)
+      setIsModalOpen(true)
       // console.log("User history fetched:", response.data);
       setHistory(response.data);
       // Handle the response data as needed
@@ -136,7 +134,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
                     </td>
                     <td className=" h-[100px]  p-2 text-center">
                       <button
-        onClick={() =>  handleHistory(user._id)}
+        onClick={() =>  handleHistory(user._id,user)}
         className="bg-blue-600 text-white px-4 py-2 rounded"
       >
       History
@@ -160,7 +158,8 @@ import HistoryModel from "../../components/mini/HistoryModel";
         handleAction={handleAction}
         action="Delete"
         cancel="Cancel"
-      />
+        user={selectedUser}
+        />
             <CustomModel
               openDialog={openDialog}
               handleDialog={() => setOpenDialog(false)}

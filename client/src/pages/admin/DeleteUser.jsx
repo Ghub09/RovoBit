@@ -44,9 +44,9 @@ export const userHistory = async (userId) => {
   }
 };
 
-export const allSportHistory = async () => {
+export const allSportHistory = async (userId) => {
   try {
-    const response = await API.get(`/admin/all-spot`, {
+     const response = await API.get(`/admin/all-spot/${userId}`, {
       withCredentials: true
     });
     
@@ -59,9 +59,9 @@ export const allSportHistory = async () => {
 }
 // allSportHistory()
 
-export const allPerpetualHistory = async () => {
+export const allPerpetualHistory = async (userId) => {
   try {
-    const response = await API.get(`/admin/all-perpetual`, {
+    const response = await API.get(`/admin/all-perpetual/${userId}`, {
       withCredentials: true
     });
 
@@ -74,9 +74,9 @@ export const allPerpetualHistory = async () => {
 }
 //  allPerpetualHistory()
 
-export const alltradingHistory = async () => {
+export const alltradingHistory = async (userId) => {
   try {
-    const response = await API.get(`/admin/all-trades`, {
+    const response = await API.get(`/admin/all-trades/${userId}`, {
       withCredentials: true
     });
     console.log("Trading history fetched:", response.data);

@@ -10,39 +10,42 @@ const HistoryModel = ({
   handleAction,
   action,
   cancel,
+  user, // Assuming userId is passed as a prop
 }) => {
   const [selectedIds, setSelectedIds] = useState([]);
   const [show,setShow]= useState({DW:true,TP:false,TR:false, TS:false});
- const [tradingHistory, setTradingHistory] = useState([]);
+  const [tradingHistory, setTradingHistory] = useState([]);
   const [sportHistory, setSportHistory] = useState([]);
   const [perpetualHistory, setPerpetualHistory] = useState([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
+  // eslint-disable-next-line react/prop-types
+  const userId=user?._id;
+     const fetchData = async () => {
       try {
-        const tradingRes = await alltradingHistory();
-        const sportRes = await allSportHistory();
-        const perpetualRes = await allPerpetualHistory();
+        const tradingRes = await alltradingHistory(userId);
+        const sportRes = await allSportHistory(userId);
+        const perpetualRes = await allPerpetualHistory(userId);
         setTradingHistory(tradingRes);
         setSportHistory(sportRes);
         setPerpetualHistory(perpetualRes);
-        console.log("Trading:", tradingRes);
-        console.log("Sport:", sportRes);
-        console.log("Perpetual:", perpetualRes);
+        console.log("Trading:", tradingHistory);
+        console.log("Sport:", sportHistory);
+        console.log("Perpetual:", perpetualHistory);
       } catch (error) {
         console.error("Error fetching history:", error);
       }
     };
 
-    fetchData();
-  }, []);
-  console.log("tradingHistory, sportHistory, perpetualHistory",tradingHistory.trades
+   console.log("tradingHistory, sportHistory, perpetualHistory",tradingHistory.trades
 , sportHistory.trades
 , perpetualHistory.trades);
 
   useEffect(() => {
-    if (!openDialog) setSelectedIds([]);
-  }, [openDialog]);
+    if (!openDialog)
+         { setShow({DW:true,TP:false,TR:false, TS:false})
+          setSelectedIds([]);}
+    else
+    fetchData()
+   }, [openDialog]);
 
   const handleCheckboxChange = (id) => {
   setSelectedIds((prevSelected) => {
@@ -58,15 +61,33 @@ const HistoryModel = ({
   });
 };
 const handleShow =(type) => {
+      fetchData();
+
   console.log(type)
   if(type === "DW"){
     setShow({DW:true,TP:false,TR:false, TS:false})
+    setSportHistory([])
+    setTradingHistory([])
+    setPerpetualHistory([])
   }else if(type === "TR"){
     setShow({DW:false,TP:false,TR:true, TS:false})
+    setSportHistory([])
+    setPerpetualHistory([])
+    labels=null
+
   }else if(type === "TS"){
     setShow({DW:false,TP:false,TR:false, TS:true})
+    setTradingHistory([])
+    setPerpetualHistory([])
+    labels=null
+
+
   }else{
     setShow({DW:false,TP:true,TR:false, TS:false})
+    setSportHistory([])
+    setTradingHistory([])
+    labels=null
+
   }
 }
 
@@ -185,16 +206,15 @@ const handleShow =(type) => {
         <th className="p-2 text-center">Select</th>
         <th className="p-2 text-center">Pair</th>
         <th className="p-2 text-center">Type</th>
-        <th className="p-2 text-center">Entry Price</th>
-        <th className="p-2 text-center">Close Price</th>
+        <th className="p-2 text-center">Entry-Close</th>
         <th className="p-2 text-center">Leverage</th>
-        <th className="p-2 text-center">Liquidation Price</th>
+        <th className="p-2 text-center">Liquidation</th>
         <th className="p-2 text-center">Profit/Loss</th>
         <th className="p-2 text-center">Quantity</th>
-        <th className="p-2 text-center">Margin Used</th>
+        <th className="p-2 text-center">Margin</th>
         <th className="p-2 text-center">Status</th>
-        <th className="p-2 text-center">Created At</th>
-        <th className="p-2 text-center">Closed At</th>
+        <th className="p-2 text-center">Start</th>
+        <th className="p-2 text-center">End</th>
       </tr>
     </thead>
     <tbody>
@@ -209,8 +229,7 @@ const handleShow =(type) => {
           </td>
           <td className="p-2 text-center">{item.pair}</td>
           <td className="p-2 text-center">{item.type}</td>
-          <td className="p-2 text-center">{item.entryPrice}</td>
-          <td className="p-2 text-center">{item.closePrice}</td>
+          <td className="p-2 text-center">{item.entryPrice}-{item.closePrice}</td>
           <td className="p-2 text-center">{item.leverage}x</td>
           <td className="p-2 text-center">{item.liquidationPrice}</td>
           <td className="p-2 text-center">{item.profitLoss}</td>
@@ -232,12 +251,12 @@ const handleShow =(type) => {
       <tr className="border">
         <th className="p-2 text-center">Select</th>
         <th className="p-2 text-center">Pair</th>
-        <th className="p-2 text-center">Type</th>
-        <th className="p-2 text-center">Trade Type</th>
-        <th className="p-2 text-center">Entry Price</th>
+        {/* <th className="p-2 text-center">Type</th> */}
+        {/* <th className="p-2 text-center">Trade Type</th> */}
+        {/* <th className="p-2 text-center">Entry Price</th> */}
         <th className="p-2 text-center">Quantity</th>
         <th className="p-2 text-center">Leverage</th>
-        <th className="p-2 text-center">Liquidation Price</th>
+        <th className="p-2 text-center">Price(L)</th>
         <th className="p-2 text-center">PnL</th>
         <th className="p-2 text-center">Status</th>
         <th className="p-2 text-center">Timestamp</th>
@@ -254,9 +273,9 @@ const handleShow =(type) => {
             />
           </td>
           <td className="p-2 text-center">{item.asset}</td>
-          <td className="p-2 text-center">{item.type}</td>
-          <td className="p-2 text-center">{item.tradeType}</td>
-          <td className="p-2 text-center">{item.price}</td>
+          {/* <td className="p-2 text-center">{item.type}</td> */}
+          {/* <td className="p-2 text-center">{item.tradeType}</td> */}
+          {/* <td className="p-2 text-center">{item.price}</td> */}
           <td className="p-2 text-center">{item.quantity}</td>
           <td className="p-2 text-center">{item.leverage}x</td>
           <td className="p-2 text-center">{item.liquidationPrice}</td>

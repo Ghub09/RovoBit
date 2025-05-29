@@ -7,8 +7,7 @@ const TradeHistorySchema = new mongoose.Schema({
     unique: true,
   },
   userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
+    type: String,
     required: true,
   },
   asset: {

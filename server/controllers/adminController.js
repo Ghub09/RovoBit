@@ -15,11 +15,9 @@ export const getAllSpotHistories = async (req, res) => {
       return res.status(403).json({ message: "Access denied. Admins only." });
     }
 
-    const trades = await Trade.find({
-      status: "approved",
-    }).sort({ createdAt: -1 });
-
-    res.status(200).json({ message: "All trade histories fetched successfully", trades });
+    const trades = await Trade.find({userId: req.params.userId}).sort({ createdAt: -1 });
+    console.log(trades)
+   return res.status(200).json({ message: "User trades history fetched successfully", trades });
   } catch (error) {
     res.status(500).json({ message: "Error fetching all trade histories", error });
   }
@@ -31,13 +29,11 @@ export const getAllPerpetualTradesHistory = async (req, res) => {
       return res.status(403).json({ message: "Access denied. Admins only." });
     }
 
-    const trades = await PerpetualTrade.find({
-      status: { $in: ["closed", "liquidated"] },
-    })
+    const trades = await PerpetualTrade.find({userId: req.params.userId})
       .populate("userId", "name email") // populate user's name/email if needed
       .sort({ createdAt: -1 });
-
-    res.status(200).json({ message: "All users' perpetual trades fetched", trades });
+    console.log(trades)
+  return res.status(200).json({ message: "User perpetual trades fetched", trades });
   } catch (error) {
     res.status(500).json({ message: "Error fetching perpetual trades", error });
   }
@@ -48,11 +44,12 @@ export const getAllUsersTradeHistory = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const trades = await TradeHistory.find()
-      .populate("userId", "name email")  
-      .sort({ createdAt: -1 });  
+    const trades = await TradeHistory.find({ userId: req.params.userId })
+      .populate("userId", "name email")
+      .sort({ createdAt: -1 });
+       console.log(trades)
 
-  return  res.status(200).json({ message: "All user trades fetched successfully", trades });
+  return  res.status(200).json({ message: "User trades fetched successfully", trades });
   } catch (error) {
   return  res.status(500).json({ message: "Error fetching all user trades", error });
   }
