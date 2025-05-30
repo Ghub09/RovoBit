@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
-import { Modal, Button } from 'flowbite-react';
+import { useState, useEffect } from "react";
+import { Modal, Button } from "flowbite-react";
 import {
   allPerpetualHistory,
   allSportHistory,
   alltradingHistory,
-} from '../../pages/admin/DeleteUser';
+} from "../../pages/admin/DeleteUser";
 
 const HistoryModel = ({
   openDialog,
@@ -16,13 +16,18 @@ const HistoryModel = ({
   user, // user._id required
 }) => {
   const [selectedIds, setSelectedIds] = useState([
-    { table: 'DW', ids: [] },
-    { table: 'TS', ids: [] },
-    { table: 'TP', ids: [] },
-    { table: 'TR', ids: [] },
+    { table: "DW", ids: [] },
+    { table: "TS", ids: [] },
+    { table: "TP", ids: [] },
+    { table: "TR", ids: [] },
   ]);
 
-  const [show, setShow] = useState({ DW: true, TP: false, TR: false, TS: false });
+  const [show, setShow] = useState({
+    DW: true,
+    TP: false,
+    TR: false,
+    TS: false,
+  });
   const [tradingHistory, setTradingHistory] = useState([]);
   const [sportHistory, setSportHistory] = useState([]);
   const [perpetualHistory, setPerpetualHistory] = useState([]);
@@ -32,10 +37,10 @@ const HistoryModel = ({
     if (!openDialog) {
       setShow({ DW: true, TP: false, TR: false, TS: false });
       setSelectedIds([
-        { table: 'DW', ids: [] },
-        { table: 'TS', ids: [] },
-        { table: 'TP', ids: [] },
-        { table: 'TR', ids: [] },
+        { table: "DW", ids: [] },
+        { table: "TS", ids: [] },
+        { table: "TP", ids: [] },
+        { table: "TR", ids: [] },
       ]);
     } else {
       fetchData();
@@ -51,13 +56,13 @@ const HistoryModel = ({
       setSportHistory(sportRes);
       setPerpetualHistory(perpetualRes);
     } catch (error) {
-      console.error('Error fetching history:', error);
+      console.error("Error fetching history:", error);
     }
   };
 
   const getTableSelected = (table) =>
     selectedIds.find((entry) => entry.table === table)?.ids || [];
-    console.log(selectedIds)
+  console.log(selectedIds);
   const updateTableSelected = (table, id) => {
     setSelectedIds((prev) =>
       prev.map((entry) =>
@@ -75,10 +80,10 @@ const HistoryModel = ({
 
   const handleShow = (type) => {
     setShow({
-      DW: type === 'DW',
-      TP: type === 'TP',
-      TR: type === 'TR',
-      TS: type === 'TS',
+      DW: type === "DW",
+      TP: type === "TP",
+      TR: type === "TR",
+      TS: type === "TS",
     });
   };
 
@@ -99,26 +104,34 @@ const HistoryModel = ({
       <div className="rounded-lg bg-[#1A1A1A] p-5 text-white shadow-lg">
         <div className="flex justify-between items-center mb-4">
           <button
-            className={`${show.DW ? 'bg-green-600' : ''} bg-green-300 p-2 rounded`}
-            onClick={() => handleShow('DW')}
+            className={`${
+              show.DW ? "bg-green-600" : ""
+            } bg-green-300 p-2 rounded`}
+            onClick={() => handleShow("DW")}
           >
             Deposit/Withdraw
           </button>
           <button
-            className={`${show.TS ? 'bg-yellow-600' : ''} bg-yellow-300 p-2 rounded`}
-            onClick={() => handleShow('TS')}
+            className={`${
+              show.TS ? "bg-yellow-600" : ""
+            } bg-yellow-300 p-2 rounded`}
+            onClick={() => handleShow("TS")}
           >
             Spot
           </button>
           <button
-            className={`${show.TP ? 'bg-purple-600' : ''} bg-purple-300 p-2 rounded`}
-            onClick={() => handleShow('TP')}
+            className={`${
+              show.TP ? "bg-purple-600" : ""
+            } bg-purple-300 p-2 rounded`}
+            onClick={() => handleShow("TP")}
           >
             Perpetual
           </button>
           <button
-            className={`${show.TR ? 'bg-pink-600' : ''} bg-pink-300 p-2 rounded`}
-            onClick={() => handleShow('TR')}
+            className={`${
+              show.TR ? "bg-pink-600" : ""
+            } bg-pink-300 p-2 rounded`}
+            onClick={() => handleShow("TR")}
           >
             Trading
           </button>
@@ -141,12 +154,12 @@ const HistoryModel = ({
               </thead>
               <tbody>
                 {labels.map((label) => (
-                  <tr key={label._id} className="hover:bg-gray-700 border-b">
+                  <tr key={label._id} className="hover:bg-gray-700 border-b text-[13px]">
                     <td className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={getTableSelected('DW').includes(label._id)}
-                        onChange={() => updateTableSelected('DW', label._id)}
+                        checked={getTableSelected("DW").includes(label._id)}
+                        onChange={() => updateTableSelected("DW", label._id)}
                       />
                     </td>
                     <td className="p-2 text-center">{label.amount}</td>
@@ -154,13 +167,15 @@ const HistoryModel = ({
                     <td className="p-2 text-center">{label.walletAddress}</td>
                     <td className="p-2 text-center">{label.currency}</td>
                     <td className="p-2 text-center">
-                      {label.adminNote === 'Request rejected by admin' ? (
+                      {label.adminNote === "Request rejected by admin" ? (
                         <span className="text-red-500">Rejected</span>
                       ) : (
                         <span>Approved</span>
                       )}
                     </td>
-                    <td className="p-2 text-center">{new Date(label.createdAt).toLocaleString()}</td>
+                    <td className="p-2 text-center">
+                      {new Date(label.createdAt).toLocaleString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -184,21 +199,36 @@ const HistoryModel = ({
               </thead>
               <tbody>
                 {sportHistory?.trades?.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-700 border-b">
+                  <tr key={item._id} className="hover:bg-gray-700 border-b text-[13px]">
                     <td className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={getTableSelected('TS').includes(item._id)}
-                        onChange={() => updateTableSelected('TS', item._id)}
+                        checked={getTableSelected("TS").includes(item._id)}
+                        onChange={() => updateTableSelected("TS", item._id)}
                       />
                     </td>
                     <td className="p-2 text-center">{item.asset}</td>
                     <td className="p-2 text-center">{item.type}</td>
                     <td className="p-2 text-center">{item.price}</td>
-                    <td className="p-2 text-center">{item.quantity}</td>
+                    <td className="p-2 text-center">
+                      {(() => {
+                        const num = Number(item.quantity);
+                        const [mantissa, exponent] = num
+                          .toExponential(2)
+                          .split("e");
+                        const expNumber = Number(exponent);
+                        return (
+                          <>
+                            {mantissa} × 10<sup>{expNumber}</sup>
+                          </>
+                        );
+                      })()}
+                    </td>
                     <td className="p-2 text-center">{item.totalCost}</td>
                     <td className="p-2 text-center">{item.status}</td>
-                    <td className="p-2 text-center">{new Date(item.executedAt).toLocaleString()}</td>
+                    <td className="p-2 text-center">
+                      {new Date(item.executedAt).toLocaleString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -226,25 +256,31 @@ const HistoryModel = ({
               </thead>
               <tbody>
                 {perpetualHistory?.trades?.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-700 border-b">
+                  <tr key={item._id} className="hover:bg-gray-700 border-b text-[13px]">
                     <td className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={getTableSelected('TP').includes(item._id)}
-                        onChange={() => updateTableSelected('TP', item._id)}
+                        checked={getTableSelected("TP").includes(item._id)}
+                        onChange={() => updateTableSelected("TP", item._id)}
                       />
                     </td>
                     <td className="p-2 text-center">{item.pair}</td>
                     <td className="p-2 text-center">{item.type}</td>
-                    <td className="p-2 text-center">{item.entryPrice} - {item.closePrice}</td>
+                    <td className="p-2 text-center">
+                      {item.entryPrice} - {item.closePrice}
+                    </td>
                     <td className="p-2 text-center">{item.leverage}x</td>
                     <td className="p-2 text-center">{item.liquidationPrice}</td>
                     <td className="p-2 text-center">{item.profitLoss}</td>
                     <td className="p-2 text-center">{item.quantity}</td>
                     <td className="p-2 text-center">{item.marginUsed}</td>
                     <td className="p-2 text-center">{item.status}</td>
-                    <td className="p-2 text-center">{new Date(item.createdAt).toLocaleString()}</td>
-                    <td className="p-2 text-center">{new Date(item.closedAt).toLocaleString()}</td>
+                    <td className="p-2 text-center">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </td>
+                    <td className="p-2 text-center">
+                      {new Date(item.closedAt).toLocaleString()}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -268,21 +304,33 @@ const HistoryModel = ({
               </thead>
               <tbody>
                 {tradingHistory?.trades?.map((item) => (
-                  <tr key={item._id || item.tradeId} className="hover:bg-gray-700 border-b">
+                  <tr
+                    key={item._id || item.tradeId}
+                    className="hover:bg-gray-700 border-b text-[13px]"
+                  >
                     <td className="p-2 text-center">
                       <input
                         type="checkbox"
-                        checked={getTableSelected('TR').includes(item._id || item.tradeId)}
-                        onChange={() => updateTableSelected('TR', item._id || item.tradeId)}
+                        checked={getTableSelected("TR").includes(
+                          item._id || item.tradeId
+                        )}
+                        onChange={() =>
+                          updateTableSelected("TR", item._id || item.tradeId)
+                        }
                       />
                     </td>
-                    <td className="p-2 text-center">{item.asset}</td>
+                    <td className="p-2 text-center ">{item.asset}</td>
                     <td className="p-2 text-center">{item.quantity}</td>
                     <td className="p-2 text-center">{item.leverage}x</td>
                     <td className="p-2 text-center">{item.liquidationPrice}</td>
                     <td className="p-2 text-center">{item.pnl}</td>
-                    <td className="p-2 text-center">{item.status}</td>
-                    <td className="p-2 text-center">{new Date(item.timestamp).toLocaleString()}</td>
+                    <td className="p-2 text-center">{item.status==="completed"?"Done":item.status}</td>
+                    <td className="p-2 text-center ">
+<>
+  {new Date(item.timestamp).toLocaleDateString()} <br />
+  {new Date(item.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+</>
+                    </td>
                   </tr>
                 ))}
               </tbody>

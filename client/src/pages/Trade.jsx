@@ -10,6 +10,7 @@ import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 import { MdCandlestickChart } from "react-icons/md";
 import OrdersRecord from "../components/trade/OrdersRecord";
+import Loader from "../components/layout/Loader";
 
 function Trade() {
   const [marketData, setMarketData] = useState([]);
@@ -47,11 +48,13 @@ function Trade() {
 
   // Fetch historical market data
   useEffect(() => {
+
     const fetchMarketData = async () => {
       try {
         const response = await fetch(
           `https://api.binance.us/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
         );
+
         const data = await response.json();
 
         const formattedData = data.map((candle) => ({
@@ -102,7 +105,7 @@ function Trade() {
   // WebSocket for real-time trade updates
   useEffect(() => {
     const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
-
+ 
     socket.on("tradeUpdate", (trade) => {
       setRecentTrades((prevTrades) => [trade, ...prevTrades.slice(0, 9)]);
     });
@@ -117,13 +120,14 @@ function Trade() {
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
   return (
-    <div className=" min-h-screen max-w-7xl mx-auto md:px-4">
+    <div className=" border border-red-500 min-h-screen max-w-7xl mx-auto md:px-4 border">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <div className="flex justify-between px-4 md:px-0">
+        
+        <div className="flex justify-between px-4 border md:px-0">
           <AnimatedHeading>
             <h3 className="text-2xl font-semibold text-white ">Spot</h3>
           </AnimatedHeading>
@@ -144,7 +148,7 @@ function Trade() {
         </div>
         <div className="flex flex-col lg:flex-row">
           <div
-            className={`w-full lg:w-3/5 bg-transparent  border-y border-[#2f2f2f] lg:border-r md:p-4 ${
+            className={`w-full lg:w-3/5 bg-transparent  border-y border-[#959494] lg:border-r md:p-4 ${
               !showChart ? "hidden md:block" : ""
             }`}
           >
@@ -175,6 +179,7 @@ function Trade() {
           </div>
         </div>
         <div className="border">
+         
           <OrdersRecord type={"spot"}  />
         </div>
       </motion.div>

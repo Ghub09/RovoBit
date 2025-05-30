@@ -22,7 +22,7 @@ import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
 import ManageOrders from "./pages/admin/ManageOrders.jsx";
-import Loader from "./components/layout/Loader.jsx";
+// import Loader from "./components/layout/Loader.jsx";
 import AddTokens from "./pages/admin/AddTokens.jsx";
 import FuturesTrade from "./pages/FuturesTrade.jsx";
 import PerpetualTrade from "./pages/PerpetualTrade.jsx";
@@ -37,7 +37,7 @@ import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 const App = () => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.global);
+  // const { loading } = useSelector((state) => state.global);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -53,7 +53,7 @@ const App = () => {
         <Router>
           <Navbar />
           <main className="pt-[82px]">
-            {loading && <Loader />}
+            {/* {loading && <Loader />} */}
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LogIn />} />

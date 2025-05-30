@@ -297,7 +297,7 @@ export const swapCrypto = async (req, res) => {
     }
 
     // Fetch user's wallet
-    const userWallet = await Wallet.findOne({ userId });
+     const userWallet = await Wallet.findOne({ userId });
     if (!userWallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }

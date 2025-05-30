@@ -9,19 +9,23 @@ import OpenPerpetualPositions from "./OpenPerpetualPositions";
 import FuturesTradeHistory from "../history/FuturesTradeHistory";
 import PerpetualsTradeHistory from "../history/PerpetualsTradeHistory";
 import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
+import Loader from "../layout/Loader";
 
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("pending");
+   const { loading } = useSelector((state) => state.global);
 
-  const { openOrders, spotHistoryTrades, loading } = useSelector(
+  const { openOrders, spotHistoryTrades } = useSelector(
     (state) => state.trade
   );
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
 
   useEffect(() => {
+
     if (type === "spot") {
+
       dispatch(fetchSpotTradesHistory());
       dispatch(fetchUsersOpenOrders());
     } else if (type === "futures") {
@@ -32,8 +36,10 @@ const OrdersRecord = ({ type, marketData }) => {
   }, [dispatch, type]);
 
   return (
-    <div className="p-4 text-white shadow-lg w-full">
+    <div className="p-4 text-white shadow-lg w-full border border-green-500">
       {/* Tab Navigation */}
+        {loading && <Loader />}
+
       <div className="flex border-b border-gray-700 mb-4">
         <button
           className={`px-4 py-2 text-sm font-semibold ${
@@ -58,7 +64,7 @@ const OrdersRecord = ({ type, marketData }) => {
       </div>
 
       {/* Orders Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto border">
         <table className="w-full text-sm">
           <tbody>
             {loading ? (

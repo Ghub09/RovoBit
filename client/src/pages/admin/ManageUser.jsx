@@ -31,6 +31,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
       dispatch(fetchUsers());
     }, [dispatch]);
     useEffect(() => {
+      
       setUpdate(users);
      }, [users]);
      

@@ -8,6 +8,7 @@ import TradeHistory from "../models/TradeHistory.js";
 import User from "../models/User.js";
 import Wallet from "../models/Wallet.js";
 import { io } from "../server.js";
+import DepositWithdrawRequest from "../models/RequestMessage.js";
 
 export const getAllSpotHistories = async (req, res) => {
   try {
@@ -54,6 +55,112 @@ export const getAllUsersTradeHistory = async (req, res) => {
   return  res.status(500).json({ message: "Error fetching all user trades", error });
   }
 };
+
+// export const deleteSelectedHistories = async (req, res) => {
+//   try {
+//     const { selectedIds, userId, deleteAll } = req.body;
+
+//     if (!req.user || req.user.role !== "admin") {
+//       return res.status(403).json({ message: "Access denied. Admins only." });
+//     }
+
+//     if (deleteAll) {
+//       // Delete all histories for the user
+//       await Promise.all([
+//         Trade.deleteMany({ userId }),
+//         PerpetualTrade.deleteMany({ userId }),
+//         TradeHistory.deleteMany({ userId }),
+//       ]);
+//       return res.status(200).json({ message: "All user histories deleted." });
+//     }
+
+//     // Delete by selected IDs per table
+//     for (const item of selectedIds) {
+//       const { table, ids } = item;
+//       if (!ids.length) continue;
+
+//       switch (table) {
+//         case "DW":
+//           await Trade.deleteMany({ _id: { $in: ids } });
+//           break;
+//         case "TS":
+//           await TradeHistory.deleteMany({ _id: { $in: ids } });
+//           break;
+//         case "TP":
+//           await PerpetualTrade.deleteMany({ _id: { $in: ids } });
+//           break;
+//         case "TR":
+//           // Add if you have another model for TR
+//           break;
+//       }
+//     }
+
+//     res.status(200).json({ message: "Selected records deleted successfully." });
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).json({ message: "Error deleting trade histories", error });
+//   }
+// };
+ 
+
+// Mapping table codes to their respective models
+const tableModelMap = {
+  DW: Trade,                     // DW = Spot Trade
+  TP: PerpetualTrade,           // TP = Perpetual Trades
+  TS: TradeHistory,             // TS = History Table
+  DM:  DepositWithdrawRequest,   // DM = Deposit/Withdraw Messages
+};
+
+export const deleteUserTradeHistory = async (req, res) => {
+  try {
+    // Ensure only admin has access
+    if (!req.user || req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied. Admins only." });
+    }
+
+    const { userId, selectedIds, deleteAll } = req.body;
+
+    // Validate userId
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required" });
+    }
+
+    // If deleteAll flag is true, remove all history for the user across all 4 schemas
+    if (deleteAll) {
+      await Promise.all([
+        Trade.deleteMany({ userId }),
+        PerpetualTrade.deleteMany({ userId }),
+        TradeHistory.deleteMany({ userId }),
+        DepositWithdrawRequest.deleteMany({ userId }),
+      ]);
+      return res.status(200).json({
+        message: "All trade and request history deleted for the user"
+      });
+    }
+
+    // Selectively delete records based on selected IDs for each model/table
+    for (const { table, ids } of selectedIds) {
+      const model = tableModelMap[table]; // Get model from tableMap
+      if (!model) continue;               // Skip if table key is invalid or unsupported
+
+      if (Array.isArray(ids) && ids.length > 0) {
+        await model.deleteMany({ _id: { $in: ids }, userId }); // Delete matching records
+      }
+    }
+
+    return res.status(200).json({
+      message: "Selected user trade history records deleted successfully"
+    });
+  } catch (error) {
+    console.error("Error deleting trade history:", error);
+    return res.status(500).json({
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+};
+
+
  
 
 export const fetchUsers = async (req, res, next) => {

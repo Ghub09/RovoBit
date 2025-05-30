@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
 import { getWallet } from "../../store/slices/assetsSlice";
+import SmallLoader from "../layout/smallLoader";
 
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
@@ -19,6 +20,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [price, setPrice] = useState(marketPrice);
   const [usdtAmount, setUsdtAmount] = useState("");
   const [assetsAmount, setAssetsAmount] = useState(0);
+  const { loading } = useSelector((state) => state.global);
 
   const [availableAssetAmount, setAvailableAssetAmount] = useState(0);
   const { wallet } = useSelector((state) => state.assets);
@@ -72,6 +74,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
   const handleSubmit = async () => {
+    
     // Check if neither assetsAmount nor usdtAmount is set
     if (assetsAmount <= 0 && usdtAmount <= 0) {
       return toast.error(t("enter_amount"));
@@ -119,11 +122,13 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   };
 
   return (
-    <Card className="md:p-4 bg-transparent text-white w-full text-lg  flex justify-center">
+    <Card className="md:p-4 border border-amber-200 bg-transparent text-white w-full text-lg  flex justify-center">
+                        {loading && <SmallLoader />}
+
       <AnimatedHeading>
         <p className="hidden md:block">{t("spot")}</p>
       </AnimatedHeading>
-      <div className="mb-2">
+      <div className="mb-2 ">
         <div className=" p-1 rounded-md flex gap-2">
           <button
             onClick={() => setSide("buy")}

@@ -3,6 +3,7 @@ import axios from "axios";
 import API from "../../utils/api";
 import { toast } from "react-toastify";
 import { setLoading } from "./globalSlice";
+import { useEffect } from "react";
 
 // Fetch coin market data
 export const fetchCoinData = createAsyncThunk(
@@ -122,6 +123,8 @@ export const fetchSpotTradesHistory = createAsyncThunk(
     }
   }
 );
+  //  fetchSpotTradesHistory();
+
 
 export const fetchUsersOpenOrders = createAsyncThunk(
   "trade/fetchUsersOpenOrders",
