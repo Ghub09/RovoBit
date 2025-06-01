@@ -3,11 +3,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { fundsRequest } from "../../store/slices/assetsSlice";
-import Wallet from "../../../../server/models/Wallet";
-
+import { useNavigate } from "react-router-dom";
 function Withdraw() {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { withdrawalHistory } = useSelector((state) => state.assets);
+  console.log(withdrawalHistory)
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USDT");
   const [walletAddress, setWalletAddress] = useState("");
@@ -20,8 +21,8 @@ function Withdraw() {
       toast.error("Please fill in all fields with valid information");
       return;
     }
-
-    dispatch(
+   try {
+     dispatch(
       fundsRequest({
         amount,
         currency,
@@ -30,6 +31,15 @@ function Withdraw() {
         type: "withdraw",
       })
     );
+    navigate("/wallet");
+   } catch (error) {
+      console.error("Error in withdrawal request:", error);
+      toast.error("An error occurred while processing your request");
+      return;
+    }
+    
+   
+   
   };
 
   return (

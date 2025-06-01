@@ -4,6 +4,7 @@ import {
   allPerpetualHistory,
   allSportHistory,
   alltradingHistory,
+  deleteAllSelectedHistory,
 } from "../../pages/admin/DeleteUser";
 
 const HistoryModel = ({
@@ -13,7 +14,7 @@ const HistoryModel = ({
   handleAction,
   action,
   cancel,
-  user, // user._id required
+  user,  
 }) => {
   const [selectedIds, setSelectedIds] = useState([
     { table: "DW", ids: [] },
@@ -31,6 +32,8 @@ const HistoryModel = ({
   const [tradingHistory, setTradingHistory] = useState([]);
   const [sportHistory, setSportHistory] = useState([]);
   const [perpetualHistory, setPerpetualHistory] = useState([]);
+  console.log(user)
+  // eslint-disable-next-line react/prop-types
   const userId = user?._id;
 
   useEffect(() => {
@@ -59,9 +62,9 @@ const HistoryModel = ({
       console.error("Error fetching history:", error);
     }
   };
-
+ console.log(tradingHistory, sportHistory, perpetualHistory);
   const getTableSelected = (table) =>
-    selectedIds.find((entry) => entry.table === table)?.ids || [];
+   selectedIds.find((entry) => entry.table === table)?.ids || [];
   console.log(selectedIds);
   const updateTableSelected = (table, id) => {
     setSelectedIds((prev) =>
@@ -87,12 +90,18 @@ const HistoryModel = ({
     });
   };
 
-  const handleDelete = () => {
-    const allSelected = selectedIds.flatMap((entry) =>
-      entry.ids.map((id) => ({ table: entry.table, id }))
-    );
-    handleAction(allSelected);
-  };
+
+  const handleDeleteInTypes = async(userId,selectedIds, deleteAll = false) => {
+     
+    handleAction(true);
+    try {
+      // eslint-disable-next-line no-undef
+      const response = await deleteAllSelectedHistory(userId, selectedIds, deleteAll);
+      console.log("All selected history deleted:", response);
+    } catch (error) {
+      console.error("Error deleting all selected history:", error.Button.response?.data || error.message);
+    }
+  }
 
   return (
     <Modal
@@ -344,7 +353,7 @@ const HistoryModel = ({
           </Button>
           <Button
             color="success"
-            onClick={handleDelete}
+            onClick={()=>handleDeleteInTypes(userId ,selectedIds )}
             disabled={selectedIds.every((entry) => entry.ids.length === 0)}
           >
             {action}

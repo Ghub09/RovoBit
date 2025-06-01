@@ -63,27 +63,49 @@ export const addTokens = createAsyncThunk(
   }
 );
 
-// Async thunk for rejecting a transaction
+
+// Async thunk for approving a withdrawal request
 export const approveWithDrawRequest = createAsyncThunk(
   "admin/approve-withdraw",
   async (requestId, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
 
-      const response = await API.put(
-        `/admin/approve-withdraw/${requestId}`,
-        null
-      );
+      // ✅ Don't pass `null` as the body
+      const response = await API.put(`/admin/approve-withdraw/${requestId}`);
+
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
-      toast.error(error.response.data.message);
-      return rejectWithValue(error.response.data);
+      toast.error(error?.response?.data?.message || "Approval failed");
+      return rejectWithValue(error.response?.data || {});
     } finally {
-      dispatch(setLoading(false)); // Stop loading after request
+      dispatch(setLoading(false));
     }
   }
 );
+
+// // Async thunk for rejecting a transaction
+// export const approveWithDrawRequest = createAsyncThunk(
+//   "admin/approve-withdraw",
+//   async (requestId, { dispatch, rejectWithValue }) => {
+//     try {
+//       dispatch(setLoading(true));
+
+//       const response = await API.put(
+//         `/admin/approve-withdraw/${requestId}`,
+//         null
+//       );
+//       toast.success(response.data.message);
+//       return response.data;
+//     } catch (error) {
+//       toast.error(error.response.data.message);
+//       return rejectWithValue(error.response.data);
+//     } finally {
+//       dispatch(setLoading(false)); // Stop loading after request
+//     }
+//   }
+// );
 
 // Async thunk for rejecting a transaction
 export const rejectTransaction = createAsyncThunk(
@@ -92,7 +114,7 @@ export const rejectTransaction = createAsyncThunk(
     try {
       dispatch(setLoading(true));
 
-      const response = await API.put(`/admin/reject/${requestId}`, null);
+      const response = await API.put(`/admin/reject/${requestId}`, {});
       toast.success(response.data.message);
       return response.data;
     } catch (error) {

@@ -31,7 +31,7 @@ const ManageTransactions = () => {
   };
 
   return (
-    <div className="p-6 min-h-screen rounded-lg mb-6">
+    <div className="p-6 min-h-screen rounded-lg mb-6  ">
       <div className="flex justify-center h-20">
         <Link
           to={"/admin/dashboard"}
@@ -46,24 +46,34 @@ const ManageTransactions = () => {
           transactions.map((tx) => (
             <div
               key={tx._id}
-              className="p-4 bg-[#2A2A2A] rounded-lg text-gray-400"
+              className="p-4 bg-[#2A2A2A]  flex flex-col justify-between   rounded-lg  text-gray-400"
             >
+              <div className="flex justify-center items-center">
               {tx.type === "deposit" ? (
-                <h3 className=" text-white w-fit px-2 font-semibold mb-2 bg-blue-500">
+                <h3 className=" w-fit px-2 font-semibold mb-2 text-blue-500">
                   Deposit
                 </h3>
               ) : (
-                <h3 className=" text-white w-fit px-2 font-semibold mb-2 bg-red-500">
+                <h3 className=" w-fit px-2 font-semibold mb-2 text-red-500">
                   Withdraw
                 </h3>
               )}
-              <p className="mb-2 text-gray-500">
-                <strong>
-                  {tx.type === "deposit"
-                    ? "Sender Wallet Address"
-                    : "Recieving Wallet Address"}{" "}
-                </strong>{" "}
-                {tx.walletAddress}
+              </div>
+              <p className="mb-2 text-gray-500   overflow-hidden ">
+                <div
+                  style={{
+                    wordWrap: "break-word",
+                    overflowWrap: "break-word",
+                    whiteSpace: "normal",
+                  }}
+                >
+                  <strong>
+                    {tx.type === "deposit"
+                      ? "Sender Wallet Address"
+                      : "Recieving Wallet Address"}{" "}
+                  </strong>
+                  <br /> {tx.walletAddress}
+                </div>
               </p>
               {tx.type === "withdraw" && (
                 <>
@@ -77,25 +87,27 @@ const ManageTransactions = () => {
               <p className="mb-2 text-gray-500">
                 <strong>Amount:</strong> {tx.amount}
               </p>
-              <div className="flex justify-end mt-4">
+              <div className="flex justify-between mt-4 ">
                 {tx.type === "deposit" ? (
                   <Button
-                    onClick={() => handleTokens(tx.userId._id, tx._id)}
-                    className="bg-primary text-white px-4 py-2 mr-2"
+                    onClick={() =>
+                      handleTokens(tx.userId?._id || tx.userId, tx._id)
+                    }
+                    className="bg-primary text-white cursor-pointer px-4 py-2 mr-2"
                   >
                     Send Tokens
                   </Button>
                 ) : (
                   <Button
                     onClick={() => handleApprove(tx._id)}
-                    className="bg-primary text-white px-4 py-2 mr-2"
+                    className="bg-primary text-white cursor-pointer px-4 py-2 mr-2"
                   >
                     Approve
                   </Button>
                 )}
                 <Button
                   onClick={() => handleReject(tx._id)}
-                  className="bg-tertiary1 text-white px-4 py-2"
+                  className="bg-tertiary1 text-white cursor-pointer px-4 py-2"
                 >
                   Reject
                 </Button>

@@ -120,14 +120,14 @@ function Trade() {
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
   return (
-    <div className=" border border-red-500 min-h-screen max-w-7xl mx-auto md:px-4 border">
+    <div className=" border border-red-500 min-h-screen max-w-7xl mx-auto md:px-4 ">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
         
-        <div className="flex justify-between px-4 border md:px-0">
+        <div className="flex justify-between px-4  md:px-0">
           <AnimatedHeading>
             <h3 className="text-2xl font-semibold text-white ">Spot</h3>
           </AnimatedHeading>
@@ -178,7 +178,7 @@ function Trade() {
             </div>
           </div>
         </div>
-        <div className="border">
+        <div className="">
          
           <OrdersRecord type={"spot"}  />
         </div>

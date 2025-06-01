@@ -201,6 +201,121 @@ export const approveWithDrawRequest = async (req, res) => {
       .json({ message: "Error approving withdraw request", error });
   }
 };
+// Reject deposit/withdrawal request
+// export const rejectRequest = async (req, res) => {
+//   try {
+//     const { requestId } = req.params;
+//     const { adminNote } = req.body;
+
+//     const request = await DepositWithdrawRequest.findById(requestId);
+
+//     if (!request || request.status !== "pending") {
+//       return res.status(400).json({ message: "Invalid request" });
+//     }
+
+//     const wallet = await Wallet.findOne({ userId: request.userId });
+//     if (!wallet) {
+//       return res.status(404).json({ message: "Wallet not found" });
+//     }
+
+//     request.status = "rejected";
+//     request.adminNote = adminNote || "Request rejected by admin";
+
+//     const index = wallet.frozenAssets.findIndex(
+//       (asset) => asset.asset === request.currency
+//     );
+
+//     if (index === -1) {
+//       return res.status(404).json({ message: "Insufficient balance" });
+//     }
+
+//     // Restore frozen assets since the request was rejected
+//     wallet.frozenAssets[index].quantity -= request.amount;
+
+//     if (request.currency === "USDT") {
+//       wallet.exchangeWallet += request.amount;
+//     } else {
+//       const holdingIndex = wallet.exchangeHoldings.findIndex(
+//         (holding) => holding.asset === request.currency
+//       );
+//       if (holdingIndex === -1) {
+//         wallet.exchangeHoldings.push({ asset: request.currency, quantity: request.amount });
+//       } else {
+//         wallet.exchangeHoldings[holdingIndex].quantity += request.amount;
+//       }
+//     }
+
+//     await request.save();
+//     await wallet.save(); // Ensure wallet changes are saved
+
+//     res.status(200).json({ message: "Request rejected", request });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error rejecting request", error });
+//   }
+// };
+
+// Reject a deposit/withdraw request
+export const rejectRequest = async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { adminNote } = req.body;
+
+    // 1. Find the request
+    const request = await DepositWithdrawRequest.findById(requestId);
+
+    if (!request || request.status !== "pending") {
+      return res.status(400).json({ message: "Invalid or already processed request" });
+    }
+
+    // 2. Get the user's wallet
+    const wallet = await Wallet.findOne({ userId: request.userId });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
+
+    // 3. Reject the request
+    request.status = "rejected";
+    request.adminNote = adminNote || "Request rejected by admin";
+
+    // 4. Only reverse frozen assets for **withdrawal** requests
+    if (request.type === "withdraw") {
+      const index = wallet.frozenAssets.findIndex(
+        (asset) => asset.asset === request.currency
+      );
+
+      if (index === -1 || wallet.frozenAssets[index].quantity < request.amount) {
+        return res.status(400).json({ message: "Insufficient frozen balance" });
+      }
+
+      // Unfreeze the funds
+      wallet.frozenAssets[index].quantity -= request.amount;
+
+      if (request.currency === "USDT") {
+        wallet.exchangeWallet += request.amount;
+      } else {
+        const holdingIndex = wallet.exchangeHoldings.findIndex(
+          (holding) => holding.asset === request.currency
+        );
+
+        if (holdingIndex === -1) {
+          wallet.exchangeHoldings.push({ asset: request.currency, quantity: request.amount });
+        } else {
+          wallet.exchangeHoldings[holdingIndex].quantity += request.amount;
+        }
+      }
+    }
+
+    // 5. Save changes
+    await request.save();
+    await wallet.save();
+
+    return res.status(200).json({ message: "Request rejected successfully", request });
+
+  } catch (error) {
+    console.error("❌ Error rejecting request:", error);
+    return res.status(500).json({ message: "Error rejecting request", error: error.message });
+  }
+};
 
 export const changeWithdrawRequeststatus = async (req, res) => {
   try {
@@ -220,58 +335,7 @@ export const changeWithdrawRequeststatus = async (req, res) => {
   }
 };
 
-// Reject deposit/withdrawal request
-export const rejectRequest = async (req, res) => {
-  try {
-    const { requestId } = req.params;
-    const { adminNote } = req.body;
 
-    const request = await DepositWithdrawRequest.findById(requestId);
-
-    if (!request || request.status !== "pending") {
-      return res.status(400).json({ message: "Invalid request" });
-    }
-
-    const wallet = await Wallet.findOne({ userId: request.userId });
-    if (!wallet) {
-      return res.status(404).json({ message: "Wallet not found" });
-    }
-
-    request.status = "rejected";
-    request.adminNote = adminNote || "Request rejected by admin";
-
-    const index = wallet.frozenAssets.findIndex(
-      (asset) => asset.asset === request.currency
-    );
-
-    if (index === -1) {
-      return res.status(404).json({ message: "Insufficient balance" });
-    }
-
-    // Restore frozen assets since the request was rejected
-    wallet.frozenAssets[index].quantity -= request.amount;
-
-    if (request.currency === "USDT") {
-      wallet.exchangeWallet += request.amount;
-    } else {
-      const holdingIndex = wallet.exchangeHoldings.findIndex(
-        (holding) => holding.asset === request.currency
-      );
-      if (holdingIndex === -1) {
-        wallet.exchangeHoldings.push({ asset: request.currency, quantity: request.amount });
-      } else {
-        wallet.exchangeHoldings[holdingIndex].quantity += request.amount;
-      }
-    }
-
-    await request.save();
-    await wallet.save(); // Ensure wallet changes are saved
-
-    res.status(200).json({ message: "Request rejected", request });
-  } catch (error) {
-    res.status(500).json({ message: "Error rejecting request", error });
-  }
-};
 
 
 export const getAllUsers = async (req, res) => {

@@ -50,9 +50,7 @@ export const openFuturesTrade = createAsyncThunk(
       // console.log(error.response.data.message);
       toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response.data);
-    } finally {
-      dispatch(setLoading(false)); // Stop loading after request
-    }
+    }  
   }
 );
 

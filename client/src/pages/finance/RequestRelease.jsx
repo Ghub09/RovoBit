@@ -2,8 +2,9 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { fundsRequest } from "../../store/slices/assetsSlice";
-
+import { useNavigate } from "react-router-dom";
 function RequestRelease() {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [requestData, setRequestData] = useState({
     amount: "",
@@ -22,6 +23,8 @@ function RequestRelease() {
       walletAddress: "",
       type: "deposit",
     });
+    navigate("/wallet");
+    
   };
 
   return (
@@ -68,7 +71,7 @@ function RequestRelease() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">
+            <label className="block text-sm font-medium mb-2 ">
               Sender wallet Address
             </label>
             <input

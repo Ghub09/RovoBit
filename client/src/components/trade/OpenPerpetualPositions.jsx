@@ -74,7 +74,7 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
 
   return (
     <div>
-      <div>
+      <div >
         <Card className=" bg-transparent text-white min-w-[100%] hidden md:flex">
           <table className="text-sm text-left text-gray-400">
             <thead className="text-xs text-gray-400 uppercase ">

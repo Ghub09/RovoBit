@@ -46,7 +46,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
         console.log(err.message || "Failed to delete user");
       }
     };
-  const handleToggle = async (user) => {
+     const handleToggle = async (user) => {
    try {
     await profitUser(user._id);
     const updatedUsers = update.map((item) =>
@@ -58,7 +58,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
   } catch (err) {
     console.log(err.message || "Failed to update user status");
   }
-};
+    };
 
   const handleHistory = async (userId,user) => {
     try {

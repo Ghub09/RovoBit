@@ -43,7 +43,6 @@ export const userHistory = async (userId) => {
     throw error.response?.data || { message: "Server error" };
   }
 };
-
 export const allSportHistory = async (userId) => {
   try {
      const response = await API.get(`/admin/all-spot/${userId}`, {
@@ -57,8 +56,6 @@ export const allSportHistory = async (userId) => {
     throw error.response?.data || { message: "Server error" };
   }
 }
-// allSportHistory()
-
 export const allPerpetualHistory = async (userId) => {
   try {
     const response = await API.get(`/admin/all-perpetual/${userId}`, {
@@ -72,8 +69,7 @@ export const allPerpetualHistory = async (userId) => {
     throw error.response?.data || { message: "Server error" };
   }
 }
-//  allPerpetualHistory()
-
+ 
 export const alltradingHistory = async (userId) => {
   try {
     const response = await API.get(`/admin/all-trades/${userId}`, {
@@ -87,4 +83,19 @@ export const alltradingHistory = async (userId) => {
   }
 
 }
-// alltradingHistory()
+// alltradingHistory("67c19fa4803f0a44361ca0ef")
+  export const deleteAllSelectedHistory = async (userId, selectedIds, deleteAll) => {
+  try {
+    const response = await API.post(
+      `/admin/delete-histories`, // ✔️ Correct endpoint
+      { userId, selectedIds, deleteAll } , // ✔️ Correct body structure
+      { withCredentials: true } // ✔️ Config separately
+    );
+    console.log("All selected history deleted:", response.data);
+    return response.data;
+  } catch (error) {
+    console.error("Delete all selected history error:", error.response?.data || error.message);
+    throw error.response?.data || { message: "Server error" };
+  }
+};
+

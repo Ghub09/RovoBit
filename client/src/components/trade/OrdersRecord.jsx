@@ -9,7 +9,7 @@ import OpenPerpetualPositions from "./OpenPerpetualPositions";
 import FuturesTradeHistory from "../history/FuturesTradeHistory";
 import PerpetualsTradeHistory from "../history/PerpetualsTradeHistory";
 import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
-import Loader from "../layout/Loader";
+// import Loader from "../layout/Loader";
 
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
@@ -38,7 +38,7 @@ const OrdersRecord = ({ type, marketData }) => {
   return (
     <div className="p-4 text-white shadow-lg w-full border border-green-500">
       {/* Tab Navigation */}
-        {loading && <Loader />}
+        {/* {loading && <Loader />} */}
 
       <div className="flex border-b border-gray-700 mb-4">
         <button
@@ -64,7 +64,7 @@ const OrdersRecord = ({ type, marketData }) => {
       </div>
 
       {/* Orders Table */}
-      <div className="overflow-x-auto border">
+      <div className="overflow-x-auto ">
         <table className="w-full text-sm">
           <tbody>
             {loading ? (

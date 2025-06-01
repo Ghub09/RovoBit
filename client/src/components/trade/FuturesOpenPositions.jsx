@@ -173,7 +173,7 @@ function FuturesOpenPosition({ showBtn = false }) {
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-6 ">
       <div className="hidden md:block bg-transparent mb-4">
         {openPositions.length > 0 ? (
           <table className="w-full text-white">
@@ -233,7 +233,7 @@ function FuturesOpenPosition({ showBtn = false }) {
       </div>
 
       {/* for mobile screens */}
-      <div className="md:hidden">
+      <div className="md:hidden  ">
         {status === "loading" && <span className="ml-2 animate-spin">⏳</span>}
         {openPositions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

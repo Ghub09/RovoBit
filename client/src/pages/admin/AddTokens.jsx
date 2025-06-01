@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { useDispatch } from "react-redux";
 import { addTokens } from "../../store/slices/adminSlice";
-
+import { useNavigate } from "react-router-dom";
 const AddTokens = () => {
   const {userId} = useParams();
   
@@ -13,9 +13,11 @@ const AddTokens = () => {
     amount: 0,
   });
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault()
     dispatch(addTokens(tokenData));
+    navigate("wallet");
   }
   return (
     <div className="w-full min-h-screen p-6 bg-gradient">

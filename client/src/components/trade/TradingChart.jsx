@@ -156,10 +156,10 @@ const TradingChart = ({
               id="tradingPair"
               value={selectedPair}
               onChange={(e) => setSelectedPair(e.target.value)}
-              className="bg-black text-tertiary3 p-2 border-r-[.3px] border-[#00c853] focus:outline-none"
+              className=" text-tertiary3 p-2 border-r-[.3px] border-[#00c853] focus:outline-none"
             >
               {tradingPairs?.map((pair, index) => (
-                <option key={index} value={pair}>
+                <option key={index} className="bg-blue-300" value={pair}>
                   {formatTradingPair(pair)}
                 </option>
               ))}
@@ -167,8 +167,8 @@ const TradingChart = ({
           </div>
         </div>
         {ohlc && (
-          <div className="w-full py-1 flex justify-evenly">
-            <p className="flex flex-col text-[.8rem] ">
+          <div className="w-full py-1 flex justify-evenly ">
+            <p className="flex flex-col text-[.8  rem] ">
               {" "}
               <span className="text-gray-600 text-[.7rem]">24H Open</span>{" "}
               {ohlc.open}
@@ -197,7 +197,7 @@ const TradingChart = ({
           <p
             key={index}
             onClick={() => setSelectedInterval(timeInterval)}
-            className={`btn cursor-pointer ${
+            className={`btn cursor-pointer  ${
               selectedInterval === timeInterval
                 ? "text-primary"
                 : "text-gray-600"
@@ -208,7 +208,7 @@ const TradingChart = ({
         ))}
       </div>
       {ohlc && (
-        <div className="w-full py-1 flex justify-evenly">
+        <div className="w-full py-1 flex justify-evenly  ">
           <p className="text-secondary font-semibold text-[.8rem] ">
             <span className="text-gray-600 text-[.7rem]">O: </span> {ohlc.open}
           </p>
@@ -226,7 +226,7 @@ const TradingChart = ({
         </div>
       )}
 
-      <div ref={chartContainerRef} style={{ width: "100%", height: "400px" }} />
+      <div ref={chartContainerRef} className="" style={{ width: "100%", height: "400px" }} />
     </div>
   );
 };

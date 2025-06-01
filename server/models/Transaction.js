@@ -1,5 +1,22 @@
 import mongoose from "mongoose";
 
+// ✅ Updated list of supported assets
+const transferablePairs = [
+  "USDT",
+  "USDC",
+  "ETH",
+  "BTC",
+  "BNB",
+  "SOL",
+  "XRP",
+  "ADA",
+  "DOGE",
+  "MATIC",
+  "DOTUS",
+  "LTC",
+  "DOT"
+];
+
 const TransactionSchema = new mongoose.Schema(
   {
     userId: {
@@ -22,11 +39,11 @@ const TransactionSchema = new mongoose.Schema(
       default: "pending",
     },
     amount: { type: Number },
-    currency: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] }, 
+    currency: { type: String, enum: transferablePairs }, // ✅
 
-    // Swap-specific fields
-    fromAsset: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] },
-    toAsset: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] },
+    // ✅ Swap-specific fields
+    fromAsset: { type: String, enum: transferablePairs },
+    toAsset: { type: String, enum: transferablePairs },
     fromAmount: { type: Number },
     toAmount: { type: Number },
     exchangeRate: { type: Number },
@@ -37,5 +54,8 @@ const TransactionSchema = new mongoose.Schema(
   },
   { timestamps: true }
 );
+
+// ✅ Clear the model to avoid recompilation error
+delete mongoose.connection.models["Transaction"];
 
 export default mongoose.model("Transaction", TransactionSchema);
