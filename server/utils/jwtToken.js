@@ -1,22 +1,25 @@
+import jwt from "jsonwebtoken";
 
 export const generateToken = (user, message, statusCode, res) => {
-  const token = user.generateJWTToken();
+  const jwtExpiry = "60d" || process.env.JWTEXPIRY;
+  const cookieExpiryDays = 60 || process.env.COOKIEEXPIRYDAYS;
+
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
+    expiresIn: jwtExpiry,
+  });
+
   const cookieName = user.role === "admin" ? "adminToken" : "userToken";
 
-  const domain = process.env.NODE_ENV === "production" ? ".cryptonexus.live" : "localhost";
-  const cookieExpiryDays = Number(process.env.COOKIE_EXPIRY) || 7;
-  const expiresDate = new Date(Date.now() + cookieExpiryDays * 24 * 60 * 60 * 1000);
+  const domain =
+    process.env.NODE_ENV === "production" ? ".cryptonexus.live" : "localhost";
 
-  console.log("COOKIE_EXPIRY:", process.env.COOKIE_EXPIRY);
-  console.log("Parsed cookieExpiryDays:", cookieExpiryDays);
-  console.log("Expires Date:", expiresDate);
-  console.log("Is valid date:", !isNaN(expiresDate.getTime()));
+  const expiresDate = new Date(Date.now() + cookieExpiryDays * 24 * 60 * 60 * 1000);
 
   res.cookie(cookieName, token, {
     httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    domain: domain,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+    domain,
     path: "/",
     expires: expiresDate,
   });
@@ -28,6 +31,40 @@ export const generateToken = (user, message, statusCode, res) => {
     token,
   });
 };
+
+
+
+
+
+// export const generateToken = (user, message, statusCode, res) => {
+//   const token = user.generateJWTToken();
+//   const cookieName = user.role === "admin" ? "adminToken" : "userToken";
+
+//   const domain = process.env.NODE_ENV === "production" ? ".cryptonexus.live" : "localhost";
+//   const cookieExpiryDays = Number(process.env.COOKIE_EXPIRY) || 7;
+//   const expiresDate = new Date(Date.now() + cookieExpiryDays * 24 * 60 * 60 * 1000);
+
+//   console.log("COOKIE_EXPIRY:", process.env.COOKIE_EXPIRY);
+//   console.log("Parsed cookieExpiryDays:", cookieExpiryDays);
+//   console.log("Expires Date:", expiresDate);
+//   console.log("Is valid date:", !isNaN(expiresDate.getTime()));
+
+//   res.cookie(cookieName, token, {
+//     httpOnly: true,
+//     secure: true,
+//     sameSite: "none",
+//     domain: domain,
+//     path: "/",
+//     expires: expiresDate,
+//   });
+
+//   res.status(statusCode).json({
+//     success: true,
+//     message,
+//     user,
+//     token,
+//   });
+// };
 
 
 // export const generateToken = (user, message, statusCode, res) => {

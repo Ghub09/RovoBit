@@ -2,9 +2,10 @@ import API from "../../utils/api";
 
 export const deleteUser = async (id) => {
   try {
-    const res = await API.delete(`/account/delete/${id}`);
-    // console.log(res.data)
-    return res.data;
+    const  histories = await deleteAllSelectedHistory({ userId: id, deleteAll: true });
+    const  user = await API.delete(`/account/delete/${id}`);
+    console.log("histories.data",histories.data)
+    return user.data;
   } catch (err) {
     throw err.response?.data || { message: "Server error" };
   }
@@ -83,13 +84,12 @@ export const alltradingHistory = async (userId) => {
   }
 
 }
-// alltradingHistory("67c19fa4803f0a44361ca0ef")
   export const deleteAllSelectedHistory = async (userId, selectedIds, deleteAll) => {
   try {
     const response = await API.post(
-      `/admin/delete-histories`, // ✔️ Correct endpoint
-      { userId, selectedIds, deleteAll } , // ✔️ Correct body structure
-      { withCredentials: true } // ✔️ Config separately
+      `/admin/delete-histories`,  
+      { userId, selectedIds, deleteAll } ,  
+      { withCredentials: true }  
     );
     console.log("All selected history deleted:", response.data);
     return response.data;

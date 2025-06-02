@@ -105,10 +105,10 @@ export const getAllUsersTradeHistory = async (req, res) => {
 
 // Mapping table codes to their respective models
 const tableModelMap = {
-  DW: Trade,                     // DW = Spot Trade
-  TP: PerpetualTrade,           // TP = Perpetual Trades
-  TS: TradeHistory,             // TS = History Table
-  DM:  DepositWithdrawRequest,   // DM = Deposit/Withdraw Messages
+  TS: Trade,                     
+  TP: PerpetualTrade,           
+  TR: TradeHistory,              
+  DW:  DepositWithdrawRequest,    
 };
 
 export const deleteUserTradeHistory = async (req, res) => {
@@ -120,31 +120,45 @@ export const deleteUserTradeHistory = async (req, res) => {
 
     const { userId, selectedIds, deleteAll } = req.body;
 
-    // Validate userId
+    console.log(userId, selectedIds, deleteAll);
+
     if (!userId) {
       return res.status(400).json({ message: "User ID is required" });
     }
 
-    // If deleteAll flag is true, remove all history for the user across all 4 schemas
-    if (deleteAll) {
-      await Promise.all([
-        Trade.deleteMany({ userId }),
-        PerpetualTrade.deleteMany({ userId }),
-        TradeHistory.deleteMany({ userId }),
-        DepositWithdrawRequest.deleteMany({ userId }),
-      ]);
+    if (deleteAll && Array.isArray(selectedIds)) {
+      for (const { table } of selectedIds) {
+        switch (table) {
+          case 'TS':
+            await Trade.deleteMany({ userId });
+            break;
+          case 'TP':
+            await PerpetualTrade.deleteMany({ userId });
+            break;
+          case 'TR':
+            await TradeHistory.deleteMany({ userId });
+            break;
+          case 'DW':
+            await DepositWithdrawRequest.deleteMany({ userId });
+            break;
+          default:
+            // Unknown table key, skip
+            break;
+        }
+      }
+
       return res.status(200).json({
-        message: "All trade and request history deleted for the user"
+        message: "Selected trade and request history deleted for the user"
       });
     }
 
-    // Selectively delete records based on selected IDs for each model/table
+    // If not deleteAll, selectively delete by IDs
     for (const { table, ids } of selectedIds) {
-      const model = tableModelMap[table]; // Get model from tableMap
-      if (!model) continue;               // Skip if table key is invalid or unsupported
+      const model = tableModelMap[table];
+      if (!model) continue;
 
       if (Array.isArray(ids) && ids.length > 0) {
-        await model.deleteMany({ _id: { $in: ids }, userId }); // Delete matching records
+        await model.deleteMany({ _id: { $in: ids }, userId });
       }
     }
 
@@ -159,6 +173,7 @@ export const deleteUserTradeHistory = async (req, res) => {
     });
   }
 };
+
 
 
  

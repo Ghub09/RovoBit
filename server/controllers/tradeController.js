@@ -2,7 +2,6 @@ import Wallet from "../models/Wallet.js";
 import Trade from "../models/Trade.js";
 import { io } from "../server.js"; // Import WebSocket instance
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
-import { response } from "express";
 
 export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
@@ -127,7 +126,7 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
-// Get User Trade History
+
 export const getTradeHistory = async (req, res) => {
   try {
     clog("got a trade history request" + req.user.userId);
@@ -169,7 +168,7 @@ export const fetchPendingOrders = async (req, res, next) => {
 
 // Transfer funds from one wallet to wallet
 export const transferFunds = catchAsyncErrors(async (req, res) => {
-  const { fromWallet, toWallet, asset, amount } = req.body;
+const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
   const userId = req.user._id;
 
   try {

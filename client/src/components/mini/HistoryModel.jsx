@@ -109,13 +109,12 @@ const HistoryModel = ({
       onClose={handleDialog}
       popup
       className="backdrop-blur-[2px] bg-black/50 text-white rounded-lg"
-    >
-      <div className="rounded-lg bg-[#1A1A1A] p-5 text-white shadow-lg">
-        <div className="flex justify-between items-center mb-4">
+    >  
+        <div className="flex justify-between items-center mb-4 p-2">
           <button
             className={`${
               show.DW ? "bg-green-600" : ""
-            } bg-green-300 p-2 rounded`}
+            } bg-green-300 p-2 rounded-full`}
             onClick={() => handleShow("DW")}
           >
             Deposit/Withdraw
@@ -123,7 +122,7 @@ const HistoryModel = ({
           <button
             className={`${
               show.TS ? "bg-yellow-600" : ""
-            } bg-yellow-300 p-2 rounded`}
+            } bg-yellow-300 p-2 rounded-full`}
             onClick={() => handleShow("TS")}
           >
             Spot
@@ -131,7 +130,7 @@ const HistoryModel = ({
           <button
             className={`${
               show.TP ? "bg-purple-600" : ""
-            } bg-purple-300 p-2 rounded`}
+            } bg-purple-300 p-2 rounded-full`}
             onClick={() => handleShow("TP")}
           >
             Perpetual
@@ -139,12 +138,17 @@ const HistoryModel = ({
           <button
             className={`${
               show.TR ? "bg-pink-600" : ""
-            } bg-pink-300 p-2 rounded`}
+            } bg-pink-300 p-2 rounded-full`}
             onClick={() => handleShow("TR")}
           >
             Trading
           </button>
+              <div className=" flex justify-center items-center">
+                <button onClick={handleDialog} className=" cursor-pointer text-white text-center rounded-full m-2 px-2 text-[10px]  bg-red-500">X</button>
+              </div>
+
         </div>
+       <div className="min-h-screen overflow-y-auto bg-[#1A1A1A] p-2 text-white shadow-lg">
 
         <div className="mb-4 text-center overflow-x-auto">
           {/* Deposit/Withdraw Table */}
@@ -360,7 +364,7 @@ const HistoryModel = ({
           </Button>
         </div>
       </div>
-    </Modal>
+     </Modal>
   );
 };
 
