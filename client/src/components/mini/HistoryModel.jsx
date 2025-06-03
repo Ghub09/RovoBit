@@ -6,6 +6,8 @@ import {
   alltradingHistory,
   deleteAllSelectedHistory,
 } from "../../pages/admin/DeleteUser";
+import { toast } from "react-toastify";
+import { t } from "i18next";
 
 const HistoryModel = ({
   openDialog,
@@ -99,6 +101,7 @@ const HistoryModel = ({
       // eslint-disable-next-line no-undef
       const response = await deleteAllSelectedHistory(userId, selectedIds, deleteAll);
       console.log("All selected history deleted:", response);
+      toast.success(response.message || t("history_deleted_successfully"));
     } catch (error) {
       console.error("Error deleting all selected history:", error.Button.response?.data || error.message);
     }

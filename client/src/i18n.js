@@ -119,6 +119,8 @@ const resources = {
       market_price: "Market Price",
       available_balance: "Available Balance",
       order_placed_success: "Order placed successfully!",
+      history_delete:"You selected to delete this history.",
+      user_history_delete:"User and His History deleted successfully.",
       enter_valid_price: "Enter a valid price.",
       enter_valid_usdt: "Enter a valid USDT amount.",
       enter_valid_assets: "Enter a valid Assets amount.",

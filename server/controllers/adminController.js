@@ -153,16 +153,16 @@ export const deleteUserTradeHistory = async (req, res) => {
       });
     }
 
-    // If not deleteAll, selectively delete by IDs
-    for (const { table, ids } of selectedIds) {
-      const model = tableModelMap[table];
-      if (!model) continue;
+    if (Array.isArray(selectedIds)) {
+  for (const { table, ids } of selectedIds) {
+    const model = tableModelMap[table];
+    if (!model) continue;
 
-      if (Array.isArray(ids) && ids.length > 0) {
-        await model.deleteMany({ _id: { $in: ids }, userId });
-      }
+    if (Array.isArray(ids) && ids.length > 0) {
+      await model.deleteMany({ _id: { $in: ids }, userId });
     }
-
+  }
+}
     return res.status(200).json({
       message: "Selected user trade history records deleted successfully"
     });

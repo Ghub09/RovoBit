@@ -7,6 +7,8 @@
   import CustomModel from "../../components/mini/Model";
   import BooleanToggle from "../../components/toggle/Toggle";
 import HistoryModel from "../../components/mini/HistoryModel";
+import { toast } from "react-toastify";
+import { t } from "i18next";
   
   const ManageUser = () => {
     const dispatch = useDispatch();
@@ -38,10 +40,11 @@ import HistoryModel from "../../components/mini/HistoryModel";
     // Delete user and update local list without page reload
     const handleDelete = async (user) => {
       try {
-        await deleteUser(user._id);
+        const res = await deleteUser(user._id);
         const updatedUsers = update.filter((item) => item._id !== user._id);
         setUpdate(updatedUsers);
-        console.log/(`Deleted user: ${user._id}`);
+        console.log(`Deleted user: ${user._id}`);
+        toast.success(res.message || "User deleted successfully");
       } catch (err) {
         console.log(err.message || "Failed to delete user");
       }
