@@ -41,7 +41,7 @@ import HistoryModel from "../../components/mini/HistoryModel";
         await deleteUser(user._id);
         const updatedUsers = update.filter((item) => item._id !== user._id);
         setUpdate(updatedUsers);
-        console.log(`Deleted user: ${user._id}`);
+        console.log/(`Deleted user: ${user._id}`);
       } catch (err) {
         console.log(err.message || "Failed to delete user");
       }

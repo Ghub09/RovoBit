@@ -45,7 +45,7 @@ function Trade() {
   const selectedCoin = coins.find(
     (coin) => coin.symbol.toLowerCase() === symbol
   );
-
+ 
   // Fetch historical market data
   useEffect(() => {
 
@@ -178,7 +178,7 @@ function Trade() {
             </div>
           </div>
         </div>
-        <div className="">
+        <div className=" ">
          
           <OrdersRecord type={"spot"}  />
         </div>

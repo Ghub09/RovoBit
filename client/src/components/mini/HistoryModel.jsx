@@ -32,7 +32,7 @@ const HistoryModel = ({
   const [tradingHistory, setTradingHistory] = useState([]);
   const [sportHistory, setSportHistory] = useState([]);
   const [perpetualHistory, setPerpetualHistory] = useState([]);
-  console.log(user)
+  // console.log(user)
   // eslint-disable-next-line react/prop-types
   const userId = user?._id;
 
@@ -55,6 +55,7 @@ const HistoryModel = ({
       const tradingRes = await alltradingHistory(userId);
       const sportRes = await allSportHistory(userId);
       const perpetualRes = await allPerpetualHistory(userId);
+      // console.log(tradingRes, sportRes, perpetualRes);
       setTradingHistory(tradingRes);
       setSportHistory(sportRes);
       setPerpetualHistory(perpetualRes);
@@ -62,10 +63,10 @@ const HistoryModel = ({
       console.error("Error fetching history:", error);
     }
   };
- console.log(tradingHistory, sportHistory, perpetualHistory);
+//  console.log(tradingHistory, sportHistory, perpetualHistory);
   const getTableSelected = (table) =>
    selectedIds.find((entry) => entry.table === table)?.ids || [];
-  console.log(selectedIds);
+  // console.log(selectedIds);
   const updateTableSelected = (table, id) => {
     setSelectedIds((prev) =>
       prev.map((entry) =>

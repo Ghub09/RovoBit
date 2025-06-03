@@ -25,7 +25,6 @@ function FuturesOpenPosition({ showBtn = false }) {
   }, [dispatch]);
 
   useEffect(() => {
-    // Listen for various socket events that should trigger a refresh
     socket.on("liquidationUpdate", () => dispatch(fetchOpenPositions()));
     socket.on("tradeExpired", () => dispatch(fetchOpenPositions()));
     socket.on("newPosition", () => {

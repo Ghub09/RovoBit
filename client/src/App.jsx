@@ -38,7 +38,7 @@ import ManageNews from "./pages/admin/ManageNews.jsx";
 const App = () => {
   const dispatch = useDispatch();
   // const { loading } = useSelector((state) => state.global);
-
+ 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {

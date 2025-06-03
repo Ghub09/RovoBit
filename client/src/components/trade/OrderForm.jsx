@@ -111,7 +111,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         toast.success(t("order_placed_success"));
       })
       .catch((error) => {
-        console.log(error.message);
+        // console.log(error.message);
         toast.error(error.message);
       });
   };

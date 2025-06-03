@@ -17,7 +17,7 @@ const HistoryPage = () => {
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
   const { spotHistoryTrades } = useSelector((state) => state.trade);
-  console.log("spotHistoryTrades, futuresHistoryTrades, perpetualsHistoryTrades",spotHistoryTrades, futuresHistoryTrades, perpetualsHistoryTrades);
+  // console.log("spotHistoryTrades, futuresHistoryTrades, perpetualsHistoryTrades",spotHistoryTrades, futuresHistoryTrades, perpetualsHistoryTrades);
    const [mainTab, setMainTab] = useState("transactionHistory");
    const [transactionTab, setTransactionTab] = useState("deposits");
    const [tradeTab, setTradeTab] = useState("spot");

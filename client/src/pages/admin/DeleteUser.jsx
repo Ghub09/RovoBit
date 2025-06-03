@@ -63,7 +63,7 @@ export const allPerpetualHistory = async (userId) => {
       withCredentials: true
     });
 
-    console.log("Perpetual history fetched:", response.data);
+    // console.log("Perpetual history fetched:", response.data);
     return response.data;
   } catch (error) {
     console.error("Fetch perpetual history error:", error.response?.data || error.message);
@@ -76,7 +76,7 @@ export const alltradingHistory = async (userId) => {
     const response = await API.get(`/admin/all-trades/${userId}`, {
       withCredentials: true
     });
-    console.log("Trading history fetched:", response.data);
+    // console.log("Trading history fetched:", response.data);
     return response.data;
   } catch (error) {
     console.error("Fetch trading history error:", error.response?.data || error.message);
@@ -91,7 +91,7 @@ export const alltradingHistory = async (userId) => {
       { userId, selectedIds, deleteAll } ,  
       { withCredentials: true }  
     );
-    console.log("All selected history deleted:", response.data);
+    // console.log("All selected history deleted:", response.data);
     return response.data;
   } catch (error) {
     console.error("Delete all selected history error:", error.response?.data || error.message);

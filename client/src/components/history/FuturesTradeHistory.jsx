@@ -42,7 +42,7 @@ const FuturesTradeHistory = ({ trades }) => {
   };
 
   return (
-    <div className="rounded-lg shadow-lg">
+    <div className="rounded-lg shadow-lg bg-amber-500">
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">

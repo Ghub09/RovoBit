@@ -6,6 +6,7 @@ import Trade from "../models/Trade.js";
 import TradeHistory from "../models/TradeHistory.js";
  import Transaction from "../models/Transaction.js"; // Ensure you import the Transaction model
 import User from "../models/User.js";
+import FuturesTradeSchema from "../models/FuturesTrade.js";
 import Wallet from "../models/Wallet.js";
 import { io } from "../server.js";
 import DepositWithdrawRequest from "../models/RequestMessage.js";
@@ -45,10 +46,10 @@ export const getAllUsersTradeHistory = async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const trades = await TradeHistory.find({ userId: req.params.userId })
+    const trades = await FuturesTradeSchema.find({ userId: req.params.userId })
       .populate("userId", "name email")
       .sort({ createdAt: -1 });
-       console.log(trades)
+       console.log(trades.data)
 
   return  res.status(200).json({ message: "User trades fetched successfully", trades });
   } catch (error) {
@@ -107,7 +108,7 @@ export const getAllUsersTradeHistory = async (req, res) => {
 const tableModelMap = {
   TS: Trade,                     
   TP: PerpetualTrade,           
-  TR: TradeHistory,              
+  TR: FuturesTradeSchema,              
   DW:  DepositWithdrawRequest,    
 };
 
@@ -136,7 +137,7 @@ export const deleteUserTradeHistory = async (req, res) => {
             await PerpetualTrade.deleteMany({ userId });
             break;
           case 'TR':
-            await TradeHistory.deleteMany({ userId });
+            await FuturesTradeSchema.deleteMany({ userId });
             break;
           case 'DW':
             await DepositWithdrawRequest.deleteMany({ userId });
