@@ -45,8 +45,6 @@ const App = () => {
       dispatch(setUser(user));
     }
   }, [dispatch]);
-
-  
 //  const isTokenExpired = (token) => {
 //   if (!token || typeof token !== "string") return true;
 

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { Card, Button } from "@material-tailwind/react";
-import axios from "axios";
+import { Card } from "@material-tailwind/react";
 import io from "socket.io-client";
 import {
   approveOrder,
@@ -12,30 +11,45 @@ import { Link } from "react-router-dom";
 
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
-
 const ManageOrders = () => {
-  const [orders, setOrders] = useState([]);
-  const { pendingOrders, status, error } = useSelector((state) => state.trade);
+  const [processedOrders, setProcessedOrders] = useState([]);
+  const { pendingOrders } = useSelector((state) => state.trade);
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(fetchPendingOrders());
+  }, [dispatch]);
 
-    socket.on("newOrderPending", (order) => {
-      setOrders((prevOrders) => [order, ...prevOrders]);
+  // Auto-approve or reject pending orders
+  useEffect(() => {
+    const autoProcess = async () => {
+      if (pendingOrders && pendingOrders.length > 0) {
+        for (let order of pendingOrders) {
+          if (order.price > 0) {
+            await dispatch(approveOrder(order._id));
+          } else {
+            await dispatch(rejectOrder(order._id));
+            setProcessedOrders((prev) => [order, ...prev]);
+          }
+        }
+      }
+    };
+    autoProcess();
+  }, [pendingOrders, dispatch]);
+
+  // Listen to new orders from socket
+  useEffect(() => {
+    socket.on("newOrderPending", async (order) => {
+      if (order.price > 0) {
+        await dispatch(approveOrder(order._id));
+      } else {
+        await dispatch(rejectOrder(order._id));
+        setProcessedOrders((prev) => [order, ...prev]);
+      }
     });
 
-    return () => {
-      socket.off("newOrderPending");
-    };
-  }, []);
-  const handleApprove = (orderId) => {
-    dispatch(approveOrder(orderId));
-  };
-
-  const handleReject = (orderId) => {
-    dispatch(rejectOrder(orderId));
-  };
+    return () => socket.off("newOrderPending");
+  }, [dispatch]);
 
   return (
     <div className="min-h-screen">
@@ -47,46 +61,31 @@ const ManageOrders = () => {
           Go To Home
         </Link>
       </div>
+
       <Card className="p-6 border-t border-gray-500 bg-transparent mb-6">
         <h2 className="text-2xl font-semibold mb-4 text-primary">
-          Pending Orders
+          Rejected Orders (price = 0)
         </h2>
         <table className="w-full text-left border-collapse">
           <thead>
-            <tr >
-              <th className="border-b p-2 w-1/6 text-gray-400">Order ID</th>
-              <th className="border-b p-2 w-1/6 text-gray-400">Type</th>
-              <th className="border-b p-2 w-1/6 text-gray-400">Asset</th>
-              <th className="border-b p-2 w-1/6 text-gray-400">Quantity</th>
-              <th className="border-b p-2 w-1/6 text-gray-400">Price</th>
-              <th className="border-b p-2 w-1/6 text-gray-400">Actions</th>
+            <tr>
+              <th className="border-b p-2 text-gray-400">Order ID</th>
+              <th className="border-b p-2 text-gray-400">Type</th>
+              <th className="border-b p-2 text-gray-400">Asset</th>
+              <th className="border-b p-2 text-gray-400">Quantity</th>
+              <th className="border-b p-2 text-gray-400">Price</th>
             </tr>
           </thead>
           <tbody>
-            {Array.isArray(pendingOrders) &&
-              pendingOrders.map((order) => (
-                <tr key={order._id}  >
-                  <td className="border-b p-2 w-1/6">{order._id}</td>
-                  <td className="border-b p-2 w-1/6">{order.type}</td>
-                  <td className="border-b p-2 w-1/6">{order.asset}</td>
-                  <td className="border-b p-2 w-1/6">{order.quantity}</td>
-                  <td className="border-b p-2 w-1/6">${order.price}</td>
-                  <td className="border-b p-2 w-1/6">
-                    <Button
-                      onClick={() => handleApprove(order._id)}
-                      className="bg-green-500 text-white px-2 py-1 mr-2"
-                    >
-                      Approve
-                    </Button>
-                    <Button
-                      onClick={() => handleReject(order._id)}
-                      className="bg-red-500 text-white px-2 py-1"
-                    >
-                      Reject
-                    </Button>
-                  </td>
-                </tr>
-              ))}
+            {processedOrders.map((order) => (
+              <tr key={order._id}>
+                <td className="border-b p-2">{order._id}</td>
+                <td className="border-b p-2">{order.type}</td>
+                <td className="border-b p-2">{order.asset}</td>
+                <td className="border-b p-2">{order.quantity}</td>
+                <td className="border-b p-2">${order.price}</td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </Card>
