@@ -16,8 +16,8 @@ const AddTokens = () => {
   const navigate = useNavigate();
   const handleSubmit = (e) => {
     e.preventDefault()
+    navigate(-1);
     dispatch(addTokens(tokenData));
-    navigate("wallet");
   }
   return (
     <div className="w-full min-h-screen p-6 bg-gradient">

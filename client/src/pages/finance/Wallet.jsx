@@ -104,77 +104,119 @@ const Wallet = () => {
     calculateWalletValues();
   }, [coins, wallet]);
 
+  // const calculateWalletValues = () => {
+  //   if (!wallet || !coins.length) return;
+
+  //   // Calculate Exchange Wallet Value
+  //   // let exchangeValue = wallet.exchangeWallet || 0;
+  //   // if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
+  //   //   const holdingsValue = wallet.exchangeHoldings.reduce((total, holding) => {
+  //   //     const coin = coins.find(
+  //   //       (c) => c.symbol === holding.asset.toLowerCase()
+  //   //     );
+  //   //     if (!coin) return total;
+  //   //     return total + coin.current_price * holding.quantity;
+  //   //   }, 0);
+  //   //   exchangeValue += holdingsValue;
+  //   // }
+  //   // setWalletValueExchange(exchangeValue);
+
+  //   // Calculate Spot Wallet Value
+  //   let spotValue = wallet.spotWallet || 0;
+  //   if (wallet.holdings && wallet.holdings.length > 0) {
+  //     const holdingsValue = wallet.holdings.reduce((total, holding) => {
+  //       const coin = coins.find(
+  //         (c) => c.symbol === holding.asset.toLowerCase()
+  //       );
+  //       if (!coin) return total;
+  //       return total + coin.current_price * holding.quantity;
+  //     }, 0);
+  //     spotValue += holdingsValue;
+  //   }
+  //   setWalletValueSpot(spotValue );
+
+  //   // Futures and Perpetuals are just their USDT balance for now
+  //   setWalletValueFutures(wallet.futuresWallet || 0);
+  //   setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
+  // };
   const calculateWalletValues = () => {
-    if (!wallet || !coins.length) return;
+  if (!wallet || !coins.length) return;
 
-    // Calculate Exchange Wallet Value
-    // let exchangeValue = wallet.exchangeWallet || 0;
-    // if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
-    //   const holdingsValue = wallet.exchangeHoldings.reduce((total, holding) => {
-    //     const coin = coins.find(
-    //       (c) => c.symbol === holding.asset.toLowerCase()
-    //     );
-    //     if (!coin) return total;
-    //     return total + coin.current_price * holding.quantity;
-    //   }, 0);
-    //   exchangeValue += holdingsValue;
-    // }
-    // setWalletValueExchange(exchangeValue);
+  // Merge Exchange and Spot Wallet balances
+  let spotValue = (wallet.spotWallet || 0) + (wallet.exchangeWallet || 0);
 
-    // Calculate Spot Wallet Value
-    let spotValue = wallet.spotWallet || 0;
-    if (wallet.holdings && wallet.holdings.length > 0) {
-      const holdingsValue = wallet.holdings.reduce((total, holding) => {
-        const coin = coins.find(
-          (c) => c.symbol === holding.asset.toLowerCase()
-        );
-        if (!coin) return total;
-        return total + coin.current_price * holding.quantity;
-      }, 0);
-      spotValue += holdingsValue;
+  // Merge Exchange and Spot Holdings
+  const mergedHoldings = [...(wallet.holdings || []), ...(wallet.exchangeHoldings || [])];
+
+  if (mergedHoldings.length > 0) {
+    const holdingsValue = mergedHoldings.reduce((total, holding) => {
+      const coin = coins.find((c) => c.symbol === holding.asset.toLowerCase());
+      if (!coin) return total;
+      return total + coin.current_price * holding.quantity;
+    }, 0);
+    spotValue += holdingsValue;
+  }
+
+  setWalletValueSpot(spotValue);
+  setWalletValueFutures(wallet.futuresWallet || 0);
+  setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
+};
+
+  // const calculateTotalValue = () => {
+  //   // Calculate value of spot holdings
+  //   const holdingsValue =
+  //     wallet?.holdings?.reduce((total, holding) => {
+  //       const coin = coins?.find(
+  //         (c) => c.symbol === holding.asset.toLowerCase()
+  //       );
+  //       if (!coin) {
+  //         console.warn(`Coin data not found for asset: ${holding.asset}`);
+  //         return total;
+  //       }
+  //       return total + coin.current_price * holding.quantity;
+  //     }, 0) || 0;
+
+  //   // Calculate value of exchange holdings
+  //   const exchangeHoldingsValue =
+  //     wallet?.exchangeHoldings?.reduce((total, holding) => {
+  //       const coin = coins?.find(
+  //         (c) => c.symbol === holding.asset.toLowerCase()
+  //       );
+  //       if (!coin) {
+  //         return total;
+  //       }
+  //       return total + coin.current_price * holding.quantity;
+  //     }, 0) || 0;
+
+  //   // Sum all wallet balances
+  //   const totalWalletValue =
+  //     (wallet?.spotWallet || 0) +
+  //     // (wallet?.exchangeWallet || 0) +
+  //     (wallet?.futuresWallet || 0) +
+  //     (wallet?.perpetualsWallet || 0);
+
+  //   setTotalValue(holdingsValue + exchangeHoldingsValue + totalWalletValue);
+  // };
+const calculateTotalValue = () => {
+  const mergedHoldings = [...(wallet?.holdings || []), ...(wallet?.exchangeHoldings || [])];
+
+  const totalHoldingsValue = mergedHoldings.reduce((total, holding) => {
+    const coin = coins?.find((c) => c.symbol === holding.asset.toLowerCase());
+    if (!coin) {
+      console.warn(`Coin data not found for asset: ${holding.asset}`);
+      return total;
     }
-    setWalletValueSpot(spotValue);
+    return total + coin.current_price * holding.quantity;
+  }, 0);
 
-    // Futures and Perpetuals are just their USDT balance for now
-    setWalletValueFutures(wallet.futuresWallet || 0);
-    setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
-  };
+  const totalWalletBalance =
+    (wallet?.spotWallet || 0) +
+    (wallet?.exchangeWallet || 0) + // Include exchange wallet balance
+    (wallet?.futuresWallet || 0) +
+    (wallet?.perpetualsWallet || 0);
 
-  const calculateTotalValue = () => {
-    // Calculate value of spot holdings
-    const holdingsValue =
-      wallet?.holdings?.reduce((total, holding) => {
-        const coin = coins?.find(
-          (c) => c.symbol === holding.asset.toLowerCase()
-        );
-        if (!coin) {
-          console.warn(`Coin data not found for asset: ${holding.asset}`);
-          return total;
-        }
-        return total + coin.current_price * holding.quantity;
-      }, 0) || 0;
-
-    // Calculate value of exchange holdings
-    const exchangeHoldingsValue =
-      wallet?.exchangeHoldings?.reduce((total, holding) => {
-        const coin = coins?.find(
-          (c) => c.symbol === holding.asset.toLowerCase()
-        );
-        if (!coin) {
-          return total;
-        }
-        return total + coin.current_price * holding.quantity;
-      }, 0) || 0;
-
-    // Sum all wallet balances
-    const totalWalletValue =
-      (wallet?.spotWallet || 0) +
-      // (wallet?.exchangeWallet || 0) +
-      (wallet?.futuresWallet || 0) +
-      (wallet?.perpetualsWallet || 0);
-
-    setTotalValue(holdingsValue + exchangeHoldingsValue + totalWalletValue);
-  };
+  setTotalValue(totalHoldingsValue + totalWalletBalance);
+};
 
   useEffect(() => {
     if (fromAsset && validPairs[fromAsset]) {
