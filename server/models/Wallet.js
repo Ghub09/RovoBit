@@ -8,7 +8,7 @@ const WalletSchema = new mongoose.Schema({
   },
   balanceUSDT: { type: Number, default: 0 }, // General balance
   marginBalance: { type: Number, default: 0 },
-  // exchangeWallet: { type: Number, default: 0 }, // Exchange wallet for deposits/withdrawals
+  exchangeWallet: { type: Number, default: 0 }, // Exchange wallet for deposits/withdrawals
   exchangeHoldings: [
     {
       asset: String,

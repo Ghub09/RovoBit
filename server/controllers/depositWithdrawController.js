@@ -237,11 +237,10 @@ export const addTokens = async (req, res) => {
 
     const numericAmount = Number(amount);
 
-    console.log("the currency is " + currency);
+    console.log("the currecy is " + currency);
 
     if (currency === "USDT") {
-      // ✅ Now deposited into spotWallet
-      wallet.spotWallet += numericAmount;
+      wallet.exchangeWallet += numericAmount;
     } else {
       const holding = wallet.exchangeHoldings.find(
         (holding) => holding.asset === currency
@@ -262,9 +261,12 @@ export const addTokens = async (req, res) => {
 
     res.status(200).json({ message: `Tokens added successfully`, wallet });
   } catch (error) {
+    // console.log(error.message);
+
     res.status(500).json({ message: "Error adding tokens", error });
   }
 };
+
 
 export const approveWithDrawRequest = async (req, res) => {
   try {
