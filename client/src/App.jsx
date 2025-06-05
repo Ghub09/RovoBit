@@ -35,6 +35,8 @@ import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
+import ChatBox from "./components/message/chatBox.jsx";
+import Messages from "./pages/admin/Messages.jsx";
 const App = () => {
   const dispatch = useDispatch();
   // const { loading } = useSelector((state) => state.global);
@@ -84,6 +86,7 @@ const App = () => {
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/market" element={<Market />} />
+              <Route path="/contact" element={<ChatBox />} />
               <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />
@@ -91,6 +94,7 @@ const App = () => {
                   path="/admin/transaction/manage"
                   element={<ManageTransactions />}
                 />
+                <Route path="/admin/users/messages" element={<Messages/>}/>
                 <Route path="/admin/orders/manage" element={<ManageOrders />} />
                 <Route
                   path="/admin/users/add-tokens/:userId"

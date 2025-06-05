@@ -279,7 +279,7 @@ const ManageNews = () => {
         <DialogHeader className="text-black">
           {currentNews ? "Edit News" : "Add News"}
         </DialogHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} className="max-h-[400px] overflow-y-auto">
           <DialogBody className="text-black">
             <div className="grid gap-6">
               <Input

@@ -232,6 +232,14 @@ return (
             >
               {t("about")}
             </Link>
+             <Link
+              to={"/contact"}
+              className={` ${getModeColor(
+                "t"
+              )}  hover:text-[#0077ff] text-center m-2  `}
+            >
+               Contact
+            </Link>
           </div>
         </div>
         <div className="flex items-center gap-4">

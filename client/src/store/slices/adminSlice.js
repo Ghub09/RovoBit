@@ -84,30 +84,6 @@ export const approveWithDrawRequest = createAsyncThunk(
     }
   }
 );
-
-// // Async thunk for rejecting a transaction
-// export const approveWithDrawRequest = createAsyncThunk(
-//   "admin/approve-withdraw",
-//   async (requestId, { dispatch, rejectWithValue }) => {
-//     try {
-//       dispatch(setLoading(true));
-
-//       const response = await API.put(
-//         `/admin/approve-withdraw/${requestId}`,
-//         null
-//       );
-//       toast.success(response.data.message);
-//       return response.data;
-//     } catch (error) {
-//       toast.error(error.response.data.message);
-//       return rejectWithValue(error.response.data);
-//     } finally {
-//       dispatch(setLoading(false)); // Stop loading after request
-//     }
-//   }
-// );
-
-// Async thunk for rejecting a transaction
 export const rejectTransaction = createAsyncThunk(
   "admin/rejectTransaction",
   async (requestId, { dispatch, rejectWithValue }) => {
@@ -191,102 +167,212 @@ const adminSlice = createSlice({
     error: null,
   },
   reducers: {},
+  // extraReducers: (builder) => {
+  //   builder
+  //     .addCase(fetchUsers.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(fetchUsers.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       state.users = action.payload;
+  //     })
+  //     .addCase(fetchUsers.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     })
+  //     .addCase(fetchRequests.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(fetchRequests.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       state.transactions = action.payload;
+  //     })
+  //     .addCase(fetchRequests.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     })
+  //     .addCase(addTokens.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(addTokens.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       state.transactions = state.transactions.filter(
+  //         (tx) => tx._id !== action.meta.arg
+  //       );
+  //     })
+  //     .addCase(addTokens.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     })
+  //     .addCase(rejectTransaction.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(rejectTransaction.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       state.transactions = state.transactions.filter(
+  //         (tx) => tx._id !== action.meta.arg
+  //       );
+  //     })
+  //     .addCase(rejectTransaction.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     })
+  //     .addCase(changeWithdrawRequestStatus.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(changeWithdrawRequestStatus.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       state.transactions = state.transactions.map((tx) =>
+  //         tx._id === action.meta.arg ? { ...tx, status: "approved" } : tx
+  //       );
+  //     })
+  //     .addCase(changeWithdrawRequestStatus.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     })
+  //     .addCase(fetchOpenTrades.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(fetchOpenTrades.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       state.openTrades = action.payload;
+  //     })
+  //     .addCase(fetchOpenTrades.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     })
+  //     .addCase(liquidateTrade.pending, (state) => {
+  //       state.loading = true;
+  //       state.error = null;
+  //     })
+  //     .addCase(liquidateTrade.fulfilled, (state, action) => {
+  //       state.loading = false;
+  //       // Remove the liquidated trade from state
+  //       state.openTrades = state.openTrades.filter(
+  //         (trade) => trade._id !== action.payload.tradeId
+  //       );
+  //     })
+  //     .addCase(liquidateTrade.rejected, (state, action) => {
+  //       state.loading = false;
+  //       state.error = action.payload;
+  //     });
+  // },
   extraReducers: (builder) => {
-    builder
-      .addCase(fetchUsers.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchUsers.fulfilled, (state, action) => {
-        state.loading = false;
-        state.users = action.payload;
-      })
-      .addCase(fetchUsers.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchRequests.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchRequests.fulfilled, (state, action) => {
-        state.loading = false;
-        state.transactions = action.payload;
-      })
-      .addCase(fetchRequests.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(addTokens.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(addTokens.fulfilled, (state, action) => {
-        state.loading = false;
-        state.transactions = state.transactions.filter(
-          (tx) => tx._id !== action.meta.arg
-        );
-      })
-      .addCase(addTokens.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(rejectTransaction.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(rejectTransaction.fulfilled, (state, action) => {
-        state.loading = false;
-        state.transactions = state.transactions.filter(
-          (tx) => tx._id !== action.meta.arg
-        );
-      })
-      .addCase(rejectTransaction.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(changeWithdrawRequestStatus.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(changeWithdrawRequestStatus.fulfilled, (state, action) => {
-        state.loading = false;
-        state.transactions = state.transactions.map((tx) =>
-          tx._id === action.meta.arg ? { ...tx, status: "approved" } : tx
-        );
-      })
-      .addCase(changeWithdrawRequestStatus.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(fetchOpenTrades.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(fetchOpenTrades.fulfilled, (state, action) => {
-        state.loading = false;
-        state.openTrades = action.payload;
-      })
-      .addCase(fetchOpenTrades.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      })
-      .addCase(liquidateTrade.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-      })
-      .addCase(liquidateTrade.fulfilled, (state, action) => {
-        state.loading = false;
-        // Remove the liquidated trade from state
-        state.openTrades = state.openTrades.filter(
-          (trade) => trade._id !== action.payload.tradeId
-        );
-      })
-      .addCase(liquidateTrade.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-      });
-  },
+  builder
+    .addCase(fetchUsers.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchUsers.fulfilled, (state, action) => {
+      state.loading = false;
+      state.users = action.payload;
+    })
+    .addCase(fetchUsers.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(fetchRequests.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchRequests.fulfilled, (state, action) => {
+      state.loading = false;
+      state.transactions = action.payload;
+    })
+    .addCase(fetchRequests.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(addTokens.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(addTokens.fulfilled, (state, action) => {
+      state.loading = false;
+      state.transactions = state.transactions.filter(
+        (tx) => tx._id !== action.meta.arg.userId
+      );
+    })
+    .addCase(addTokens.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(approveWithDrawRequest.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(approveWithDrawRequest.fulfilled, (state, action) => {
+      state.loading = false;
+      state.transactions = state.transactions.filter(
+        (tx) => tx._id !== action.meta.arg
+      );
+    })
+    .addCase(approveWithDrawRequest.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(rejectTransaction.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(rejectTransaction.fulfilled, (state, action) => {
+      state.loading = false;
+      state.transactions = state.transactions.filter(
+        (tx) => tx._id !== action.meta.arg
+      );
+    })
+    .addCase(rejectTransaction.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(changeWithdrawRequestStatus.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(changeWithdrawRequestStatus.fulfilled, (state, action) => {
+      state.loading = false;
+      state.transactions = state.transactions.filter(
+        (tx) => tx._id !== action.meta.arg
+      );
+    })
+    .addCase(changeWithdrawRequestStatus.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(fetchOpenTrades.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(fetchOpenTrades.fulfilled, (state, action) => {
+      state.loading = false;
+      state.openTrades = action.payload;
+    })
+    .addCase(fetchOpenTrades.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    })
+    .addCase(liquidateTrade.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(liquidateTrade.fulfilled, (state, action) => {
+      state.loading = false;
+      state.openTrades = state.openTrades.filter(
+        (trade) => trade._id !== action.payload.tradeId
+      );
+    })
+    .addCase(liquidateTrade.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+    });
+}
+
 });
 
 export default adminSlice.reducer;

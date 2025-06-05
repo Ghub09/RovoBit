@@ -65,7 +65,7 @@ const HistoryModel = ({
       console.error("Error fetching history:", error);
     }
   };
-//  console.log(tradingHistory, sportHistory, perpetualHistory);
+ console.log(tradingHistory, sportHistory, perpetualHistory);
   const getTableSelected = (table) =>
    selectedIds.find((entry) => entry.table === table)?.ids || [];
   // console.log(selectedIds);
@@ -312,6 +312,7 @@ const HistoryModel = ({
                   <th className="p-2 text-center">Select</th>
                   <th className="p-2 text-center">Pair</th>
                   <th className="p-2 text-center">Quantity</th>
+                  <th className="p-2 text-center">ClosePrice</th>
                   <th className="p-2 text-center">Leverage</th>
                   <th className="p-2 text-center">Price(L)</th>
                   <th className="p-2 text-center">PnL</th>
@@ -336,16 +337,17 @@ const HistoryModel = ({
                         }
                       />
                     </td>
-                    <td className="p-2 text-center ">{item.asset}</td>
+                    <td className="p-2 text-center ">{item.pair}</td>
                     <td className="p-2 text-center">{item.quantity}</td>
+                    <td className="p-2 text-center">{item.closePrice}</td>
                     <td className="p-2 text-center">{item.leverage}x</td>
                     <td className="p-2 text-center">{item.liquidationPrice}</td>
-                    <td className="p-2 text-center">{item.pnl}</td>
+                    <td className="p-2 text-center">{item.profitLoss}</td>
                     <td className="p-2 text-center">{item.status==="completed"?"Done":item.status}</td>
                     <td className="p-2 text-center ">
 <>
-  {new Date(item.timestamp).toLocaleDateString()} <br />
-  {new Date(item.timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
+  {new Date(item.createdAt).toLocaleDateString()} <br />
+  {new Date(item.closedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
 </>
                     </td>
                   </tr>

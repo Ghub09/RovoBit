@@ -8,8 +8,7 @@
   import BooleanToggle from "../../components/toggle/Toggle";
 import HistoryModel from "../../components/mini/HistoryModel";
 import { toast } from "react-toastify";
-import { t } from "i18next";
-  
+   
   const ManageUser = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
