@@ -168,7 +168,7 @@ const TradingChart = ({
         </div>
         {ohlc && (
           <div className="w-full py-1 flex justify-evenly ">
-            <p className="flex flex-col text-[.8  rem] ">
+            <p className="flex flex-col text-[.8rem] ">
               {" "}
               <span className="text-gray-600 text-[.7rem]">24H Open</span>{" "}
               {ohlc.open}

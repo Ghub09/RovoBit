@@ -33,7 +33,8 @@ const Navbar = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrollDirection, setScrollDirection] = useState("up");
-  const { theme, toggleTheme,getModeColor } = useTheme();
+  // const { theme, toggleTheme, getModeColor } = useTheme();
+  const { theme, getModeColor } = useTheme();
 
   const dispatch = useDispatch((state) => state.user);
   const location = useLocation();
@@ -318,14 +319,7 @@ return (
                   <LuMessageCircleQuestion className={`${getModeColor("t")}`} />
                 </a>
               </div>
-              <div>
-                <button
-                  onClick={toggleTheme}
-                  className="ml-auto cursor-pointer  text-xs  px-1 py-1 rounded"
-                >
-                  {theme === "dark" ? "🌙" : "☀️"}
-                </button>
-              </div>
+              
             </>
           )}
           {!user && (

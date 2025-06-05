@@ -71,7 +71,7 @@ const Wallet = () => {
   const [transferAsset, setTransferAsset] = useState("USDT");
   const [totalValue, setTotalValue] = useState(0);
 
-  // const [walletValueExchange, setWalletValueExchange] = useState(0);
+  const [walletValueExchange, setWalletValueExchange] = useState(0);
   const [walletValueSpot, setWalletValueSpot] = useState(0);
   const [walletValueFutures, setWalletValueFutures] = useState(0);
   const [walletValuePerpetuals, setWalletValuePerpetuals] = useState(0);
@@ -104,119 +104,77 @@ const Wallet = () => {
     calculateWalletValues();
   }, [coins, wallet]);
 
-  // const calculateWalletValues = () => {
-  //   if (!wallet || !coins.length) return;
-
-  //   // Calculate Exchange Wallet Value
-  //   // let exchangeValue = wallet.exchangeWallet || 0;
-  //   // if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
-  //   //   const holdingsValue = wallet.exchangeHoldings.reduce((total, holding) => {
-  //   //     const coin = coins.find(
-  //   //       (c) => c.symbol === holding.asset.toLowerCase()
-  //   //     );
-  //   //     if (!coin) return total;
-  //   //     return total + coin.current_price * holding.quantity;
-  //   //   }, 0);
-  //   //   exchangeValue += holdingsValue;
-  //   // }
-  //   // setWalletValueExchange(exchangeValue);
-
-  //   // Calculate Spot Wallet Value
-  //   let spotValue = wallet.spotWallet || 0;
-  //   if (wallet.holdings && wallet.holdings.length > 0) {
-  //     const holdingsValue = wallet.holdings.reduce((total, holding) => {
-  //       const coin = coins.find(
-  //         (c) => c.symbol === holding.asset.toLowerCase()
-  //       );
-  //       if (!coin) return total;
-  //       return total + coin.current_price * holding.quantity;
-  //     }, 0);
-  //     spotValue += holdingsValue;
-  //   }
-  //   setWalletValueSpot(spotValue );
-
-  //   // Futures and Perpetuals are just their USDT balance for now
-  //   setWalletValueFutures(wallet.futuresWallet || 0);
-  //   setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
-  // };
   const calculateWalletValues = () => {
-  if (!wallet || !coins.length) return;
+    if (!wallet || !coins.length) return;
 
-  // Merge Exchange and Spot Wallet balances
-  let spotValue = (wallet.spotWallet || 0) + (wallet.exchangeWallet || 0);
-
-  // Merge Exchange and Spot Holdings
-  const mergedHoldings = [...(wallet.holdings || []), ...(wallet.exchangeHoldings || [])];
-
-  if (mergedHoldings.length > 0) {
-    const holdingsValue = mergedHoldings.reduce((total, holding) => {
-      const coin = coins.find((c) => c.symbol === holding.asset.toLowerCase());
-      if (!coin) return total;
-      return total + coin.current_price * holding.quantity;
-    }, 0);
-    spotValue += holdingsValue;
-  }
-
-  setWalletValueSpot(spotValue);
-  setWalletValueFutures(wallet.futuresWallet || 0);
-  setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
-};
-
-  // const calculateTotalValue = () => {
-  //   // Calculate value of spot holdings
-  //   const holdingsValue =
-  //     wallet?.holdings?.reduce((total, holding) => {
-  //       const coin = coins?.find(
-  //         (c) => c.symbol === holding.asset.toLowerCase()
-  //       );
-  //       if (!coin) {
-  //         console.warn(`Coin data not found for asset: ${holding.asset}`);
-  //         return total;
-  //       }
-  //       return total + coin.current_price * holding.quantity;
-  //     }, 0) || 0;
-
-  //   // Calculate value of exchange holdings
-  //   const exchangeHoldingsValue =
-  //     wallet?.exchangeHoldings?.reduce((total, holding) => {
-  //       const coin = coins?.find(
-  //         (c) => c.symbol === holding.asset.toLowerCase()
-  //       );
-  //       if (!coin) {
-  //         return total;
-  //       }
-  //       return total + coin.current_price * holding.quantity;
-  //     }, 0) || 0;
-
-  //   // Sum all wallet balances
-  //   const totalWalletValue =
-  //     (wallet?.spotWallet || 0) +
-  //     // (wallet?.exchangeWallet || 0) +
-  //     (wallet?.futuresWallet || 0) +
-  //     (wallet?.perpetualsWallet || 0);
-
-  //   setTotalValue(holdingsValue + exchangeHoldingsValue + totalWalletValue);
-  // };
-const calculateTotalValue = () => {
-  const mergedHoldings = [...(wallet?.holdings || []), ...(wallet?.exchangeHoldings || [])];
-
-  const totalHoldingsValue = mergedHoldings.reduce((total, holding) => {
-    const coin = coins?.find((c) => c.symbol === holding.asset.toLowerCase());
-    if (!coin) {
-      console.warn(`Coin data not found for asset: ${holding.asset}`);
-      return total;
+    // Calculate Exchange Wallet Value
+    let exchangeValue = wallet.exchangeWallet || 0;
+    if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
+      const holdingsValue = wallet.exchangeHoldings.reduce((total, holding) => {
+        const coin = coins.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) return total;
+        return total + coin.current_price * holding.quantity;
+      }, 0);
+      exchangeValue += holdingsValue;
     }
-    return total + coin.current_price * holding.quantity;
-  }, 0);
+    setWalletValueExchange(exchangeValue);
 
-  const totalWalletBalance =
-    (wallet?.spotWallet || 0) +
-    (wallet?.exchangeWallet || 0) + // Include exchange wallet balance
-    (wallet?.futuresWallet || 0) +
-    (wallet?.perpetualsWallet || 0);
+    // Calculate Spot Wallet Value
+    let spotValue = wallet.spotWallet || 0;
+    if (wallet.holdings && wallet.holdings.length > 0) {
+      const holdingsValue = wallet.holdings.reduce((total, holding) => {
+        const coin = coins.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) return total;
+        return total + coin.current_price * holding.quantity;
+      }, 0);
+      spotValue += holdingsValue;
+    }
+    setWalletValueSpot(spotValue);
 
-  setTotalValue(totalHoldingsValue + totalWalletBalance);
-};
+    // Futures and Perpetuals are just their USDT balance for now
+    setWalletValueFutures(wallet.futuresWallet || 0);
+    setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
+  };
+
+  const calculateTotalValue = () => {
+    // Calculate value of spot holdings
+    const holdingsValue =
+      wallet?.holdings?.reduce((total, holding) => {
+        const coin = coins?.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) {
+          console.warn(`Coin data not found for asset: ${holding.asset}`);
+          return total;
+        }
+        return total + coin.current_price * holding.quantity;
+      }, 0) || 0;
+
+    // Calculate value of exchange holdings
+    const exchangeHoldingsValue =
+      wallet?.exchangeHoldings?.reduce((total, holding) => {
+        const coin = coins?.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) {
+          return total;
+        }
+        return total + coin.current_price * holding.quantity;
+      }, 0) || 0;
+
+    // Sum all wallet balances
+    const totalWalletValue =
+      (wallet?.spotWallet || 0) +
+      (wallet?.exchangeWallet || 0) +
+      (wallet?.futuresWallet || 0) +
+      (wallet?.perpetualsWallet || 0);
+
+    setTotalValue(holdingsValue + exchangeHoldingsValue + totalWalletValue);
+  };
 
   useEffect(() => {
     if (fromAsset && validPairs[fromAsset]) {
@@ -307,8 +265,8 @@ const calculateTotalValue = () => {
     localStorage.removeItem("selectedWalletType");
     localStorage.removeItem("showAssets");
   };
-  // console.log(wallet)
-  // console.log(showAssets)
+// console.log(wallet)
+// console.log(showAssets)
   return (
     <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
@@ -337,13 +295,29 @@ const calculateTotalValue = () => {
               </div>
 
               {/* My Account Section */}
-              <div className="mb-6 ">
-                <h2 className="text-3xl text-center font-semibold text-white mb-4">
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-white mb-4">
                   My Account
                 </h2>
-                {/* <div className="grid   grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                   <div
-                    className="bg-[#242424] border  p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div
+                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    onClick={() => handleAssetsRendering("exchange")}
+                  >
+                    <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                      Exchange Wallet
+                    </h2>
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                      <div>
+                        <p className="text-3xl font-bold text-white">
+                          ${walletValueExchange?.toFixed(2) || "0.00"}{" "}
+                          <span className="text-gray-400 text-sm">USDT</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("spot")}
                   >
                     <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
@@ -390,61 +364,6 @@ const calculateTotalValue = () => {
                       </div>
                     </div>
                   </div>
-                  </div>
-               </div> */}
-                <div className="   flex items-center justify-center px-4">
-                  <div className="   flex justify-around w-[100%] items-center sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 justify-around">
-                    <div
-                      className="bg-[#242424]   w-[25%] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
-                      onClick={() => handleAssetsRendering("spot")}
-                    >
-                      <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                        Spot Asset
-                      </h2>
-                      <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div>
-                          <p className="text-3xl font-bold text-white">
-                            ${walletValueSpot?.toFixed(2) || "0.00"}{" "}
-                            <span className="text-gray-400 text-sm">USDT</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      className="bg-[#242424] w-[25%] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
-                      onClick={() => handleAssetsRendering("futures")}
-                    >
-                      <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                        Trading Asset
-                      </h2>
-                      <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div>
-                          <p className="text-3xl font-bold text-white">
-                            ${walletValueFutures?.toFixed(2) || "0.00"}{" "}
-                            <span className="text-gray-400 text-sm">USDT</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div
-                      className="bg-[#242424] w-[25%] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
-                      onClick={() => handleAssetsRendering("perpetuals")}
-                    >
-                      <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                        Perpetual Asset
-                      </h2>
-                      <div className="flex flex-col md:flex-row justify-between items-center">
-                        <div>
-                          <p className="text-3xl font-bold text-white">
-                            ${walletValuePerpetuals?.toFixed(2) || "0.00"}{" "}
-                            <span className="text-gray-400 text-sm">USDT</span>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
 
@@ -456,7 +375,6 @@ const calculateTotalValue = () => {
                 >
                   Deposit
                 </button>
-
                 <button
                   onClick={() => navigate("/wallet/withdraw")}
                   className="flex px-4 cursor-pointer
@@ -464,16 +382,16 @@ const calculateTotalValue = () => {
                 >
                   Withdraw
                 </button>
-
                 <button
+                  className="bg-green-500 text-white px-4 py-2 rounded"
                   onClick={() => setOpen(true)}
                   className="flex px-4 cursor-pointer
  py-2 text-sm sm:text-base text-white font-medium rounded-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transition duration-300 shadow"
                 >
                   Swap
                 </button>
-
                 <button
+                  className="bg-[#f78667] text-white px-4 py-2 rounded hover:bg-[#EA6A47] transition"
                   onClick={() => setTransferOpen(true)}
                   className="flex px-4 cursor-pointer
  py-2 text-sm sm:text-base text-white font-medium rounded-full bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 transition duration-300 shadow"
@@ -693,7 +611,7 @@ const calculateTotalValue = () => {
             <div className="max-w-lg mx-auto">
               <h2 className="text-xl font-semibold mb-2">My account</h2>
               <div className="space-y-2">
-                {/* <div
+                <div
                   className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
                   onClick={() => {
                     handleAssetsRendering("exchange");
@@ -709,7 +627,7 @@ const calculateTotalValue = () => {
                   <div className="text-3xl">
                     <IoIosArrowForward />
                   </div>
-                </div> */}
+                </div>
                 <div
                   className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
                   onClick={() => {
@@ -861,9 +779,9 @@ const calculateTotalValue = () => {
                   Select Wallet
                 </option>
                 {/* Default empty option */}
-                {/* <option className="bg-[#1a1a1a]" value="exchangeWallet">
+                <option className="bg-[#1a1a1a]" value="exchangeWallet">
                   Exchange Wallet
-                </option> */}
+                </option>
                 <option className="bg-[#1a1a1a]" value="spotWallet">
                   Spot Wallet
                 </option>
@@ -888,9 +806,9 @@ const calculateTotalValue = () => {
                   Select Wallet
                 </option>{" "}
                 {/* Default empty option */}
-                {/* <option className="bg-[#1a1a1a]" value="exchangeWallet">
+                <option className="bg-[#1a1a1a]" value="exchangeWallet">
                   Exchange Wallet
-                </option> */}
+                </option>
                 <option className="bg-[#1a1a1a]" value="spotWallet">
                   Spot Wallet
                 </option>
