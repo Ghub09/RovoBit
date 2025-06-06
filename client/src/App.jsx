@@ -34,8 +34,8 @@ import Profile from "./pages/Profile.jsx";
 import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
-import ChatBox from "./components/message/chatBox.jsx";
 import Messages from "./pages/admin/Messages.jsx";
+import ChatBox from "./components/message/ChatBox.jsx";
  const App = () => {
   const dispatch = useDispatch();
   // const { loading } = useSelector((state) => state.global);
