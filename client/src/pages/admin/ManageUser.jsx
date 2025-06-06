@@ -94,7 +94,7 @@ import { toast } from "react-toastify";
                 <th className="  p-2 text-center">User ID</th>
                 <th className="  p-2 text-center">Email</th>
                 <th className="  p-2 text-center border">Token</th>
-                <th className="  p-2 text-center">Profit</th>
+                <th className="  p-2 text-center">Loss</th>
                 <th className="  p-2 text-center">Delete</th>
                 <th className="  p-2 text-center">History</th>
               </tr>

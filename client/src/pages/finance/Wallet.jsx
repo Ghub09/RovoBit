@@ -383,8 +383,7 @@ const Wallet = () => {
                   Withdraw
                 </button>
                 <button
-                  className="bg-green-500 text-white px-4 py-2 rounded"
-                  onClick={() => setOpen(true)}
+                   onClick={() => setOpen(true)}
                   className="flex px-4 cursor-pointer
  py-2 text-sm sm:text-base text-white font-medium rounded-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transition duration-300 shadow"
                 >

@@ -14,8 +14,9 @@ import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("pending");
-   const { loading } = useSelector((state) => state.global);
-
+  //  const { loading } = useSelector((state) => state.global);
+   const { user } = useSelector((state) => state.user);
+   console.log("OrderRecord.jsx",user.isActive)
   const { openOrders, spotHistoryTrades } = useSelector(
     (state) => state.trade
   );
@@ -25,7 +26,6 @@ const OrdersRecord = ({ type, marketData }) => {
   useEffect(() => {
 
     if (type === "spot") {
-
       dispatch(fetchSpotTradesHistory());
       dispatch(fetchUsersOpenOrders());
     } else if (type === "futures") {
@@ -67,13 +67,7 @@ const OrdersRecord = ({ type, marketData }) => {
       <div className="overflow-x-auto ">
         <table className="w-full text-sm">
           <tbody>
-            {loading ? (
-              <tr>
-                <td colSpan="7" className="text-center py-4 text-gray-400">
-                  Loading...
-                </td>
-              </tr>
-            ) : activeTab === "pending" ? (
+            {  activeTab === "pending" ? (
               type === "spot" ? (
                 <SpotTradesHistory trades={openOrders} />
               ) : type === "futures" ? (
