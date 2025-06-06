@@ -21,7 +21,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
-import ManageOrders from "./pages/admin/ManageOrders.jsx";
+// import ManageOrders from "./pages/admin/ManageOrders.jsx";
 // import Loader from "./components/layout/Loader.jsx";
 import AddTokens from "./pages/admin/AddTokens.jsx";
 import FuturesTrade from "./pages/FuturesTrade.jsx";
@@ -98,7 +98,7 @@ import Messages from "./pages/admin/Messages.jsx";
                   element={<ManageTransactions />}
                 />
                 <Route path="/admin/users/messages" element={<Messages/>}/>
-                <Route path="/admin/orders/manage" element={<ManageOrders />} />
+                {/* <Route path="/admin/orders/manage" element={<ManageOrders />} /> */}
                 <Route
                   path="/admin/users/add-tokens/:userId"
                   element={<AddTokens />}
