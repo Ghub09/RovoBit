@@ -21,8 +21,6 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
-// import ManageOrders from "./pages/admin/ManageOrders.jsx";
-// import Loader from "./components/layout/Loader.jsx";
 import AddTokens from "./pages/admin/AddTokens.jsx";
 import FuturesTrade from "./pages/FuturesTrade.jsx";
 import PerpetualTrade from "./pages/PerpetualTrade.jsx";
@@ -35,11 +33,8 @@ import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 import Messages from "./pages/admin/Messages.jsx";
-// import ChatBox from "./components/message/ChatBox.jsx";
  const App = () => {
   const dispatch = useDispatch();
-  // const { loading } = useSelector((state) => state.global);
- 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -47,59 +42,26 @@ import Messages from "./pages/admin/Messages.jsx";
       logout()
     }
   }, [dispatch]);
-
- 
- 
-
-//  const isTokenExpired = (token) => {
-//   if (!token || typeof token !== "string") return true;
-
-//   try {
-//     const base64Url = token.split(".")[1]; // Get payload part
-//     const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-//     const jsonPayload = decodeURIComponent(
-//       atob(base64)
-//         .split("")
-//         .map(c => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
-//         .join("")
-//     );
-//     const { exp } = JSON.parse(jsonPayload);
-
-//     const currentTime = Date.now() / 1000; // in seconds
-// console.log("Now:     ", new Date(currentTime * 1000));
-// console.log("Expires: ", new Date(exp * 1000));
-//     return exp < currentTime;
-//   } catch (error) {
-//     console.error("Token decode error:", error);
-//     return true; // If decoding fails, treat as expired
-//   }
-// };
-// isTokenExpired("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDFmY2UwYWViMmZlZWZiYjAyODZhZCIsImlhdCI6MTc0OTE3MTU0OSwiZXhwIjoxNzQ5MTcxNTU5fQ.AhP7fSFW0X1Jp5WR59hVIe6bRQy68YfyJ5NWty2tz-8")
-
-
-  return (
+ return (
       <div className="bg-gradient text-white overflow-hidden">
         <Router>
           <Navbar />
           <main className="pt-[82px]">
-            {/* {loading && <Loader />} */}
-            <Routes>
+             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LogIn />} />
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/market" element={<Market />} />
-              {/* <Route path="/contact" element={<ChatBox />} /> */}
-              <Route element={<AdminProtectedRoute />}>
+               <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />
                 <Route
                   path="/admin/transaction/manage"
                   element={<ManageTransactions />}
                 />
-                <Route path="/admin/users/messages" element={<Messages/>}/>
-                {/* <Route path="/admin/orders/manage" element={<ManageOrders />} /> */}
-                <Route
+                <Route path="/admin/users/messages" element={<Messages />} />
+                 <Route
                   path="/admin/users/add-tokens/:userId"
                   element={<AddTokens />}
                 />
