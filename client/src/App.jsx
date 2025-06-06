@@ -32,8 +32,7 @@ import Profile from "./pages/Profile.jsx";
 import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
-import Messages from "./pages/admin/Messages.jsx";
- const App = () => {
+const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -60,8 +59,7 @@ import Messages from "./pages/admin/Messages.jsx";
                   path="/admin/transaction/manage"
                   element={<ManageTransactions />}
                 />
-                <Route path="/admin/users/messages" element={<Messages />} />
-                 <Route
+                  <Route
                   path="/admin/users/add-tokens/:userId"
                   element={<AddTokens />}
                 />

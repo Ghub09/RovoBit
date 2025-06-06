@@ -28,7 +28,7 @@ const Hero = () => {
   ];
 
   return (
-    <section className="heroSection min-h-screen bg-gradient border px-6 py-12 flex flex-col justify-center items-center font-sans">
+    <section className="heroSection min-h-screen bg-gradient  px-6 py-12 flex flex-col justify-center items-center font-sans">
       <div className="wrapper flex flex-col md:flex-row justify-center items-center w-full max-w-7xl">
         <div className="first text-center md:text-left md:mr-12 mb-10 md:mb-0">
           <div className="heading space-y-4">
