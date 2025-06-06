@@ -17,7 +17,6 @@ import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import {
   MdCandlestickChart,
-  MdOutlinePersonOutline,
   MdPerson,
 } from "react-icons/md";
 import { setShowChart } from "../../store/slices/globalSlice";
@@ -233,14 +232,7 @@ return (
             >
               {t("about")}
             </Link>
-             <Link
-              to={"/contact"}
-              className={` ${getModeColor(
-                "t"
-              )}  hover:text-[#0077ff] text-center m-2  `}
-            >
-               Contact
-            </Link>
+              
           </div>
         </div>
         <div className="flex items-center gap-4">
