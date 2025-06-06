@@ -1,4 +1,3 @@
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
@@ -45,41 +44,42 @@ const Testimonials = () => {
       <AnimatedHeading>
         <h2 className="text-4xl font-bold mb-8 text-white">Testimonials</h2>
       </AnimatedHeading>
-      <Swiper
-        loop={true}
-        loopFillGroupWithBlank={true}
-        pagination={{
-          clickable: true,
-        }}
-        autoplay={{
-          delay: 2500,
-          disableOnInteraction: false,
-        }}
-        modules={[EffectCoverflow, Pagination, Navigation]}
-        className="mySwiper"
-        effect={"coverflow"}
-        coverflowEffect={{
-          rotate: 10,
-          stretch: 50,
-          depth: 200,
-          modifier: 1,
-          slideShadows: true,
-        }}
-        breakpoints={{
-          640: {
-            slidesPerView: 1,
-            spaceBetween: 20,
-          },
-          768: {
-            slidesPerView: 2,
-            spaceBetween: 30,
-          },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 150,
-          },
-        }}
-      >
+     <Swiper
+  loop={true}
+  // ❌ loopFillGroupWithBlank={true} — remove this line
+  pagination={{
+    clickable: true,
+  }}
+  autoplay={{
+    delay: 2500,
+    disableOnInteraction: false,
+  }}
+  modules={[EffectCoverflow, Pagination, Navigation]}
+  className="mySwiper"
+  effect={"coverflow"}
+  coverflowEffect={{
+    rotate: 10,
+    stretch: 50,
+    depth: 200,
+    modifier: 1,
+    slideShadows: true,
+  }}
+  breakpoints={{
+    640: {
+      slidesPerView: 1,
+      spaceBetween: 20,
+    },
+    768: {
+      slidesPerView: 2,
+      spaceBetween: 30,
+    },
+    1024: {
+      slidesPerView: 3,
+      spaceBetween: 150,
+    },
+  }}
+>
+
         {testimonials.map((testimonial) => (
         <SwiperSlide key={testimonial.id} className="swiper-slide ">
           <div

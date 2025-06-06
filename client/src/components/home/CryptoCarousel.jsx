@@ -1,4 +1,3 @@
-import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -7,12 +6,13 @@ import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { useNavigate } from "react-router-dom";
 import btcLogo from "../../assets/btc.png";
-import ethLogo from "../../assets/eth.png";
-import bnbLogo from "../../assets/bnb.png";
-import adaLogo from "../../assets/ada.png";
+// import btcLogo from "../../assets/btc.svg";
+import ethLogo from '../../assets/eth.png';
+import bnbLogo from '../../assets/bnb.png';
+import adaLogo from '../../assets/ada.png';
 
 const CryptoCarousel = () => {
-  const navigate = useNavigate();
+  const navigate =useNavigate();
   return (
     <section className="cryptoCarousel min-h-screen px-4 md:px-0 pt-[30vh] bg-gradient text-white text-center">
       <div>

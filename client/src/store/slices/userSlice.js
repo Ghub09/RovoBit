@@ -65,7 +65,7 @@ export const logoutUser = createAsyncThunk(
 
       await API.post("/user/logout", {});
       // Remove user data from local storage
-      localStorage.removeItem("user");
+      JSON.parse(localStorage.removeItem("user"));
       toast.success("User logged out successfully");
       return {};
     } catch (error) {

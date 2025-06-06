@@ -1290,13 +1290,14 @@ classnames@2.5.1:
     autoprefixer "^10.4.20"
     axios "^1.7.9"
     chart.js "^4.4.7"
-    client "file:C:/Users/sadaq/AppData/Local/Yarn/Cache/v6/npm-client-0.0.0-809128cf-6572-4d2f-af8d-67d116d1f7f6-1748884707787/node_modules/client"
+    client "file:C:/Users/sadaq/AppData/Local/Yarn/Cache/v6/npm-client-0.0.0-6adeac90-8457-402e-9727-d177d37fd691-1749165421478/node_modules/client"
     cloudinary "^2.6.0"
     flowbite-react "^0.10.2"
     framer-motion "^12.4.1"
     i18next "^25.0.1"
     i18next-browser-languagedetector "^8.0.5"
     i18next-http-backend "^3.0.2"
+    jwt-decode "^4.0.0"
     lightweight-charts "^5.0.2"
     postcss "^8.5.1"
     react "^18.3.1"
@@ -3296,6 +3297,11 @@ swiper@^11.2.2:
   version "11.2.7"
   resolved "https://registry.yarnpkg.com/swiper/-/swiper-11.2.7.tgz#9657e467047cf098b6c9a79d1864bc6810d2e4fb"
   integrity sha512-oPJCwdcjFMw3SoBM7AdB1RJzjT7JaE4Mg7TWceTmJ/i2OtF8L01Ct+5eOf48nG3trgR0wXFekWdfnTdl0eg6Pg==
+
+swiper@^11.2.8:
+  version "11.2.8"
+  resolved "https://registry.yarnpkg.com/swiper/-/swiper-11.2.8.tgz#2b5d7da3093454c0a7bf090f1714fb4332142702"
+  integrity sha512-S5FVf6zWynPWooi7pJ7lZhSUe2snTzqLuUzbd5h5PHUOhzgvW0bLKBd2wv0ixn6/5o9vwc/IkQT74CRcLJQzeg==
 
 tabbable@^6.0.0, tabbable@^6.0.1:
   version "6.2.0"

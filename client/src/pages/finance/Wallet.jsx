@@ -393,8 +393,6 @@ const Wallet = () => {
                 <button
                   className="bg-[#f78667] text-white px-4 py-2 rounded hover:bg-[#EA6A47] transition"
                   onClick={() => setTransferOpen(true)}
-                  className="flex px-4 cursor-pointer
- py-2 text-sm sm:text-base text-white font-medium rounded-full bg-gradient-to-r from-orange-400 to-pink-500 hover:from-orange-500 hover:to-pink-600 transition duration-300 shadow"
                 >
                   Transfer
                 </button>
@@ -438,7 +436,7 @@ const Wallet = () => {
               {/* Deposit & Withdrawal History */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Deposit History */}
-                <Card className="bg-[#242424] p-6 rounded-lg border border-gray-100">
+                <Card className="bg-[#242424] p-6 rounded-lg">
                   <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
                     Deposit History
                   </h2>

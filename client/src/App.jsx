@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect} from "react";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -9,13 +9,13 @@ import SignUp from "./pages/SignUp";
 import About from "./pages/About";
 import Market from "./pages/Market";
 import Trade from "./pages/Trade";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import Wallet from "./pages/finance/Wallet.jsx";
 import Deposit from "./pages/finance/Deposit.jsx";
 import RequestRelease from "./pages/finance/RequestRelease.jsx";
 import Withdraw from "./pages/finance/Withdraw.jsx";
 import ProtectedRoute from "./components/middleware/ProtectedRoute.jsx";
-import { setUser } from "./store/slices/userSlice";
+import { logout, setUser } from "./store/slices/userSlice";
 import "react-toastify/dist/ReactToastify.css";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManageUser from "./pages/admin/ManageUser.jsx";
@@ -33,11 +33,10 @@ import SendPnL from "./pages/admin/SendPnL.jsx";
 import Profile from "./pages/Profile.jsx";
 import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
-import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 import ChatBox from "./components/message/chatBox.jsx";
 import Messages from "./pages/admin/Messages.jsx";
-const App = () => {
+ const App = () => {
   const dispatch = useDispatch();
   // const { loading } = useSelector((state) => state.global);
  
@@ -45,8 +44,13 @@ const App = () => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
       dispatch(setUser(user));
+      logout()
     }
   }, [dispatch]);
+
+ 
+ 
+
 //  const isTokenExpired = (token) => {
 //   if (!token || typeof token !== "string") return true;
 
@@ -70,11 +74,10 @@ const App = () => {
 //     return true; // If decoding fails, treat as expired
 //   }
 // };
-// isTokenExpired("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4M2M5NmUxMjExNDZkOTk3YzNjNDhkYiIsImlhdCI6MTc0ODgwMTI3MywiZXhwIjoxNzUzOTg1MjczfQ.splKBEcYtIRG4scdej3DHhouOnLUkugxG08RdY2qUIM")
+// isTokenExpired("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY4NDFmY2UwYWViMmZlZWZiYjAyODZhZCIsImlhdCI6MTc0OTE3MTU0OSwiZXhwIjoxNzQ5MTcxNTU5fQ.AhP7fSFW0X1Jp5WR59hVIe6bRQy68YfyJ5NWty2tz-8")
 
 
   return (
-    <TranslationWrapper>
       <div className="bg-gradient text-white overflow-hidden">
         <Router>
           <Navbar />
@@ -148,8 +151,7 @@ const App = () => {
           />
         </Router>
       </div>
-    </TranslationWrapper>
-  );
+   );
 };
 
 export default App;

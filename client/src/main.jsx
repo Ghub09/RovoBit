@@ -7,12 +7,15 @@ import store from "./store/store.js";
 // Import i18n configuration
 import "./i18n.js";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
+import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ThemeProvider>
-      <Provider store={store}>
-        <App />
-      </Provider>
-    </ThemeProvider>
+    <TranslationWrapper>
+        <Provider store={store}>
+      <ThemeProvider>
+          <App />
+      </ThemeProvider>
+        </Provider>
+    </TranslationWrapper>
   </StrictMode>
 );

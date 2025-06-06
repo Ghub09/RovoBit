@@ -31,6 +31,105 @@ export const fundsRequest = createAsyncThunk(
   }
 );
 
+// export const getWallet = createAsyncThunk(
+//   "user/wallet",
+//   async (_, { dispatch, rejectWithValue }) => {
+//     try {
+//       dispatch(setLoading(true));
+
+//       // Detect if user is on iOS/macOS
+//       const userAgent = navigator.userAgent.toLowerCase();
+//       const isApple = /(mac|iphone|ipad|ipod)/i.test(userAgent);
+//       const isSafari =
+//         isApple &&
+//         /safari/i.test(userAgent) &&
+//         !/chrome|crios/i.test(userAgent);
+
+//       // Add a random query parameter to prevent caching on Safari
+//       const cacheBuster = `_t=${Date.now()}`;
+//       const url = isSafari
+//         ? `/user/getwallet?${cacheBuster}`
+//         : "/user/getwallet";
+
+//       // Use a different configuration for Apple devices if needed
+//       const config = {
+//         headers: {
+//           "Content-Type": "application/json",
+//           "Cache-Control": "no-cache, no-store, must-revalidate",
+//           Pragma: "no-cache",
+//           Expires: "0",
+//         },
+//         timeout: isApple ? 60000 : 30000, // Longer timeout for Apple devices
+//       };
+
+//       // For Safari, use a retry mechanism with progressive backoff
+//       let response = null;
+//       let attempts = 0;
+//       const maxAttempts = 3;
+
+//       while (!response && attempts < maxAttempts) {
+//         try {
+//           attempts++;
+//           response = await API.get(url, config);
+//           break;
+//         } catch (error) {
+//           console.warn(
+//             `Wallet fetch attempt ${attempts} failed: ${error.message}`
+//           );
+
+//           if (attempts >= maxAttempts) {
+//             throw error;
+//           }
+
+//           // Wait longer between each retry
+//           await new Promise((resolve) => setTimeout(resolve, 1000 * attempts));
+//         }
+//       }
+
+//       // Ensure we have valid data before returning
+//       if (!response?.data) {
+//         throw new Error("Invalid wallet data received");
+//       }
+
+//       // Add safety checks for wallet properties
+//       const walletData = response.data;
+
+//       // Ensure all required wallet properties exist
+//       const safeWallet = {
+//         spotWallet: walletData.spotWallet || 0,
+//         exchangeWallet: walletData.exchangeWallet || 0,
+//         futuresWallet: walletData.futuresWallet || 0,
+//         perpetualsWallet: walletData.perpetualsWallet || 0,
+//         holdings: Array.isArray(walletData.holdings) ? walletData.holdings : [],
+//         exchangeHoldings: Array.isArray(walletData.exchangeHoldings)
+//           ? walletData.exchangeHoldings
+//           : [],
+//         frozenAssets: Array.isArray(walletData.frozenAssets)
+//           ? walletData.frozenAssets
+//           : [],
+//         ...walletData,
+//       };
+
+//       return safeWallet;
+//     } catch (error) {
+//       console.error("Wallet fetch error:", error);
+
+//       // Create a user-friendly error message
+//       const errorMessage =
+//         error.response?.data?.message ||
+//         "Failed to fetch wallet data" +
+//           (error.message ? `: ${error.message}` : "");
+
+//       toast.error(errorMessage);
+
+//       return rejectWithValue(error.response?.data || { message: errorMessage });
+//     } finally {
+//       dispatch(setLoading(false)); // Stop loading after request
+//     }
+//   }
+// );
+
+
 export const getWallet = createAsyncThunk(
   "user/wallet",
   async (_, { dispatch, rejectWithValue }) => {
@@ -45,13 +144,11 @@ export const getWallet = createAsyncThunk(
         /safari/i.test(userAgent) &&
         !/chrome|crios/i.test(userAgent);
 
-      // Add a random query parameter to prevent caching on Safari
       const cacheBuster = `_t=${Date.now()}`;
       const url = isSafari
         ? `/user/getwallet?${cacheBuster}`
         : "/user/getwallet";
 
-      // Use a different configuration for Apple devices if needed
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -59,10 +156,9 @@ export const getWallet = createAsyncThunk(
           Pragma: "no-cache",
           Expires: "0",
         },
-        timeout: isApple ? 60000 : 30000, // Longer timeout for Apple devices
+        timeout: isApple ? 60000 : 30000,
       };
 
-      // For Safari, use a retry mechanism with progressive backoff
       let response = null;
       let attempts = 0;
       const maxAttempts = 3;
@@ -81,20 +177,16 @@ export const getWallet = createAsyncThunk(
             throw error;
           }
 
-          // Wait longer between each retry
           await new Promise((resolve) => setTimeout(resolve, 1000 * attempts));
         }
       }
 
-      // Ensure we have valid data before returning
       if (!response?.data) {
         throw new Error("Invalid wallet data received");
       }
 
-      // Add safety checks for wallet properties
       const walletData = response.data;
 
-      // Ensure all required wallet properties exist
       const safeWallet = {
         spotWallet: walletData.spotWallet || 0,
         exchangeWallet: walletData.exchangeWallet || 0,
@@ -114,17 +206,18 @@ export const getWallet = createAsyncThunk(
     } catch (error) {
       console.error("Wallet fetch error:", error);
 
-      // Create a user-friendly error message
-      const errorMessage =
-        error.response?.data?.message ||
-        "Failed to fetch wallet data" +
-          (error.message ? `: ${error.message}` : "");
+      // ✅ Force logout and redirect to login page
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      toast.error("Session expired or failed to fetch wallet data. Logging out...");
+      toast.info("Please login again For more security.");
+      window.location.href = "/login";
 
-      toast.error(errorMessage);
-
-      return rejectWithValue(error.response?.data || { message: errorMessage });
+      return rejectWithValue({
+        message: "Session expired. Redirecting to login...",
+      });
     } finally {
-      dispatch(setLoading(false)); // Stop loading after request
+      dispatch(setLoading(false));
     }
   }
 );

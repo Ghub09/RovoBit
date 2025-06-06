@@ -190,7 +190,6 @@ export const fetchUsers = async (req, res, next) => {
     next(error);
   }
 };
-
 export const fetchTransactions = async (req, res, next) => {
   try {
     const transactions = await Transaction.find();

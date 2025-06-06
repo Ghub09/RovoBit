@@ -93,6 +93,7 @@ const LiquidateOpenTrades = () => {
       (trade.expiryTime && new Date(trade.expiryTime) < new Date())
     );
   };
+  console.log(openTrades)
 
   return (
     <Card className="min-h-screen p-4 bg-transparent text-white w-full">
@@ -125,14 +126,14 @@ const LiquidateOpenTrades = () => {
                   isTradeExpired(trade) ? "bg-red-900/20" : ""
                 }`}
               >
-                <td className="p-2">{trade.userId.firstName}</td>
-                <td className="p-2">{trade.pair}</td>
-                <td className="p-2">{trade.type}</td>
-                <td className="p-2">{trade.category}</td>
-                <td className="p-2">{trade.leverage}x</td>
-                <td className="p-2">${trade.entryPrice}</td>
+                <td className="p-2">{trade.userId?.firstName || "N/A"}</td>
+                <td className="p-2">{trade?.pair}</td>
+                <td className="p-2">{trade?.type}</td>
+                <td className="p-2">{trade?.category}</td>
+                <td className="p-2">{trade?.leverage}x</td>
+                <td className="p-2">${trade?.entryPrice}</td>
                 <td className="p-2 text-yellow-400">
-                  {formatDateTime(trade.expiryTime)}
+                  {formatDateTime(trade?.expiryTime)}
                 </td>
                 <td className="p-2">
                   {isTradeExpired(trade) ? (

@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import CountUp from "react-countup";
 import HeroImgSrc from "../../assets/hero.png";
+import TypingText from "../TypingText/TypingText";
 
 const Hero = () => {
   const { t } = useTranslation();
@@ -31,9 +32,10 @@ const Hero = () => {
       <div className="wrapper flex flex-col md:flex-row justify-center items-center w-full max-w-7xl">
         <div className="first text-center md:text-left md:mr-12 mb-10 md:mb-0">
           <div className="heading space-y-4">
-            <h1 className="text-4xl md:text-6xl ml-10 font-extrabold text-white leading-tight">
+            {/* <h1 className="text-4xl md:text-6xl ml-10 font-extrabold text-white leading-tight">
               {t("trusted_trading")}
-            </h1>
+            </h1> */}
+            <TypingText/>
             <p className="text-3xl md:text-4xl ml-10 text-primary">
               {t("trade_safely")}
             </p>

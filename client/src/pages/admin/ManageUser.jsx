@@ -22,11 +22,11 @@ import { toast } from "react-toastify";
   
     const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDialog = () => setIsModalOpen(!isModalOpen);
+    const handleDialog = () => setIsModalOpen(!isModalOpen);
 
-  const handleAction = () => {
+    const handleAction = () => {
      handleDialog(); // close modal
-  };
+    };
   
     useEffect(() => {
       dispatch(fetchUsers());

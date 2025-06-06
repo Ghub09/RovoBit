@@ -5,6 +5,7 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import GradientText from "../TypingText/GradientText";
 
 const Faqs = () => {
   const [open, setOpen] = useState(0);
@@ -52,9 +53,10 @@ const Faqs = () => {
   return (
     <section className="faqs min-h-screen px-8 bg-gradient-reverse w-full text-white flex flex-col justify-center text-start">
       <AnimatedHeading>
-        <h2 className="text-4xl font-bold mb-24 text-white text-center">
+        <h2 className="text-4xl font-bold mb-24 text-green-300 text-center">
           Frequently Asked Questions
         </h2>
+
       </AnimatedHeading>
       <div className="container mx-auto px-4">
         {faqs.map((faq) => (
@@ -73,9 +75,11 @@ const Faqs = () => {
                   : ""
               }  px-4`}
             >
-              {faq.question}
+                                     <GradientText text= {faq.question} />
+
             </AccordionHeader>
-            <AccordionBody className="bg-tertiary2 text-tertiary3 px-4 text-2xl">
+            <AccordionBody className="bg-tertiary2 text-tertiary3 text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl 
+                 px-4 md:px-8">
               {faq.answer}
             </AccordionBody>
           </Accordion>

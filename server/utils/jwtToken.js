@@ -1,8 +1,8 @@
 import jwt from "jsonwebtoken";
 
 export const generateToken = (user, message, statusCode, res) => {
-  const jwtExpiry = "60d" || process.env.JWTEXPIRY;
-  const cookieExpiryDays = 60 || process.env.COOKIEEXPIRYDAYS;
+  const jwtExpiry = "30d" || process.env.JWT_EXPIRY;
+  const cookieExpiryDays = 30 || process.env.COOKIE_EXPIRY;
 
   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET_KEY, {
     expiresIn: jwtExpiry,
