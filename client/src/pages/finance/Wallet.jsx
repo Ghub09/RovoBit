@@ -119,7 +119,7 @@ const Wallet = () => {
       }, 0);
       exchangeValue += holdingsValue;
     }
-    setWalletValueExchange(exchangeValue);
+    setWalletValueSpot(exchangeValue);
 
     // Calculate Spot Wallet Value
     let spotValue = wallet.spotWallet || 0;
@@ -265,8 +265,8 @@ const Wallet = () => {
     localStorage.removeItem("selectedWalletType");
     localStorage.removeItem("showAssets");
   };
-// console.log(wallet)
-// console.log(showAssets)
+  // console.log(wallet)
+  // console.log(showAssets)
   return (
     <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
@@ -300,7 +300,7 @@ const Wallet = () => {
                   My Account
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  <div
+                  {/* <div
                     className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("exchange")}
                   >
@@ -315,7 +315,7 @@ const Wallet = () => {
                         </p>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div
                     className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("spot")}
@@ -383,14 +383,15 @@ const Wallet = () => {
                   Withdraw
                 </button>
                 <button
-                   onClick={() => setOpen(true)}
+                  onClick={() => setOpen(true)}
                   className="flex px-4 cursor-pointer
  py-2 text-sm sm:text-base text-white font-medium rounded-full bg-gradient-to-r from-green-500 to-green-700 hover:from-green-600 hover:to-green-800 transition duration-300 shadow"
                 >
                   Swap
                 </button>
                 <button
-                  className="bg-[#f78667] text-white px-4 py-2 rounded hover:bg-[#EA6A47] transition"
+                  className="flex px-4 cursor-pointer
+ py-2 text-sm sm:text-base text-white font-medium rounded-full bg-gradient-to-r from-orange-500 to-orange-700 hover:from-orange-600 hover:to-orange-800 transition duration-300 shadow"
                   onClick={() => setTransferOpen(true)}
                 >
                   Transfer
@@ -617,7 +618,7 @@ const Wallet = () => {
                   <div>
                     <p className="text-lg">Exchange Wallet</p>
                     <p className="text-2xl font-bold">
-                      ${walletValueExchange?.toFixed(2) || "0.00"}{" "}
+                      ${walletValueSpot?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>
@@ -776,9 +777,9 @@ const Wallet = () => {
                   Select Wallet
                 </option>
                 {/* Default empty option */}
-                <option className="bg-[#1a1a1a]" value="exchangeWallet">
+                {/* <option className="bg-[#1a1a1a]" value="exchangeWallet">
                   Exchange Wallet
-                </option>
+                </option> */}
                 <option className="bg-[#1a1a1a]" value="spotWallet">
                   Spot Wallet
                 </option>
@@ -803,9 +804,9 @@ const Wallet = () => {
                   Select Wallet
                 </option>{" "}
                 {/* Default empty option */}
-                <option className="bg-[#1a1a1a]" value="exchangeWallet">
+                {/* <option className="bg-[#1a1a1a]" value="exchangeWallet">
                   Exchange Wallet
-                </option>
+                </option> */}
                 <option className="bg-[#1a1a1a]" value="spotWallet">
                   Spot Wallet
                 </option>

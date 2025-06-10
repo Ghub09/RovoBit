@@ -167,8 +167,97 @@ export const fetchPendingOrders = async (req, res, next) => {
 };
 
 // Transfer funds from one wallet to wallet
+// export const transferFunds = catchAsyncErrors(async (req, res) => {
+// const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
+//   const userId = req.user._id;
+
+//   try {
+//     // Fetch user wallet
+//     const wallet = await Wallet.findOne({ userId });
+//     if (!wallet) {
+//       return res.status(404).json({ message: "Wallet not found" });
+//     }
+
+//     // Validate wallet types
+//     const validWallets = [
+//       // "exchangeWallet",
+//       "spotWallet",
+//       "futuresWallet",
+//       "perpetualsWallet",
+//     ];
+//     if (
+//       !validWallets.includes(fromWallet) ||
+//       !validWallets.includes(toWallet)
+//     ) {
+//       return res.status(400).json({ message: "Invalid wallet type" });
+//     }
+
+//     const transferAmount = Number(amount); // Ensure the amount is a number
+
+//     console.log("the asset is" + asset);
+
+//     // Validate balance for USDT transfers
+//     if (asset === "USDT") {
+//       if (wallet[fromWallet] < transferAmount) {
+//         return res.status(400).json({ message: "Insufficient funds" });
+//       }
+
+//       // Process transfer with proper addition
+//       wallet[fromWallet] -= transferAmount;
+//       wallet[toWallet] += transferAmount;
+//     } else {
+//       // Handle asset transfers between exchange and spot wallets
+//       const fromHoldings =
+//         fromWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+//       const toHoldings =
+//         toWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+
+//       // Validate if fromHoldings is empty
+//       if (fromHoldings.length === 0) {
+//         return res.status(400).json({ message: "Insufficient crypto balance" });
+//       }
+
+//       const fromHolding = fromHoldings.find(
+//         (holding) => holding.asset === asset
+//       );
+//       if (!fromHolding || fromHolding.quantity < transferAmount) {
+//         return res.status(400).json({ message: "Insufficient balance" });
+//       }
+
+//       // Deduct from the sender's holdings
+//       fromHolding.quantity -= transferAmount;
+//       if (fromHolding.quantity === 0) {
+//         fromHoldings.splice(fromHoldings.indexOf(fromHolding), 1);
+//       }
+
+//       // Add to the receiver's holdings
+//       const toHolding = toHoldings.find((holding) => holding.asset === asset);
+//       if (toHolding) {
+//         toHolding.quantity += transferAmount;
+//       } else {
+//         toHoldings.push({ asset, quantity: transferAmount });
+//       }
+//     }
+
+//     // Log transfer in history
+//     wallet.transferHistory.push({
+//       fromWallet,
+//       toWallet,
+//       asset,
+//       amount: transferAmount,
+//       timestamp: new Date(),
+//     });
+
+//     await wallet.save();
+
+//     res.status(200).json({ message: "Transfer successful", wallet });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error processing transfer", error });
+//   }
+// });
+
 export const transferFunds = catchAsyncErrors(async (req, res) => {
-const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
+  const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
   const userId = req.user._id;
 
   try {
@@ -178,9 +267,38 @@ const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
       return res.status(404).json({ message: "Wallet not found" });
     }
 
-    // Validate wallet types
+    // ✅ Automatically migrate exchangeWallet funds to spotWallet before proceeding
+    let migrated = false;
+    if (wallet.exchangeWallet && wallet.exchangeWallet > 0) {
+      wallet.spotWallet += wallet.exchangeWallet;
+      wallet.exchangeWallet = 0;
+      migrated = true;
+    }
+    if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
+      wallet.exchangeHoldings.forEach((holding) => {
+        const existing = wallet.holdings.find(h => h.asset === holding.asset);
+        if (existing) {
+          existing.quantity += holding.quantity;
+        } else {
+          wallet.holdings.push({ asset: holding.asset, quantity: holding.quantity });
+        }
+      });
+      wallet.exchangeHoldings = [];
+      migrated = true;
+    }
+    if (migrated) {
+      wallet.transferHistory.push({
+        fromWallet: "exchangeWallet",
+        toWallet: "spotWallet",
+        asset: "ALL",
+        amount: 0,
+        timestamp: new Date(),
+        details: wallet.holdings.map(h => ({ asset: h.asset, quantity: h.quantity })),
+      });
+    }
+
+    // ✅ Now proceed with normal transfer logic
     const validWallets = [
-      "exchangeWallet",
       "spotWallet",
       "futuresWallet",
       "perpetualsWallet",
@@ -192,46 +310,35 @@ const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
       return res.status(400).json({ message: "Invalid wallet type" });
     }
 
-    const transferAmount = Number(amount); // Ensure the amount is a number
+    const transferAmount = Number(amount);
+    if (isNaN(transferAmount) || transferAmount <= 0) {
+      return res.status(400).json({ message: "Invalid transfer amount" });
+    }
 
-    console.log("the asset is" + asset);
-
-    // Validate balance for USDT transfers
+    // USDT transfer between wallets
     if (asset === "USDT") {
       if (wallet[fromWallet] < transferAmount) {
         return res.status(400).json({ message: "Insufficient funds" });
       }
 
-      // Process transfer with proper addition
       wallet[fromWallet] -= transferAmount;
       wallet[toWallet] += transferAmount;
     } else {
-      // Handle asset transfers between exchange and spot wallets
-      const fromHoldings =
-        fromWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
-      const toHoldings =
-        toWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+      // Crypto asset transfer
+      const fromHoldings = wallet.holdings;
+      const toHoldings = wallet.holdings; // all assets now use `holdings`
 
-      // Validate if fromHoldings is empty
-      if (fromHoldings.length === 0) {
-        return res.status(400).json({ message: "Insufficient crypto balance" });
-      }
-
-      const fromHolding = fromHoldings.find(
-        (holding) => holding.asset === asset
-      );
+      const fromHolding = fromHoldings.find(h => h.asset === asset);
       if (!fromHolding || fromHolding.quantity < transferAmount) {
-        return res.status(400).json({ message: "Insufficient balance" });
+        return res.status(400).json({ message: "Insufficient asset balance" });
       }
 
-      // Deduct from the sender's holdings
       fromHolding.quantity -= transferAmount;
       if (fromHolding.quantity === 0) {
         fromHoldings.splice(fromHoldings.indexOf(fromHolding), 1);
       }
 
-      // Add to the receiver's holdings
-      const toHolding = toHoldings.find((holding) => holding.asset === asset);
+      const toHolding = toHoldings.find(h => h.asset === asset);
       if (toHolding) {
         toHolding.quantity += transferAmount;
       } else {
@@ -250,7 +357,11 @@ const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
 
     await wallet.save();
 
-    res.status(200).json({ message: "Transfer successful", wallet });
+    res.status(200).json({
+      message: "Transfer successful",
+      migratedExchangeToSpot: migrated,
+      wallet,
+    });
   } catch (error) {
     res.status(500).json({ message: "Error processing transfer", error });
   }
