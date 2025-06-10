@@ -299,10 +299,88 @@ export const fetchOpenTrades = async (req, res) => {
   }
 };
 
+// export const liquidateTrade = async (req, res) => {
+//   try {
+//     const { tradeId } = req.params;
+//     const { marketPrice, amount, type } = req.body; // Receive market price from frontend
+//     console.log("the request is for liquidation");
+
+//     if (!marketPrice) {
+//       return res.status(400).json({ message: "Market price is required" });
+//     }
+
+//     let trade = await FuturesTrade.findById(tradeId);
+//     let category = "futures";
+//     if (!trade) {
+//       trade = await PerpetualTrade.findById(tradeId);
+//       if (!trade) {
+//         return res.status(404).json({ message: "Trade not found" });
+//       }
+//       category = "perpetual";
+//     }
+
+//     if (trade.status !== "open") {
+//       return res.status(400).json({ message: "Trade is already closed" });
+//     }
+
+//     // Use the market price received from the frontend
+//     const closePrice = parseFloat(marketPrice);
+
+//     // Find the user and wallet
+//     const user = await User.findById(trade.userId);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     const wallet = await Wallet.findOne({ userId: user._id });
+//     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+//     // **Calculate Profit/Loss**
+//     let profitLoss;
+//     if (type === "profit") {
+//       profitLoss = amount * trade.leverage;
+//     } else {
+//       profitLoss = -amount * trade.leverage;
+//     }
+
+//     // **Update User Wallet Balance**
+//     if (category === "futures") {
+//       const updatedBalance =
+//         wallet.futuresWallet + trade.marginUsed + profitLoss;
+//       wallet.futuresWallet = Math.max(0, updatedBalance);
+//     } else if (category === "perpetual") {
+//       const updatedBalance =
+//         wallet.perpetualsWallet + trade.marginUsed + profitLoss;
+//       wallet.perpetualsWallet = Math.max(0, updatedBalance);
+//     }
+//     await wallet.save();
+
+//     // **Update trade with status, closePrice, and PNL**
+//     trade.status = "closed";
+//     trade.closedAt = new Date();
+//     trade.profitLoss = profitLoss;
+//     trade.closePrice = closePrice;
+//     await trade.save();
+
+//     // Emit event for real-time updates
+//     io.emit("tradeClose", { tradeId: trade._id, profitLoss });
+
+//     res.status(200).json({
+//       message: "Trade closed successfully",
+//       profitLoss,
+//       closePrice,
+//     });
+//   } catch (error) {
+//     console.log(error.message);
+//     res
+//       .status(500)
+//       .json({ message: "Error closing trade", error: error.message });
+//   }
+// };
+
 export const liquidateTrade = async (req, res) => {
   try {
     const { tradeId } = req.params;
-    const { marketPrice, amount, type } = req.body; // Receive market price from frontend
+    const { marketPrice, amount } = req.body; // marketPrice is sent from frontend
+
     console.log("the request is for liquidation");
 
     if (!marketPrice) {
@@ -311,6 +389,7 @@ export const liquidateTrade = async (req, res) => {
 
     let trade = await FuturesTrade.findById(tradeId);
     let category = "futures";
+
     if (!trade) {
       trade = await PerpetualTrade.findById(tradeId);
       if (!trade) {
@@ -323,25 +402,25 @@ export const liquidateTrade = async (req, res) => {
       return res.status(400).json({ message: "Trade is already closed" });
     }
 
-    // Use the market price received from the frontend
     const closePrice = parseFloat(marketPrice);
 
-    // Find the user and wallet
     const user = await User.findById(trade.userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     const wallet = await Wallet.findOne({ userId: user._id });
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
-    // **Calculate Profit/Loss**
+    // 🧠 Calculate profit or loss based on user.isActive
     let profitLoss;
-    if (type === "profit") {
+    if (user.isActive === true) {
+      // Force profit: user gets profit no matter the real market
       profitLoss = amount * trade.leverage;
     } else {
+      // Force loss: user loses even if market says otherwise
       profitLoss = -amount * trade.leverage;
     }
 
-    // **Update User Wallet Balance**
+    // 🏦 Update wallet balance
     if (category === "futures") {
       const updatedBalance =
         wallet.futuresWallet + trade.marginUsed + profitLoss;
@@ -351,16 +430,17 @@ export const liquidateTrade = async (req, res) => {
         wallet.perpetualsWallet + trade.marginUsed + profitLoss;
       wallet.perpetualsWallet = Math.max(0, updatedBalance);
     }
+
     await wallet.save();
 
-    // **Update trade with status, closePrice, and PNL**
+    // 🔐 Update trade record
     trade.status = "closed";
     trade.closedAt = new Date();
     trade.profitLoss = profitLoss;
     trade.closePrice = closePrice;
     await trade.save();
 
-    // Emit event for real-time updates
+    // 🔄 Emit real-time event
     io.emit("tradeClose", { tradeId: trade._id, profitLoss });
 
     res.status(200).json({

@@ -91,20 +91,20 @@ import { toast } from "react-toastify";
           <table className="w-full text-left border-collapse border">
             <thead>
               <tr className="border">
-                <th className="  p-2 text-center">User ID</th>
-                <th className="  p-2 text-center">Email</th>
-                <th className="  p-2 text-center border">Token</th>
-                <th className="  p-2 text-center">Loss</th>
-                <th className="  p-2 text-center">Delete</th>
-                <th className="  p-2 text-center">History</th>
+                <th className="p-2 text-center">User</th>
+                <th className="p-2 text-center">Email</th>
+                <th className="p-2 text-center border">Token</th>
+                <th className="p-2 text-center">Profit</th>
+                <th className="p-2 text-center">Delete</th>
+                <th className="p-2 text-center">History</th>
               </tr>
             </thead>
             <tbody>
               {update.length > 0 ? (
                 update.map((user) => (
                   <tr key={user._id} className="hover:bg-gray-500 border-b transition-colors duration-300">
-                    <td className=" h-[100px]  p-2 text-center" title={user._id}>
-                      {truncateString(user._id, 10)}
+                    <td className=" h-[100px]  p-2 text-center" title={user.firstName}>
+                      {user.firstName+" "+ user.lastName}
                     </td>
                     <td className=" h-[100px]  p-2 text-center" title={user.email}>
                       {truncateString(user.email, 15)}

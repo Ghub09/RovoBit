@@ -7,7 +7,7 @@ import {
   deleteNews,
 } from "../controllers/newsController.js";
 import {
-  isUserAuthenticated,
+  // isUserAuthenticated,
   isAdminAuthenticated,
 } from "../middlewares/auth.js";
 

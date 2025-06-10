@@ -64,8 +64,11 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
       if (result.meta.requestStatus === "fulfilled") {
         // Emit a socket event to notify about the new position
         socket.emit("newPosition", result.payload);
+        toast.success("Trading is doing successfully")
       }
-    });
+    }).catch((err)=>{
+      toast.error(err,"something went wrong")
+    })
   };
 
   const handleAssetsClick = (value) => {

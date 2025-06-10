@@ -354,8 +354,6 @@ const ManageNews = () => {
           </DialogFooter>
         </form>
       </Dialog>
-
-      {/* Delete Confirmation Modal */}
       <Dialog open={openDeleteModal} handler={handleCloseDeleteModal}>
         <DialogHeader className="text-black">Confirm Deletion</DialogHeader>
         <DialogBody className="text-black">

@@ -15,8 +15,8 @@ const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("pending");
   //  const { loading } = useSelector((state) => state.global);
-   const { user } = useSelector((state) => state.user);
-   console.log("OrderRecord.jsx",user.isActive)
+  //  const { user } = useSelector((state) => state.user);
+  //  console.log("OrderRecord.jsx",user.isActive)
   const { openOrders, spotHistoryTrades } = useSelector(
     (state) => state.trade
   );

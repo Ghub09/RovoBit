@@ -41,8 +41,24 @@ const FuturesTradeHistory = ({ trades }) => {
     return `${numPnl >= 0 ? "+" : ""}${formattedValue}`;
   };
 
+  const getTradeDuration = (start, end) => {
+  if (!start || !end) return "--";
+  const startDate = new Date(start);
+  const endDate = new Date(end);
+  const diffMs = endDate - startDate;
+
+  if (diffMs < 0) return "Expired before start";
+
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+  const diffSeconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+  return `${diffDays}d ${diffHours}h ${diffMinutes}m ${diffSeconds+1}s`;
+};
+
   return (
-    <div className="rounded-lg shadow-lg bg-amber-500">
+    <div className="rounded-lg shadow-lg bg-gray-700">
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
@@ -65,6 +81,9 @@ const FuturesTradeHistory = ({ trades }) => {
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Close Price
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
+                Duration
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 PNL (USDT)
@@ -93,7 +112,7 @@ const FuturesTradeHistory = ({ trades }) => {
                   {trade.type}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.leverage}x
+                  {trade.leverage}%
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
                   <span
@@ -114,6 +133,16 @@ const FuturesTradeHistory = ({ trades }) => {
                 <td className="px-4 py-2 text-sm text-gray-200">
                   {trade.closePrice ? `$${trade.closePrice.toFixed(2)}` : "--"}
                 </td>
+                <td className="p-2 text-center ">
+  <>
+    {new Date(trade.createdAt).toLocaleDateString()} <br />
+    {new Date(trade.closedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} <br />
+    <span className="text-xs text-gray-400">
+      {getTradeDuration(trade.createdAt, trade.closedAt)}
+    </span>
+  </>
+</td>
+
                 <td
                   className={`px-4 py-2 text-sm font-medium ${
                     trade.profitLoss > 0

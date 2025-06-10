@@ -149,14 +149,14 @@ const TradingChart = ({
 
   return (
     <div>
-      <div className="md:flex justify-between items-center border-b-[.3px] border-[#00c853] hidden md:block">
+      <div className="md:flex justify-between items-center border-b-[.3px]  hidden md:block">
         <div className=" flex gap-4 w-fit">
           <div>
             <select
               id="tradingPair"
               value={selectedPair}
               onChange={(e) => setSelectedPair(e.target.value)}
-              className=" text-tertiary3 p-2 border-r-[.3px] border-[#00c853] focus:outline-none"
+              className=" text-tertiary3 p-2 border-r-[.3px] focus:outline-none"
             >
               {tradingPairs?.map((pair, index) => (
                 <option key={index} className="bg-blue-300" value={pair}>
