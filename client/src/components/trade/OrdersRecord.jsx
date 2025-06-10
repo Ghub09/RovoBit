@@ -36,7 +36,7 @@ const OrdersRecord = ({ type, marketData }) => {
   }, [dispatch, type]);
 
   return (
-    <div className="p-4 text-white shadow-lg w-full border border-green-500">
+    <div className="p-4 text-white shadow-lg w-full">
       {/* Tab Navigation */}
         {/* {loading && <Loader />} */}
 

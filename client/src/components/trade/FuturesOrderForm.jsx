@@ -80,13 +80,15 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   return (
     <Card className="p-4 bg-transparent text-lg text-white w-full md:max-w-md">
       <AnimatedHeading>
-        <h2>Open Position</h2>
+        <div className="flex justify-center">
+        <h2 className="mb-4">Open Position</h2>
+        </div>
       </AnimatedHeading>
 
       <div className=" p-1 rounded-md flex gap-2">
         <button
           onClick={() => setOrderType("long")}
-          className={`w-1/2 text-center py-2 rounded-md ${
+          className={`w-1/2 text-center rounded-full ${
             orderType === "long"
               ? "bg-[#26bb8c] text-white"
               : "text-gray-400  bg-[#232323]"
@@ -96,7 +98,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </button>
         <button
           onClick={() => setOrderType("short")}
-          className={`w-1/2 text-center py-2 rounded-md ${
+          className={`w-1/2 text-center rounded-full ${
             orderType === "short"
               ? "bg-[#ff5e5a] text-white"
               : "text-gray-400  bg-[#232323]"
@@ -180,7 +182,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
           {assetsOptions.map((option, index) => (
             <p
               key={index}
-              className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
+              className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer text-[9px] hover:scale-[1.2] ${
                 assetsAmount === option
                   ? "bg-[#2c2c2c] text-white"
                   : "bg-transparent text-gray-500"
@@ -204,7 +206,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
 
       <button
         onClick={handleSubmit}
-        className={` w-full py-2 rounded-md text-sm ${
+        className={` w-full py-2 rounded-full text-sm ${
           orderType === "long"
             ? "bg-[#26bb8c] hover:bg-green-500"
             : "bg-[#ff5e5a] hover:bg-red-500"
