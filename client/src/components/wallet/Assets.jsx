@@ -5,6 +5,7 @@ import { getWallet } from "../../store/slices/assetsSlice";
 import OpenPerpetualPositions from "../trade/OpenPerpetualPositions";
 import { fetchOpenPositions } from "../../store/slices/futuresTradeSlice";
 import { fetchMarketData } from "../../store/slices/marketSlice";
+import SmallLoader from "../layout/smallLoader";
 
 const Assets = ({ type }) => {
   const dispatch = useDispatch();
@@ -142,10 +143,10 @@ const Assets = ({ type }) => {
   // Display a loading state if data is being fetched
   if (isLoading) {
     return (
-      <div className="bg-[#242424] p-6 rounded-lg mb-6">
-        <h2 className="text-lg font-semibold text-white mb-4">
-          Loading assets...
-        </h2>
+      <div className="bg-[#242424] p-6 rounded-lg mb-6 h-[50vh] flex justify-center items-center">
+        {/* <h2 className="text-lg font-semibold text-white mb-4"> */}
+          <SmallLoader/>
+        {/* </h2> */}
       </div>
     );
   }

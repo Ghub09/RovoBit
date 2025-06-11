@@ -182,8 +182,8 @@ export const getWallet = async (req, res) => {
       futuresWallet: wallet.futuresWallet || 0,
       perpetualsWallet: wallet.perpetualsWallet || 0,
       holdings: Array.isArray(wallet.holdings) ? wallet.holdings : [],
-      exchangeHoldings: Array.isArray(wallet.exchangeHoldings)
-        ? wallet.exchangeHoldings
+      holdings: Array.isArray(wallet.holdings)
+        ? wallet.holdings
         : [],
       frozenAssets: Array.isArray(wallet.frozenAssets)
         ? wallet.frozenAssets
@@ -314,20 +314,20 @@ export const getTransactions = async (req, res) => {
 //       userWallet.spotWallet -= amount;
 //     } else {
 //       // Find the 'fromAsset' in the assets array
-//       const fromAssetIndex = userWallet.exchangeHoldings.findIndex(
+//       const fromAssetIndex = userWallet.holdings.findIndex(
 //         (holding) => holding.asset === fromAsset
 //       );
 
 //       if (
 //         fromAssetIndex === -1 ||
-//         userWallet.exchangeHoldings[fromAssetIndex].quantity < amount
+//         userWallet.holdings[fromAssetIndex].quantity < amount
 //       ) {
 //         return res
 //           .status(400)
 //           .json({ message: "Insufficient balance in exchange wallet" });
 //       }
 //       // Deduct from the existing asset balance
-//       userWallet.exchangeHoldings[fromAssetIndex].quantity -= amount;
+//       userWallet.holdings[fromAssetIndex].quantity -= amount;
 //     }
 
 //     // Handle 'toAsset' logic
@@ -336,28 +336,28 @@ export const getTransactions = async (req, res) => {
 //     //   userWallet.spotWallet += toAmount;
 //     // } else {
 //     //   // Find the 'toAsset' in the assets array
-//     //   const toAssetIndex = userWallet.exchangeHoldings.findIndex(
+//     //   const toAssetIndex = userWallet.holdings.findIndex(
 //     //     (holding) => holding.asset === toAsset
 //     //   );
 
 //     //   if (toAssetIndex === -1) {
 //     //     // If the asset doesn't exist, add it to the assets array
-//     //     userWallet.exchangeHoldings.push({
+//     //     userWallet.holdings.push({
 //     //       asset: toAsset,
 //     //       quantity: toAmount,
 //     //     });
 //     //   } else {
 //     //     // If the asset exists, increment its balance
-//     //     userWallet.exchangeHoldings[toAssetIndex].quantity += toAmount;
+//     //     userWallet.holdings[toAssetIndex].quantity += toAmount;
 //     //   }
 //     // }
 
 //     // // Save the updated wallet
 //     // await userWallet.save();
 
-//     // Ensure exchangeHoldings is an array
-// if (!Array.isArray(userWallet.exchangeHoldings)) {
-//   userWallet.exchangeHoldings = [];
+//     // Ensure holdings is an array
+// if (!Array.isArray(userWallet.holdings)) {
+//   userWallet.holdings = [];
 // }
 
 // // Handle 'toAsset' logic
@@ -365,24 +365,24 @@ export const getTransactions = async (req, res) => {
 //   // Add to spotWallet
 //   userWallet.spotWallet += toAmount;
 // } else {
-//   const toAssetIndex = userWallet.exchangeHoldings.findIndex(
+//   const toAssetIndex = userWallet.holdings.findIndex(
 //     (holding) => holding.asset === toAsset
 //   );
 
 //   if (toAssetIndex === -1) {
-//     userWallet.exchangeHoldings.push({
+//     userWallet.holdings.push({
 //       asset: toAsset,
 //       quantity: toAmount,
 //     });
 //   } else {
-//     userWallet.exchangeHoldings[toAssetIndex].quantity += toAmount;
+//     userWallet.holdings[toAssetIndex].quantity += toAmount;
 //   }
 
 //   // 🔥 Ensure mongoose registers nested changes
-//   userWallet.markModified("exchangeHoldings");
+//   userWallet.markModified("holdings");
 // }
 
-// userWallet.markModified("exchangeHoldings");
+// userWallet.markModified("holdings");
 // console.log("Amount:", amount, "ExchangeRate:", exchangeRate, "ToAmount:", toAmount);
 
 // await userWallet.save();
@@ -447,39 +447,39 @@ export const swapCrypto = async (req, res) => {
       }
       userWallet.spotWallet -= amount;
     } else {
-      const fromAssetIndex = userWallet.exchangeHoldings.findIndex(
+      const fromAssetIndex = userWallet.holdings.findIndex(
         (holding) => holding.asset === fromAsset
       );
 
       if (
         fromAssetIndex === -1 ||
-        userWallet.exchangeHoldings[fromAssetIndex].quantity < amount
+        userWallet.holdings[fromAssetIndex].quantity < amount
       ) {
         return res.status(400).json({ message: "Insufficient balance in exchange wallet" });
       }
 
-      userWallet.exchangeHoldings[fromAssetIndex].quantity -= amount;
+      userWallet.holdings[fromAssetIndex].quantity -= amount;
     }
 
     // ✅ Add to `toAsset`
-    if (!Array.isArray(userWallet.exchangeHoldings)) {
-      userWallet.exchangeHoldings = [];
+    if (!Array.isArray(userWallet.holdings)) {
+      userWallet.holdings = [];
     }
 
     if (toAsset === "USDT") {
       userWallet.spotWallet += toAmount;
     } else {
-      const toAssetIndex = userWallet.exchangeHoldings.findIndex(
+      const toAssetIndex = userWallet.holdings.findIndex(
         (holding) => holding.asset === toAsset
       );
 
       if (toAssetIndex === -1) {
-        userWallet.exchangeHoldings.push({ asset: toAsset, quantity: toAmount });
+        userWallet.holdings.push({ asset: toAsset, quantity: toAmount });
       } else {
-        userWallet.exchangeHoldings[toAssetIndex].quantity += toAmount;
+        userWallet.holdings[toAssetIndex].quantity += toAmount;
       }
 
-      userWallet.markModified("exchangeHoldings");
+      userWallet.markModified("holdings");
     }
 
     // ✅ Save wallet

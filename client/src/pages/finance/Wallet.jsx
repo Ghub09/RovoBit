@@ -189,30 +189,29 @@ const Wallet = () => {
     dispatch(fetchExchangeRate({ fromAsset, toAsset }));
   }, [dispatch, fromAsset, toAsset]);
 
- const handleSwap = async () => {
-  if (!amount) {
-    toast.error("Please enter an amount");
-    return;
-  }
+  const handleSwap = async () => {
+    if (!amount) {
+      toast.error("Please enter an amount");
+      return;
+    }
 
-  try {
-    // Wait for exchange rate to be fetched
-    const exchangeRate = await dispatch(
-      fetchExchangeRate({ fromAsset, toAsset })
-    ).unwrap();
+    try {
+      // Wait for exchange rate to be fetched
+      const exchangeRate = await dispatch(
+        fetchExchangeRate({ fromAsset, toAsset })
+      ).unwrap();
 
-    // Then use that rate in swap
-    await dispatch(
-      swapAssets({ fromAsset, toAsset, amount, exchangeRate })
-    ).unwrap();
+      // Then use that rate in swap
+      await dispatch(
+        swapAssets({ fromAsset, toAsset, amount, exchangeRate })
+      ).unwrap();
 
-    setOpen(false);
-  } catch (error) {
-    console.error("Swap failed:", error);
-    setOpen(false);
-  }
-};
-
+      setOpen(false);
+    } catch (error) {
+      console.error("Swap failed:", error);
+      setOpen(false);
+    }
+  };
 
   // Fund Transfer Handler
   const handleTransfer = async () => {
@@ -276,9 +275,9 @@ const Wallet = () => {
   };
   // console.log(wallet)
   // console.log(showAssets)
-  // console.log(wallet?.withdrawalHistory)
+  console.log(wallet?.withdrawalHistory);
   return (
-    <div className="min-h-[100vh] mx-auto md:px-6 py-4  border">
+    <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -444,67 +443,79 @@ const Wallet = () => {
               </Card>
 
               {/* Deposit & Withdrawal History */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* Deposit History */}
-                <Card className="bg-[#242424] p-6 rounded-lg">
-                  <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                    Deposit History
-                  </h2>
-                  <CardBody>
-                    {wallet?.depositHistory?.length > 0 ? (
-                      <ul className="text-white">
-                        {wallet.depositHistory.map((tx, index) => (
-                          <li
-                            key={index}
-                            className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
-                          >
-                            <span>
-                              {new Date(tx.createdAt).toLocaleString()}
-                            </span>
-                            <span>{tx.currency}</span>
-                            <span className="text-green-500">
-                              <AiOutlineArrowDown className="inline-block" /> $
-                              {tx.amount?.toFixed(2)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-400">No deposits yet.</p>
-                    )}
-                  </CardBody>
-                </Card>
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+  {/* Deposit History */}
+  <Card className="bg-[#242424] p-6 rounded-lg">
+    <h2 className="bg-transparent text-lg text-center font-semibold text-[#00FF7F]">
+      Deposit History
+    </h2>
+    <CardBody>
+      {wallet?.depositHistory?.length > 0 ? (
+        <ul className="text-white">
+          {[...wallet.depositHistory]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map((tx, index) => (
+              <li
+                key={index}
+                className="flex py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+              >
+                <span className="w-[50%] text-[100%]">
+                  {new Date(tx.createdAt).toLocaleString()}
+                </span>
+                <span className="w-[20%]">{tx.currency}</span>
+                <span className="text-green-500 w-[30%]">
+                  <AiOutlineArrowDown className="inline-block" /> ${tx.amount?.toFixed(2)}
+                </span>
+              </li>
+            ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">No deposits yet.</p>
+      )}
+    </CardBody>
+  </Card>
 
-                {/* Withdrawal History */}
-                <Card className="bg-[#242424] p-6 rounded-lg">
-                  <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                    Withdrawal History
-                  </h2>
-                  <CardBody>
-                    {wallet?.withdrawalHistory?.length > 0 ? (
-                      <ul className="text-white">
-                        {wallet.withdrawalHistory.map((tx, index) => (
-                          <li
-                            key={index}
-                            className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
-                          >
-                            <span>
-                              {new Date(tx.createdAt).toLocaleString()}
-                            </span>
-                            
-                            <span className="text-red-500">
-                              <AiOutlineArrowUp className="inline-block" /> $
-                              {tx.amount?.toFixed(2)}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : (
-                      <p className="text-gray-400">No withdrawals yet.</p>
-                    )}
-                  </CardBody>
-                </Card>
-              </div>
+  {/* Withdrawal History */}
+  <Card className="bg-[#242424] p-6 rounded-lg">
+    <h2 className="bg-transparent text-lg text-center font-semibold text-[#00FF7F]">
+      Withdrawal History
+    </h2>
+    <CardBody>
+      {wallet?.withdrawalHistory?.length > 0 ? (
+        <ul className="text-white space-y-2">
+          {[...wallet.withdrawalHistory]
+            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+            .map((tx, index) => (
+              <li
+                key={index}
+                className="p-4 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+              >
+                {/* First Row */}
+                <div className="flex justify-between mb-1">
+                  <span className="w-[65%]">
+                    {new Date(tx.createdAt).toLocaleString()}
+                  </span>
+                  <span className="w-[20%]   ">{tx.currency}</span>
+                  <span className="w-[25%]   text-red-500 text-sm">
+                    <AiOutlineArrowUp className="inline-block " /> ${tx.amount?.toFixed(2)}
+                  </span>
+                </div>
+
+                {/* Second Row */}
+                <div className="flex justify-between  text-gray-400">
+                  <span className="text-[10px] w-[78%] ">{tx?.walletAddress}</span>
+                  <span className=" text-[10px] w-[22%]   text-left">{tx?.network}</span>
+                </div>
+              </li>
+            ))}
+        </ul>
+      ) : (
+        <p className="text-gray-400">No withdrawals yet.</p>
+      )}
+    </CardBody>
+  </Card>
+</div>
+
             </>
           ) : (
             <div className="mb-6">
@@ -548,8 +559,7 @@ const Wallet = () => {
                         ? "Spot Assets"
                         : assetsType === "futures"
                         ? "Trading Assets"
-                        : assetsType === "perpetuals"
-                        && "Perpetual Assets"}
+                        : assetsType === "perpetuals" && "Perpetual Assets"}
                     </span>
                   </div>
                 ) : (

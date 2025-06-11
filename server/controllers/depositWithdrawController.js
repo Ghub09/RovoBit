@@ -267,8 +267,8 @@ export const addTokens = async (req, res) => {
 export const approveWithDrawRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
-
     const request = await DepositWithdrawRequest.findById(requestId);
+    console.log(request)
     if (!request) {
       return res.status(404).send({ message: "Request not found" });
     }
@@ -296,6 +296,8 @@ export const approveWithDrawRequest = async (req, res) => {
     wallet.withdrawalHistory.push({
       amount: request.amount,
       currency: request.currency,
+      network: request.network,
+      walletAddress:request.walletAddress,
       createdAt: new Date(),
     });
 

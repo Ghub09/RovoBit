@@ -73,7 +73,7 @@ export const approveWithDrawRequest = createAsyncThunk(
 
       // ✅ Don't pass `null` as the body
       const response = await API.put(`/admin/approve-withdraw/${requestId}`);
-
+      console.log(response.data)
       toast.success(response.data.message);
       return response.data;
     } catch (error) {

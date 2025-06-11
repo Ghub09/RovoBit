@@ -31,7 +31,8 @@ const WalletSchema = new mongoose.Schema({
     },
   ],
   depositHistory: [{ amount: Number, currency: String, createdAt: Date }],
-  withdrawalHistory: [{ amount: Number, currency: String, createdAt: Date }],
+  withdrawalHistory: [{ amount: Number, currency: String,network: String,
+    walletAddress:String, createdAt: Date }],
   transferHistory: [
     {
       fromWallet: String,
