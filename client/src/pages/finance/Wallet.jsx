@@ -109,8 +109,8 @@ const Wallet = () => {
 
     // Calculate Exchange Wallet Value
     let exchangeValue = wallet.exchangeWallet || 0;
-    if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
-      const holdingsValue = wallet.exchangeHoldings.reduce((total, holding) => {
+    if (wallet.holdings && wallet.holdings.length > 0) {
+      const holdingsValue = wallet.holdings.reduce((total, holding) => {
         const coin = coins.find(
           (c) => c.symbol === holding.asset.toLowerCase()
         );
@@ -189,21 +189,30 @@ const Wallet = () => {
     dispatch(fetchExchangeRate({ fromAsset, toAsset }));
   }, [dispatch, fromAsset, toAsset]);
 
-  const handleSwap = async () => {
-    if (!amount) {
-      toast.error("Please enter an amount");
-      return;
-    }
-    dispatch(fetchExchangeRate({ fromAsset, toAsset }));
-    try {
-      dispatch(
-        swapAssets({ fromAsset, toAsset, amount, exchangeRate })
-      ).unwrap();
-      setOpen(false);
-    } catch {
-      setOpen(false);
-    }
-  };
+ const handleSwap = async () => {
+  if (!amount) {
+    toast.error("Please enter an amount");
+    return;
+  }
+
+  try {
+    // Wait for exchange rate to be fetched
+    const exchangeRate = await dispatch(
+      fetchExchangeRate({ fromAsset, toAsset })
+    ).unwrap();
+
+    // Then use that rate in swap
+    await dispatch(
+      swapAssets({ fromAsset, toAsset, amount, exchangeRate })
+    ).unwrap();
+
+    setOpen(false);
+  } catch (error) {
+    console.error("Swap failed:", error);
+    setOpen(false);
+  }
+};
+
 
   // Fund Transfer Handler
   const handleTransfer = async () => {
@@ -267,8 +276,9 @@ const Wallet = () => {
   };
   // console.log(wallet)
   // console.log(showAssets)
+  // console.log(wallet?.withdrawalHistory)
   return (
-    <div className="min-h-[100vh] mx-auto md:px-6 py-4">
+    <div className="min-h-[100vh] mx-auto md:px-6 py-4  border">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -295,11 +305,11 @@ const Wallet = () => {
               </div>
 
               {/* My Account Section */}
-              <div className="mb-6">
+              <div className="mb-6 ">
                 <h2 className="text-2xl font-semibold text-white mb-4">
                   My Account
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <div className=" grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  flex justify-between  ">
                   {/* <div
                     className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("exchange")}
@@ -317,7 +327,7 @@ const Wallet = () => {
                     </div>
                   </div> */}
                   <div
-                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    className="bg-[#242424] p-6 w-[30%] rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("spot")}
                   >
                     <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
@@ -333,7 +343,7 @@ const Wallet = () => {
                     </div>
                   </div>
                   <div
-                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    className="bg-[#242424] p-6 w-[30%] rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("futures")}
                   >
                     <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
@@ -349,7 +359,7 @@ const Wallet = () => {
                     </div>
                   </div>
                   <div
-                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    className="bg-[#242424] p-6 w-[30%] rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("perpetuals")}
                   >
                     <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
@@ -481,6 +491,7 @@ const Wallet = () => {
                             <span>
                               {new Date(tx.createdAt).toLocaleString()}
                             </span>
+                            
                             <span className="text-red-500">
                               <AiOutlineArrowUp className="inline-block" /> $
                               {tx.amount?.toFixed(2)}
@@ -538,8 +549,7 @@ const Wallet = () => {
                         : assetsType === "futures"
                         ? "Trading Assets"
                         : assetsType === "perpetuals"
-                        ? "Perpetual Assets"
-                        : "Exchange Wallet"}
+                        && "Perpetual Assets"}
                     </span>
                   </div>
                 ) : (
@@ -609,7 +619,7 @@ const Wallet = () => {
             <div className="max-w-lg mx-auto">
               <h2 className="text-xl font-semibold mb-2">My account</h2>
               <div className="space-y-2">
-                <div
+                {/* <div
                   className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
                   onClick={() => {
                     handleAssetsRendering("exchange");
@@ -625,7 +635,7 @@ const Wallet = () => {
                   <div className="text-3xl">
                     <IoIosArrowForward />
                   </div>
-                </div>
+                </div> */}
                 <div
                   className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
                   onClick={() => {
@@ -683,7 +693,7 @@ const Wallet = () => {
         </div>
         {/* Swap Funds */}
         <Dialog open={open} handler={() => setOpen(false)} size="sm">
-          <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between">
+          <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between ">
             <span>Swap</span>
             <button onClick={() => setOpen(false)}>✖</button>
           </DialogHeader>
