@@ -7,9 +7,9 @@ import FuturesOrderForm from "../components/trade/FuturesOrderForm";
 import { fetchOpenPositions } from "../store/slices/futuresTradeSlice";
 import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
-import { useNavigate } from "react-router-dom";
-import { MdCandlestickChart } from "react-icons/md";
-import FuturesOpenPosition from "../components/trade/FuturesOpenPositions";
+// import { useNavigate } from "react-router-dom";
+// import { MdCandlestickChart } from "react-icons/md";
+// import FuturesOpenPosition from "../components/trade/FuturesOpenPositions";
 import OrdersRecord from "../components/trade/OrdersRecord";
 
 const socket = io(import.meta.env.VITE_API_URL);
@@ -18,11 +18,11 @@ function FuturesTrade() {
   const [marketData, setMarketData] = useState([]);
   const [selectedPair, setSelectedPair] = useState("BTCUSDT");
   const [selectedInterval, setSelectedInterval] = useState("1h");
-  const { openPositions } = useSelector((state) => state.futures);
+  // const { openPositions } = useSelector((state) => state.futures);
   const showChart = useSelector((state) => state.global.showChart);
   const dispatch = useDispatch();
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const tradingPairs = [
     "BTCUSDT",
     "ETHUSDT",
@@ -110,7 +110,7 @@ function FuturesTrade() {
   const currentMarketPrice =
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
   return (
-    <div className="min-h-screen max-w-7xl mx-auto md:px-4 ">
+    <div className="min-h-screen max-w-7xl mx-auto md:px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

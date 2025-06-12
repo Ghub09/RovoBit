@@ -139,23 +139,37 @@ export const fetchOpenTrades = createAsyncThunk(
   }
 );
 
-// Liquidate a trade
+  
 export const liquidateTrade = createAsyncThunk(
   "admin/liquidateTrade",
-  async ({tradeId, marketPrice,amount, type}, { dispatch, rejectWithValue }) => {
+  async ({ tradeId, marketPrice, amount, type }, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
-      const response = await API.post(`/admin/liquidate-trade/${tradeId}`,{marketPrice,type,amount});
-      toast.success(response.data.message);
+
+      // Make the API call
+      await API.post(`/admin/liquidate-trade/${tradeId}`, {
+        marketPrice,
+        type,
+        amount,
+      });
+
+      // Dismiss existing toasts and show success
+      toast.dismiss();
+      toast.success("Trade liquidated successfully");
+
       return { tradeId };
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to liquidate trade");
+      // Dismiss existing toasts and show error
+      // toast.dismiss();
+      // toast.error( "Failed to liquidate trade");
+      console.log(error.response?.data?.message)
       return rejectWithValue(error.response?.data);
     } finally {
       dispatch(setLoading(false));
     }
   }
 );
+
 
 const adminSlice = createSlice({
   name: "admin",

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { openFuturesTrade } from "../../store/slices/futuresTradeSlice";
+import { fetchOpenPositions, openFuturesTrade } from "../../store/slices/futuresTradeSlice";
 import { toast } from "react-toastify";
 import { getWallet } from "../../store/slices/assetsSlice";
 import { Card } from "@material-tailwind/react";
@@ -62,13 +62,12 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
       })
     ).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
-        // Emit a socket event to notify about the new position
-        socket.emit("newPosition", result.payload);
-        toast.success("Trading is doing successfully")
-      }
+         socket.emit("newPosition", result.payload);
+       }
     }).catch((err)=>{
-      toast.error(err,"something went wrong")
+      console.log(err,"something went wrong")
     })
+     
   };
 
   const handleAssetsClick = (value) => {
@@ -141,14 +140,20 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
           value={leverage}
           onChange={(e) => setLeverage(e.target.value)}
         >
+          <option value="10" className="bg-[#1a1a1a] ">
+            30s - 10%
+          </option>
           <option value="20" className="bg-[#1a1a1a] ">
-            30s - 20%
+            60s - 20%
           </option>
           <option value="30" className="bg-[#1a1a1a] ">
-            60s - 30%
+            120s - 30%
+          </option>
+          <option value="40" className="bg-[#1a1a1a] ">
+            150s - 40%
           </option>
           <option value="50" className="bg-[#1a1a1a] ">
-            120s - 50%
+            180s - 50%
           </option>
           <option value="60" className="bg-[#1a1a1a] ">
             24h - 60%

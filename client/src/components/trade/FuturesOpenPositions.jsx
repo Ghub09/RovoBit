@@ -37,7 +37,7 @@ function FuturesOpenPosition({ showBtn = false }) {
   const [countdowns, setCountdowns] = useState({});
   const { openPositions, status } = useSelector((state) => state.futures);
   const { user } = useSelector((state) => state.user);
-  console.log(user.isActive)//check it and apply PNL according to this as true and false if true then profit always exist if use goes to loss else false then then user is in profit then should be in loss
+  // console.log(user.isActive)//check it and apply PNL according to this as true and false if true then profit always exist if use goes to loss else false then then user is in profit then should be in loss
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -74,43 +74,6 @@ function FuturesOpenPosition({ showBtn = false }) {
       ws.close();
     };
   }, []);
-
-  // useEffect(() => {
-  //   if (!marketPrice || openPositions.length === 0) return;
-
-  //   const newPnlData = {};
-
-  //   openPositions.forEach((trade) => {
-  //     const { entryPrice, quantity, leverage, marginUsed } = trade;
-      
-  //     // Get profit percentage based on trade duration
-  //     const profitPercentage = getProfitPercentage(trade);
-  //     const baseProfit = (profitPercentage / 100) * marginUsed;
-      
-  //     // Calculate market PNL
-  //     let marketPnl;
-  //     if (trade.type === "long") {
-  //       marketPnl = (marketPrice - entryPrice) * quantity;
-  //     } else {
-  //       marketPnl = (entryPrice - marketPrice) * quantity;
-  //     }
-      
-  //     // Apply leverage
-  //     const leveragedPnl = marketPnl * leverage;
-      
-  //     // Apply 1% fee
-  //     const tradeValue = quantity * entryPrice;
-  //     const fee = 0.01 * tradeValue;
-      
-  //     // Final PNL = base profit + leveraged market PNL - fee
-  //     const finalPnl = baseProfit + leveragedPnl - fee;
-      
-  //     newPnlData[trade._id] = finalPnl;
-  //   });
-     
-  //   setPnlData(newPnlData);
-  // }, [marketPrice, openPositions]);
-
   useEffect(() => {
   if (!marketPrice || openPositions.length === 0) return;
 
@@ -197,24 +160,20 @@ function FuturesOpenPosition({ showBtn = false }) {
   };
 
   const formatCountdown = (countdown, trade) => {
-    if (trade.isExpired) {
-      return "0s";
-    }
+  if (trade.isExpired || !countdown || countdown.total <= 0) {
+    return "0s";
+  }
 
-    if (!countdown || countdown.total <= 0) {
-      return "0s";
-    }
+  const pad = (n) => String(n).padStart(2, '0'); // pads single digits with 0
 
-    if (countdown.days > 0) {
-      return `${countdown.days}d ${countdown.hours}h`;
-    } else if (countdown.hours > 0) {
-      return `${countdown.hours}h ${countdown.minutes}m`;
-    } else if (countdown.minutes > 0) {
-      return `${countdown.minutes}m ${countdown.seconds}s`;
-    } else {
-      return `${countdown.seconds}s`;
-    }
-  };
+  const totalHours = countdown.days * 24 + countdown.hours;
+  const hours = pad(totalHours);
+  const minutes = pad(countdown.minutes);
+  const seconds = pad(countdown.seconds);
+
+  return `${hours}:${minutes}:${seconds}`;
+};
+
 
   const handleCloseTrade = (tradeId) => {
     if (!tradeId) {
@@ -232,7 +191,7 @@ function FuturesOpenPosition({ showBtn = false }) {
   };
 
   return (
-    <div className="mt-6 ">
+    <div className="mt-6 border">
       <div className="hidden md:block bg-transparent mb-4">
         {openPositions.length > 0 ? (
           <table className="w-full text-white">
@@ -249,53 +208,57 @@ function FuturesOpenPosition({ showBtn = false }) {
                 {showBtn && <th className="py-2">Action</th>}
               </tr>
             </thead>
-            <tbody>
-              {openPositions.map((trade) => {
-                const profitPercentage = getProfitPercentage(trade);
-                return (
-                  <tr
-                    key={trade._id}
-                    className="border-b border-gray-700 text-center"
-                  >
-                    <td className="py-2">{trade.pair}</td>
-                    <td className="py-2 capitalize">{trade.type}</td>
-                    <td className="py-2">{trade.leverage}x</td>
-                    <td className="py-2">${trade?.entryPrice?.toFixed(2)}</td>
-                    <td className="py-2 text-red-400 hidden md:table-cell">
-                      ${trade?.liquidationPrice?.toFixed(2)}
-                    </td>
-                    <td className="py-2 text-green-400">
-                      {profitPercentage}%
-                    </td>
-                    <td
-                      className={`py-2 font-semibold ${
-                        pnlData[trade._id] > 0 ? "text-green-500" : "text-red-400"
-                      }`}
-                    >
-                      {pnlData[trade._id] ? pnlData[trade._id]?.toFixed(2) : "--"}{" "}
-                    </td>
-                    <td className="py-2 text-yellow-400">
-                      {formatCountdown(countdowns[trade._id], trade) === "0s" ? (
-                        <AutoLiquidate trade={trade} marketPrice={marketPrice} />
-                      ) : (
-                        formatCountdown(countdowns[trade._id], trade)
-                      )}
-                    </td>
-                    {showBtn && (
-                      <td className="py-2">
-                        <Button
-                          onClick={() => handleCloseTrade(trade._id)}
-                          className="px-4 py-2 rounded-md bg-[#ff5e5a]"
-                          disabled={status === "loading"}
-                        >
-                          {status === "loading" ? "Closing..." : "Close Trade"}
-                        </Button>
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
+<tbody>
+  {openPositions
+    .filter((trade) => {
+      const countdown = countdowns[trade._id];
+      return countdown && countdown.total > 0 && countdown.seconds > 0;
+    })
+    .map((trade) => {
+      const profitPercentage = getProfitPercentage(trade);
+      const countdown = countdowns[trade._id];
+
+      return (
+        <tr
+          key={trade._id}
+          className="border-b border-gray-700 text-center"
+        >
+          <td className="py-2">{trade.pair}</td>
+          <td className="py-2 capitalize">{trade.type}</td>
+          <td className="py-2">{trade.leverage}%</td>
+          <td className="py-2">${trade?.entryPrice?.toFixed(2)}</td>
+          <td className="py-2 text-red-400 hidden md:table-cell">
+            ${trade?.liquidationPrice?.toFixed(2)}
+          </td>
+          <td className="py-2 text-green-400">
+            {profitPercentage}%
+          </td>
+          <td
+            className={`py-2 font-semibold ${
+              pnlData[trade._id] > 0 ? "text-green-500" : "text-red-400"
+            }`}
+          >
+            {pnlData[trade._id] ? pnlData[trade._id]?.toFixed(2) : "--"}
+          </td>
+          <td className="py-2 text-yellow-400">
+            {formatCountdown(countdown, trade)}
+          </td>
+          {showBtn && (
+            <td className="py-2">
+              <Button
+                onClick={() => handleCloseTrade(trade._id)}
+                className="px-4 py-2 rounded-md bg-[#ff5e5a]"
+                disabled={status === "loading"}
+              >
+                {status === "loading" ? "Closing..." : "Close Trade"}
+              </Button>
+            </td>
+          )}
+        </tr>
+      );
+    })}
+</tbody>
+
           </table>
         ) : (
           <p className="text-gray-400">No open positions</p>

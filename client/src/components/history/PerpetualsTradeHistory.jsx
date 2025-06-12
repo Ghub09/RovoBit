@@ -93,7 +93,7 @@ const PerpetualsTradeHistory = ({ trades }) => {
                   {trade.type}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.leverage}x
+                  {trade.leverage}%
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
                   <span
@@ -152,7 +152,7 @@ const PerpetualsTradeHistory = ({ trades }) => {
                 </div>
               </span>
               <span className="text-[#e9b43b] bg-[#37321e] text-sm p-1 rounded-md">
-                {trade.leverage}x
+                {trade.leverage}%
               </span>
             </div>
 

@@ -71,35 +71,43 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   }
 
   // Calculate expiry time based on leverage value
-  let expiryTime = new Date();
-  switch (leverage.toString()) {
-    case "20": // 30s
-      expiryTime.setSeconds(expiryTime.getSeconds() + 30);
-      break;
-    case "30": // 60s
-      expiryTime.setMinutes(expiryTime.getMinutes() + 1);
-      break;
-    case "50": // 120s
-      expiryTime.setMinutes(expiryTime.getMinutes() + 2);
-      break;
-    case "60": // 24h
-      expiryTime.setHours(expiryTime.getHours() + 24);
-      break;
-    case "70": // 48h
-      expiryTime.setHours(expiryTime.getHours() + 48);
-      break;
-    case "80": // 72h
-      expiryTime.setHours(expiryTime.getHours() + 72);
-      break;
-    case "90": // 7d
-      expiryTime.setDate(expiryTime.getDate() + 7);
-      break;
-    case "100": // 15d
-      expiryTime.setDate(expiryTime.getDate() + 15);
-      break;
-    default:
-      expiryTime.setHours(expiryTime.getHours() + 24); // Default 24h
-  }
+ let expiryTime = new Date();
+
+switch (leverage.toString()) {
+  case "10": // 30s
+    expiryTime.setSeconds(expiryTime.getSeconds() + 30);
+    break;
+  case "20": // 60s
+    expiryTime.setSeconds(expiryTime.getSeconds() + 60);
+    break;
+  case "30": // 120s
+    expiryTime.setSeconds(expiryTime.getSeconds() + 120);
+    break;
+  case "40": // 150s
+    expiryTime.setSeconds(expiryTime.getSeconds() + 150);
+    break;
+  case "50": // 180s
+    expiryTime.setSeconds(expiryTime.getSeconds() + 180);
+    break;
+  case "60": // 24h
+    expiryTime.setHours(expiryTime.getHours() + 24);
+    break;
+  case "70": // 48h
+    expiryTime.setHours(expiryTime.getHours() + 48);
+    break;
+  case "80": // 72h
+    expiryTime.setHours(expiryTime.getHours() + 72);
+    break;
+  case "90": // 7d
+    expiryTime.setDate(expiryTime.getDate() + 7);
+    break;
+  case "100": // 15d
+    expiryTime.setDate(expiryTime.getDate() + 15);
+    break;
+  default:
+    expiryTime.setHours(expiryTime.getHours() + 24); // Default: 24h
+}
+
 
   // Deduct margin from user's wallet
   wallet.futuresWallet -= marginUsed;
@@ -127,9 +135,10 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   io.emit("newPosition", futuresTrade);
 
   res.status(201).json({
-    message: "Futures position opened successfully",
-    trade: futuresTrade,
-  });
+  message: "Futures position opened successfully",
+  trade: futuresTrade,
+});
+
 });
 
 export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
@@ -161,11 +170,12 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate profit/loss taking leverage into account
   let profitLoss;
   if (trade.type === "long") {
-    profitLoss =
-      (parsedClosePrice - trade.entryPrice) * trade.quantity * trade.leverage;
+ profitLoss =(trade.quantity * trade.leverage)/100
+      // (parsedClosePrice - trade.entryPrice) * trade.quantity * trade.leverage;
   } else {
-    profitLoss =
-      (trade.entryPrice - parsedClosePrice) * trade.quantity * trade.leverage;
+    profitLoss  =(trade.quantity * trade.leverage)/100
+
+      // (trade.entryPrice - parsedClosePrice) * trade.quantity * trade.leverage;
   }
 
   // Handle invalid calculation results

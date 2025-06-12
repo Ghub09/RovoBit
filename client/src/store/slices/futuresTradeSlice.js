@@ -1,7 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../utils/api.js";
-import { toast } from "react-toastify";
+// import { toast } from "react-toastify";
 import { setLoading } from "./globalSlice.js";
+import FuturesOpenPosition from "../../components/trade/FuturesOpenPositions.jsx";
 
 // Fetch Open Positions
 export const fetchOpenPositions = createAsyncThunk(
@@ -44,13 +45,11 @@ export const openFuturesTrade = createAsyncThunk(
         },
         { withCredentials: true }
       );
-      // toast.success("Trade Opened Successfully");
-      return response.data;
+      
+       return response.data;
     } catch (error) {
-      // console.log(error.response.data.message);
-      // toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response.data);
-    }  
+    } 
   }
 );
 
@@ -61,16 +60,15 @@ export const closeFuturesTrade = createAsyncThunk(
     try {
       dispatch(setLoading(true));
 
-      // Close a trade by trade ID using the futures/close endpoint in the API
-      const response = await API.post(
+       const response = await API.post(
         "/futures/close",
         { tradeId, closePrice },
         { withCredentials: true }
       );
-      toast.success("Trade Closed Successfully");
+      // toast.success("Trade Closed Successfully");
       return response.data;
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to close trade");
+      console.log(error.response?.data?.message || "Failed to close trade");
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request

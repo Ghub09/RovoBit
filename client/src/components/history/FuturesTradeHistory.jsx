@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketData } from "../../store/slices/marketSlice"; // Adjust the import path
 import PropTypes from "prop-types";
+import { fetchFuturesTradesHistory } from "../../store/slices/futuresTradeSlice";
 
 const FuturesTradeHistory = ({ trades }) => {
   const dispatch = useDispatch();
@@ -9,6 +10,7 @@ const FuturesTradeHistory = ({ trades }) => {
 
   useEffect(() => {
     dispatch(fetchMarketData());
+    dispatch(fetchFuturesTradesHistory());
   }, [dispatch]);
 
   const getCoinImage = (symbol) => {
@@ -41,24 +43,44 @@ const FuturesTradeHistory = ({ trades }) => {
     return `${numPnl >= 0 ? "+" : ""}${formattedValue}`;
   };
 
-  const getTradeDuration = (start, end) => {
+const getTradeDuration = (start, end) => {
   if (!start || !end) return "--";
+
   const startDate = new Date(start);
   const endDate = new Date(end);
-  const diffMs = endDate - startDate;
+  const diffSeconds = Math.floor((endDate - startDate) / 1000);
 
-  if (diffMs < 0) return "Expired before start";
+  if (diffSeconds < 0) return "Expired before start";
 
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-  const diffSeconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+  // Duration buckets (in seconds), from largest to smallest
+  const durations = [
+    { label: "15d", seconds: 1296000 },
+    { label: "7d", seconds: 604800 },
+    { label: "72h", seconds: 259200 },
+    { label: "48h", seconds: 172800 },
+    { label: "24h", seconds: 86400 },
+    { label: "120s", seconds: 120 },
+    { label: "60s", seconds: 60 },
+    { label: "30s", seconds: 30 },
+  ];
 
-  return `${diffDays}d ${diffHours}h ${diffMinutes}m ${diffSeconds+1}s`;
+  for (let i = 0; i < durations.length; i++) {
+    if (diffSeconds >= durations[i].seconds) {
+      return durations[i].label;
+    }
+  }
+
+  return "30s";
+};
+const calculatePnL = (amount, leveragePercent) => {
+  // leveragePercent = 20, 30, 50, 100, etc.
+  return (amount * leveragePercent) / 100;
 };
 
+
+  console.log(trades);
   return (
-    <div className="rounded-lg shadow-lg bg-gray-700">
+    <div className="rounded-lg shadow-lg bg-gray-700 ">
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
@@ -86,12 +108,17 @@ const FuturesTradeHistory = ({ trades }) => {
                 Duration
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
+                Amount ($)
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 PNL (USDT)
               </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
-            {trades.map((trade, idx) => (
+            {[...trades]
+  .sort((a, b) => new Date(b.closedAt || b.createdAt) - new Date(a.closedAt || a.createdAt))
+  .map((trade, idx) => (
               <tr
                 key={trade._id || idx}
                 className="hover:bg-gray-800 transition-colors"
@@ -134,14 +161,22 @@ const FuturesTradeHistory = ({ trades }) => {
                   {trade.closePrice ? `$${trade.closePrice.toFixed(2)}` : "--"}
                 </td>
                 <td className="p-2 text-center ">
-  <>
-    {new Date(trade.createdAt).toLocaleDateString()} <br />
-    {new Date(trade.closedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })} <br />
-    <span className="text-xs text-gray-400">
-      {getTradeDuration(trade.createdAt, trade.closedAt)}
-    </span>
-  </>
-</td>
+                  <>
+                    {new Date(trade.createdAt).toLocaleDateString()} <br />
+                    {new Date(trade.closedAt).toLocaleTimeString([], {
+                      hour: "numeric",
+                      minute: "2-digit",
+                    })}{" "}
+                    <br />
+                    <span className="text-xs text-gray-400">
+                      {getTradeDuration(trade.createdAt, trade.closedAt)}
+                    </span>
+                  </>
+                </td>
+
+                <td className="px-4 py-2 text-sm text-center text-gray-200">
+                  {trade.assetsAmount}
+                </td>
 
                 <td
                   className={`px-4 py-2 text-sm font-medium ${
@@ -152,7 +187,7 @@ const FuturesTradeHistory = ({ trades }) => {
                       : "text-gray-200"
                   }`}
                 >
-                  {formatPnL(trade.profitLoss)}
+                  {calculatePnL(trade.assetsAmount, trade.leverage)}
                 </td>
               </tr>
             ))}
@@ -181,7 +216,7 @@ const FuturesTradeHistory = ({ trades }) => {
                 </div>
               </span>
               <span className="text-[#e9b43b] bg-[#37321e] text-sm p-1 rounded-md">
-                {trade.leverage}x
+                {trade.leverage}%
               </span>
             </div>
 
