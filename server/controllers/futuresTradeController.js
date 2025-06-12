@@ -170,12 +170,12 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate profit/loss taking leverage into account
   let profitLoss;
   if (trade.type === "long") {
- profitLoss =(trade.quantity * trade.leverage)/100
-      // (parsedClosePrice - trade.entryPrice) * trade.quantity * trade.leverage;
+ profitLoss =(trade.assetsAmount * trade.leverage)/100
+      // (parsedClosePrice - trade.entryPrice) * trade.assetsAmount * trade.leverage;
   } else {
-    profitLoss  =(trade.quantity * trade.leverage)/100
+    profitLoss  =(trade.assetsAmount * trade.leverage)/100
 
-      // (trade.entryPrice - parsedClosePrice) * trade.quantity * trade.leverage;
+      // (trade.entryPrice - parsedClosePrice) * trade.assetsAmount * trade.leverage;
   }
 
   // Handle invalid calculation results
@@ -194,8 +194,7 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
     wallet.futuresWallet = 0;
   }
   await wallet.save();
-
-  // Close the trade and store PNL information
+   // Close the trade and store PNL information
   trade.status = "closed";
   trade.closedAt = new Date();
   trade.profitLoss = profitLoss;

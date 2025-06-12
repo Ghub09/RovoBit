@@ -2,8 +2,6 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../utils/api.js";
 // import { toast } from "react-toastify";
 import { setLoading } from "./globalSlice.js";
-import FuturesOpenPosition from "../../components/trade/FuturesOpenPositions.jsx";
-
 // Fetch Open Positions
 export const fetchOpenPositions = createAsyncThunk(
   "futures/positions",
