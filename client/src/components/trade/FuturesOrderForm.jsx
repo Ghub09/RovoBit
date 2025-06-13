@@ -13,7 +13,7 @@ const socket = io(import.meta.env.VITE_API_URL);
 const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const dispatch = useDispatch();
   const [orderType, setOrderType] = useState("long");
-  const [leverage, setLeverage] = useState(20);
+  const [leverage, setLeverage] = useState(10);
   const [quantity, setQuantity] = useState("");
   const [assetsAmount, setAssetsAmount] = useState(100);
   const { wallet } = useSelector((state) => state.assets);
@@ -50,8 +50,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     if (quantity <= 0 || leverage < 1) {
       return toast.error("Invalid trade details");
     }
-
-    dispatch(
+   dispatch(
       openFuturesTrade({
         pair: selectedPair,
         type: orderType,
@@ -63,13 +62,27 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     ).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
          socket.emit("newPosition", result.payload);
+         
        }
+      // toast.dismiss();
+      toast.success("Trade is open successfully");
     }).catch((err)=>{
       console.log(err,"something went wrong")
+      toast.error("Some thing is wrong");
+
     })
      
   };
-
+ 
+  useEffect(() => {
+      socket.on("liquidationUpdate", () => dispatch(fetchOpenPositions()));
+      socket.on("newPosition", () => dispatch(fetchOpenPositions()));
+  
+      return () => {
+        socket.off("liquidationUpdate");
+        socket.off("newPosition");
+      };
+    }, [dispatch]);
   const handleAssetsClick = (value) => {
     setAssetsAmount(value);
   };

@@ -13,7 +13,7 @@ import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
 
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState("pending");
+const [activeTab, setActiveTab] = useState("history");
   //  const { loading } = useSelector((state) => state.global);
   //  const { user } = useSelector((state) => state.user);
   //  console.log("OrderRecord.jsx",user.isActive)

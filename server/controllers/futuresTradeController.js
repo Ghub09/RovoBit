@@ -174,7 +174,7 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
       // (parsedClosePrice - trade.entryPrice) * trade.assetsAmount * trade.leverage;
   } else {
     profitLoss  =(trade.assetsAmount * trade.leverage)/100
-
+       
       // (trade.entryPrice - parsedClosePrice) * trade.assetsAmount * trade.leverage;
   }
 

@@ -169,7 +169,7 @@ function Trade() {
             <div className="w-1/2 bg-transparent md:border border-[#2f2f2f] pr-2 md:pr-0 md:p-4">
               <OrderBook selectedPair={selectedPair} />
             </div>
-            <div className="w-1/2 bg-transparent  md:border-y border-[#2f2f2f] flex justify-center pl-2 md:pl-0 md:p-4">
+            <div className="w-1/2 bg-transparent   md:border-y border-[#2f2f2f] flex justify-center pl-2 md:pl-0 md:p-4">
               <OrderForm
                 marketPrice={currentMarketPrice}
                 selectedPair={selectedPair}
@@ -178,7 +178,7 @@ function Trade() {
             </div>
           </div>
         </div>
-        <div className=" ">
+        <div className="  ">
          
           <OrdersRecord type={"spot"}  />
         </div>

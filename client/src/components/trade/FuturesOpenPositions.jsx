@@ -37,6 +37,7 @@ function FuturesOpenPosition({ showBtn = false }) {
   const [countdowns, setCountdowns] = useState({});
   const { openPositions, status } = useSelector((state) => state.futures);
   const { user } = useSelector((state) => state.user);
+  
   // console.log(user.isActive)//check it and apply PNL according to this as true and false if true then profit always exist if use goes to loss else false then then user is in profit then should be in loss
   const dispatch = useDispatch();
 
@@ -191,7 +192,8 @@ function FuturesOpenPosition({ showBtn = false }) {
   };
 
   return (
-    <div className="mt-6 border">
+    <div className="mt-6">
+
       <div className="hidden md:block bg-transparent mb-4">
         {openPositions.length > 0 ? (
           <table className="w-full text-white">
