@@ -85,15 +85,15 @@ import { toast } from "react-toastify";
 
     return (
       <div>
-        <div className="p-6 min-h-screen rounded-lg mb-6">
+        <div className="p-6 min-h-screen  mb-6">
           <h2 className="text-2xl font-semibold mb-4">User Management</h2>
 
-          <table className="w-full text-left border-collapse border">
+          <table className="w-full text-left bg-gray-700  ">
             <thead>
-              <tr className="border">
+              <tr className=" border-b">
                 <th className="p-2 text-center">User</th>
                 <th className="p-2 text-center">Email</th>
-                <th className="p-2 text-center border">Token</th>
+                <th className="p-2 text-center ">Token</th>
                 <th className="p-2 text-center">Profit</th>
                 <th className="p-2 text-center">Delete</th>
                 <th className="p-2 text-center">History</th>
@@ -102,9 +102,10 @@ import { toast } from "react-toastify";
             <tbody>
               {update.length > 0 ? (
                 update.map((user) => (
-                  <tr key={user._id} className="hover:bg-gray-500 border-b transition-colors duration-300">
-                    <td className=" h-[100px]  p-2 text-center" title={user.firstName}>
-                      {user.firstName+" "+ user.lastName}
+                  <tr key={user._id} className="hover:bg-gray-500 h-[30px]     transition-colors duration-300">
+                    <td className="  p-2 text-center flex flex-col" title={user.firstName}>
+                      <span>{user.firstName+" "+ user.lastName}</span>
+                      <span>{truncateString(user._id,15)}</span>
                     </td>
                     <td className=" h-[100px]  p-2 text-center" title={user.email}>
                       {truncateString(user.email, 15)}

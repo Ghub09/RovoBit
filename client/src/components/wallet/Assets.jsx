@@ -75,8 +75,8 @@ const Assets = ({ type }) => {
         value = wallet.exchangeWallet || 0;
 
         // Add value of all exchange holdings
-        if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
-          const holdingsValue = wallet.exchangeHoldings.reduce(
+        if (wallet.holdings && wallet.holdings.length > 0) {
+          const holdingsValue = wallet.holdings.reduce(
             (total, holding) => {
               const coin = coins.find(
                 (c) => c.symbol === holding.asset.toLowerCase()
@@ -274,7 +274,7 @@ const Assets = ({ type }) => {
             </div>
           )
         ) : type === "exchange" ? (
-          wallet?.exchangeHoldings?.length > 0 ||
+          wallet?.holdings?.length > 0 ||
           (wallet?.exchangeWallet && wallet.exchangeWallet > 0) ? (
             <div className="mt-6 overflow-x-auto">
               <div className="border-b text-gray-500">
@@ -314,7 +314,7 @@ const Assets = ({ type }) => {
                   </div>
                 </div>
               </div>
-              {wallet?.exchangeHoldings?.map((holding, index) => {
+              {wallet?.holdings?.map((holding, index) => {
                 const coinData = getCoinData(holding.asset);
                 return (
                   <div key={index} className=" p-3 border-b text-gray-400">
@@ -654,7 +654,7 @@ const Assets = ({ type }) => {
         )}
 
         {type === "exchange" &&
-          (wallet?.exchangeHoldings?.length > 0 ||
+          (wallet?.holdings?.length > 0 ||
             (wallet?.exchangeWallet && wallet.exchangeWallet > 0)) && (
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
@@ -691,7 +691,7 @@ const Assets = ({ type }) => {
                     )}
 
                     {/* Show other exchange holdings */}
-                    {wallet?.exchangeHoldings?.map((holding, index) => {
+                    {wallet?.holdings?.map((holding, index) => {
                       const coinData = getCoinData(holding.asset);
                       const assetValue = calculateValue(
                         coinData?.current_price,
@@ -726,7 +726,7 @@ const Assets = ({ type }) => {
 
         {type === "exchange" &&
           !(
-            wallet?.exchangeHoldings?.length > 0 ||
+            wallet?.holdings?.length > 0 ||
             (wallet?.exchangeWallet && wallet.exchangeWallet > 0)
           ) && (
             <div className="bg-[#242424] p-6 rounded-lg mb-6">

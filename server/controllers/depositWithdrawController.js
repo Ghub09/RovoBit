@@ -34,7 +34,7 @@ import Wallet from "../models/Wallet.js";
   //         wallet.exchangeWallet -= amount;
   //       } else {
   //         // Check if the user has enough of the specified cryptocurrency
-  //         const holding = wallet.exchangeHoldings.find((h) => h.asset === currency);
+  //         const holding = wallet.holdings.find((h) => h.asset === currency);
   //         if (!holding || holding.quantity < amount) {
   //           return res
   //             .status(400)
@@ -108,7 +108,7 @@ import Wallet from "../models/Wallet.js";
         }
         wallet.spotWallet -= amount;
       } else {
-        const holding = wallet.exchangeHoldings.find((h) => h.asset === currency);
+        const holding = wallet.holdings.find((h) => h.asset === currency);
         if (!holding || holding.quantity < amount) {
           return res.status(400).json({ message: `Insufficient ${currency} balance` });
         }
@@ -194,11 +194,11 @@ export const getAllRequests = async (req, res) => {
 //     if (currency === "USDT") {
 //       wallet.exchangeWallet += numericAmount;
 //     } else {
-//       const holding = wallet.exchangeHoldings.find(
+//       const holding = wallet.holdings.find(
 //         (holding) => holding.asset === currency
 //       );
 //       if (!holding) {
-//         wallet.exchangeHoldings.push({
+//         wallet.holdings.push({
 //           asset: currency,
 //           quantity: numericAmount,
 //         });
@@ -239,11 +239,11 @@ export const addTokens = async (req, res) => {
     if (currency === "USDT") {
       wallet.spotWallet += numericAmount;  // Updated line
     } else {
-      const holding = wallet.exchangeHoldings.find(
+      const holding = wallet.holdings.find(
         (holding) => holding.asset === currency
       );
       if (!holding) {
-        wallet.exchangeHoldings.push({
+        wallet.holdings.push({
           asset: currency,
           quantity: numericAmount,
         });
@@ -355,14 +355,14 @@ export const rejectRequest = async (req, res) => {
       if (request.currency === "USDT") {
         wallet.exchangeWallet += request.amount;
       } else {
-        const holdingIndex = wallet.exchangeHoldings.findIndex(
+        const holdingIndex = wallet.holdings.findIndex(
           (holding) => holding.asset === request.currency
         );
 
         if (holdingIndex === -1) {
-          wallet.exchangeHoldings.push({ asset: request.currency, quantity: request.amount });
+          wallet.holdings.push({ asset: request.currency, quantity: request.amount });
         } else {
-          wallet.exchangeHoldings[holdingIndex].quantity += request.amount;
+          wallet.holdings[holdingIndex].quantity += request.amount;
         }
       }
     }

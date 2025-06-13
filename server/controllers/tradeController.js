@@ -208,9 +208,9 @@ export const fetchPendingOrders = async (req, res, next) => {
 //     } else {
 //       // Handle asset transfers between exchange and spot wallets
 //       const fromHoldings =
-//         fromWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+//         fromWallet === "spotWallet" ? wallet.holdings : wallet.holdings;
 //       const toHoldings =
-//         toWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+//         toWallet === "spotWallet" ? wallet.holdings : wallet.holdings;
 
 //       // Validate if fromHoldings is empty
 //       if (fromHoldings.length === 0) {
@@ -274,8 +274,8 @@ export const transferFunds = catchAsyncErrors(async (req, res) => {
       wallet.exchangeWallet = 0;
       migrated = true;
     }
-    if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
-      wallet.exchangeHoldings.forEach((holding) => {
+    if (wallet.holdings && wallet.holdings.length > 0) {
+      wallet.holdings.forEach((holding) => {
         const existing = wallet.holdings.find(h => h.asset === holding.asset);
         if (existing) {
           existing.quantity += holding.quantity;
@@ -283,7 +283,7 @@ export const transferFunds = catchAsyncErrors(async (req, res) => {
           wallet.holdings.push({ asset: holding.asset, quantity: holding.quantity });
         }
       });
-      wallet.exchangeHoldings = [];
+      wallet.holdings = [];
       migrated = true;
     }
     if (migrated) {

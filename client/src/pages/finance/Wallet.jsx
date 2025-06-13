@@ -155,25 +155,25 @@ const Wallet = () => {
       }, 0) || 0;
 
     // Calculate value of exchange holdings
-    const exchangeHoldingsValue =
-      wallet?.exchangeHoldings?.reduce((total, holding) => {
-        const coin = coins?.find(
-          (c) => c.symbol === holding.asset.toLowerCase()
-        );
-        if (!coin) {
-          return total;
-        }
-        return total + coin.current_price * holding.quantity;
-      }, 0) || 0;
+    // const exchangeHoldingsValue =
+    //   wallet?.exchangeHoldings?.reduce((total, holding) => {
+    //     const coin = coins?.find(
+    //       (c) => c.symbol === holding.asset.toLowerCase()
+    //     );
+    //     if (!coin) {
+    //       return total;
+    //     }
+    //     return total + coin.current_price * holding.quantity;
+    //   }, 0) || 0;
 
     // Sum all wallet balances
     const totalWalletValue =
       (wallet?.spotWallet || 0) +
-      (wallet?.exchangeWallet || 0) +
+      // (wallet?.exchangeWallet || 0) +
       (wallet?.futuresWallet || 0) +
       (wallet?.perpetualsWallet || 0);
 
-    setTotalValue(holdingsValue + exchangeHoldingsValue + totalWalletValue);
+    setTotalValue(holdingsValue +  totalWalletValue);
   };
 
   useEffect(() => {

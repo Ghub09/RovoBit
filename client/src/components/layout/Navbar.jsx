@@ -103,8 +103,8 @@ return (
     >
       <nav className="container mx-auto flex justify-between items-center items-center p-4 ">
         <div className="logo-container flex items-center ">
-          <Link to={"/"} className="  ">
-               <img className="h-[70px]  " src={logoSrc} alt="LOGO" />
+          <Link to={"/"} className=" h-[70px] w-[100px]">
+               <img className="h-[100%] w-[100%]  " src={logoSrc} alt="LOGO" />
            </Link>
           {showSelectOption && (
             <div className="flex md:hidden border border-[#fffff] items-center ml-auto">

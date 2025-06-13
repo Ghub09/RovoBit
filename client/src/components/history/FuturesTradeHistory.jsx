@@ -72,14 +72,7 @@ const getTradeDuration = (start, end) => {
 
   return "30s";
 };
-const calculatePnL = (amount, leveragePercent) => {
-  // leveragePercent = 20, 30, 50, 100, etc.
-  return (amount * leveragePercent) / 100;
-};
-
-
-  console.log(trades);
-  return (
+return (
     <div className="rounded-lg shadow-lg bg-gray-700 ">
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto">
@@ -187,7 +180,7 @@ const calculatePnL = (amount, leveragePercent) => {
                       : "text-gray-200"
                   }`}
                 >
-                  {calculatePnL(trade.assetsAmount, trade.leverage)}
+                  {trade.profitLoss}
                 </td>
               </tr>
             ))}

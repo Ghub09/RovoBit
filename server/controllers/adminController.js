@@ -379,12 +379,12 @@ export const fetchOpenTrades = async (req, res) => {
 export const liquidateTrade = async (req, res) => {
   try {
     const { tradeId } = req.params;
-    const { marketPrice, amount } = req.body; // marketPrice is sent from frontend
+    const { marketPrice } = req.body; // marketPrice is sent from frontend
 
-    console.log("the request is for liquidation");
+    console.log("Liquidation request received");
 
-    if (!marketPrice) {
-      return res.status(400).json({ message: "Market price is required" });
+    if (!marketPrice || isNaN(parseFloat(marketPrice))) {
+      return res.status(400).json({ message: "Valid market price is required" });
     }
 
     let trade = await FuturesTrade.findById(tradeId);
@@ -405,42 +405,38 @@ export const liquidateTrade = async (req, res) => {
     const closePrice = parseFloat(marketPrice);
 
     const user = await User.findById(trade.userId);
-    if (!user) return res.status(404).json({ message: "User not found" });
-
-    const wallet = await Wallet.findOne({ userId: user._id });
-    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
-
-    // 🧠 Calculate profit or loss based on user.isActive
-    let profitLoss;
-    if (user.isActive === true) {
-      // Force profit: user gets profit no matter the real market
-      profitLoss = amount * trade.leverage;
-    } else {
-      // Force loss: user loses even if market says otherwise
-      profitLoss = -amount * trade.leverage;
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
-    // 🏦 Update wallet balance
+    const wallet = await Wallet.findOne({ userId: user._id });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
+
+    // ✅ Calculate fixed profit/loss as % of leverage
+    const fixedProfit = (trade.assetsAmount * trade.leverage) / 100;
+    const profitLoss = user.isActive === true ? fixedProfit : -fixedProfit;
+
+    // ✅ Update wallet balance
     if (category === "futures") {
-      const updatedBalance =
-        wallet.futuresWallet + trade.marginUsed + profitLoss;
+      const updatedBalance = wallet.futuresWallet + trade.marginUsed + profitLoss;
       wallet.futuresWallet = Math.max(0, updatedBalance);
-    } else if (category === "perpetual") {
-      const updatedBalance =
-        wallet.perpetualsWallet + trade.marginUsed + profitLoss;
+    } else {
+      const updatedBalance = wallet.perpetualsWallet + trade.marginUsed + profitLoss;
       wallet.perpetualsWallet = Math.max(0, updatedBalance);
     }
 
     await wallet.save();
 
-    // 🔐 Update trade record
+    // ✅ Update trade status
     trade.status = "closed";
     trade.closedAt = new Date();
     trade.profitLoss = profitLoss;
     trade.closePrice = closePrice;
     await trade.save();
 
-    // 🔄 Emit real-time event
+    // ✅ Emit event for frontend updates
     io.emit("tradeClose", { tradeId: trade._id, profitLoss });
 
     res.status(200).json({
@@ -449,9 +445,8 @@ export const liquidateTrade = async (req, res) => {
       closePrice,
     });
   } catch (error) {
-    console.log(error.message);
-    res
-      .status(500)
-      .json({ message: "Error closing trade", error: error.message });
+    console.log("Liquidation error:", error.message);
+    res.status(500).json({ message: "Error closing trade", error: error.message });
   }
 };
+

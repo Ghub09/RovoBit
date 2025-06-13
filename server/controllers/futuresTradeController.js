@@ -6,114 +6,203 @@ import PerpetualTrade from "../models/PerpetualTrade.js";
 import { io } from "../server.js"; // Import WebSocket instance
 import axios from "axios";
 
+// export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
+//   const {
+//     pair,
+//     type,
+//     leverage,
+//     time,
+//     quantity, // Quantity of crypto (optional)
+//     entryPrice,
+//     assetsAmount,
+//     tradeType,
+//     amountInUSDT, // New field: Amount of USDT to allocate
+//   } = req.body;
+//   const userId = req.user._id;
+
+//   // Validate required fields
+//   if (
+//     !pair ||
+//     !type ||
+//     !leverage ||
+//     !entryPrice ||
+//     !assetsAmount ||
+//     (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
+//   ) {
+//     return res.status(400).json({ message: "Kindly fill in all fields" });
+//   }
+
+//   // Validate trade type
+//   if (!["long", "short"].includes(type)) {
+//     return res.status(400).json({ message: "Invalid trade type" });
+//   }
+
+//   const wallet = await Wallet.findOne({ userId });
+
+//   if (!wallet) {
+//     return res.status(404).json({ message: "Wallet not found" });
+//   }
+
+//   let calculatedQuantity = quantity;
+
+//   // If amountInUSDT is provided, calculate the quantity of crypto
+//   if (amountInUSDT) {
+//     calculatedQuantity = amountInUSDT / entryPrice; // Quantity = USDT Amount / Entry Price
+//   }
+
+//   // Calculate required margin
+//   const marginUsed = (calculatedQuantity * entryPrice) / leverage;
+
+//   const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
+
+//   if (availableMargin < marginUsed) {
+//     return res.status(400).json({
+//       message:
+//         "Insufficient funds in Perpetuals Wallet based on the specified assets amount.",
+//     });
+//   }
+
+//   // Calculate liquidation price (approximate formula)
+//   let liquidationPrice;
+//   if (type === "long") {
+//     liquidationPrice = entryPrice * (1 - 1 / leverage);
+//   } else {
+//     liquidationPrice = entryPrice * (1 + 1 / leverage);
+//   }
+
+//   // Calculate expiry time based on leverage value
+//  let expiryTime = new Date();
+
+// switch (leverage.toString()) {
+//   case "10": // 30s
+//     expiryTime.setSeconds(expiryTime.getSeconds() + 30);
+//     break;
+//   case "20": // 60s
+//     expiryTime.setSeconds(expiryTime.getSeconds() + 60);
+//     break;
+//   case "30": // 120s
+//     expiryTime.setSeconds(expiryTime.getSeconds() + 120);
+//     break;
+//   case "40": // 150s
+//     expiryTime.setSeconds(expiryTime.getSeconds() + 150);
+//     break;
+//   case "50": // 180s
+//     expiryTime.setSeconds(expiryTime.getSeconds() + 180);
+//     break;
+//   case "60": // 24h
+//     expiryTime.setHours(expiryTime.getHours() + 24);
+//     break;
+//   case "70": // 48h
+//     expiryTime.setHours(expiryTime.getHours() + 48);
+//     break;
+//   case "80": // 72h
+//     expiryTime.setHours(expiryTime.getHours() + 72);
+//     break;
+//   case "90": // 7d
+//     expiryTime.setDate(expiryTime.getDate() + 7);
+//     break;
+//   case "100": // 15d
+//     expiryTime.setDate(expiryTime.getDate() + 15);
+//     break;
+//   default:
+//     expiryTime.setHours(expiryTime.getHours() + 24); // Default: 24h
+// }
+
+
+//   // Deduct margin from user's wallet
+//   wallet.futuresWallet -= marginUsed;
+//   await wallet.save();
+
+//   // Save trade to database
+//   const futuresTrade = await FuturesTrade.create({
+//     userId,
+//     pair,
+//     type,
+//     tradeType,
+//     assetsAmount,
+//     leverage,
+//     time,
+//     entryPrice,
+//     quantity: calculatedQuantity, // Use calculated quantity
+//     marginUsed,
+//     liquidationPrice,
+//     expiryTime, // Add expiry time
+//     status: "open",
+//   });
+
+//   // Emit events for real-time updates
+//   io.emit("newFuturesTrade", futuresTrade);
+//   io.emit("newPosition", futuresTrade);
+
+//   res.status(201).json({
+//   message: "Futures position opened successfully",
+//   trade: futuresTrade,
+// });
+
+// });
+
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   const {
     pair,
     type,
     leverage,
     time,
-    quantity, // Quantity of crypto (optional)
+    quantity,
     entryPrice,
     assetsAmount,
     tradeType,
-    amountInUSDT, // New field: Amount of USDT to allocate
+    amountInUSDT,
   } = req.body;
+
   const userId = req.user._id;
 
-  // Validate required fields
   if (
-    !pair ||
-    !type ||
-    !leverage ||
-    !entryPrice ||
-    !assetsAmount ||
-    (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
+    !pair || !type || !leverage || !entryPrice || !assetsAmount ||
+    (!quantity && !amountInUSDT)
   ) {
     return res.status(400).json({ message: "Kindly fill in all fields" });
   }
 
-  // Validate trade type
   if (!["long", "short"].includes(type)) {
     return res.status(400).json({ message: "Invalid trade type" });
   }
 
   const wallet = await Wallet.findOne({ userId });
-
-  if (!wallet) {
-    return res.status(404).json({ message: "Wallet not found" });
-  }
+  if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
   let calculatedQuantity = quantity;
-
-  // If amountInUSDT is provided, calculate the quantity of crypto
   if (amountInUSDT) {
-    calculatedQuantity = amountInUSDT / entryPrice; // Quantity = USDT Amount / Entry Price
+    calculatedQuantity = amountInUSDT / entryPrice;
   }
 
-  // Calculate required margin
   const marginUsed = (calculatedQuantity * entryPrice) / leverage;
-
   const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
 
   if (availableMargin < marginUsed) {
     return res.status(400).json({
-      message:
-        "Insufficient funds in Perpetuals Wallet based on the specified assets amount.",
+      message: "Insufficient funds in Perpetuals Wallet based on the specified assets amount.",
     });
   }
 
-  // Calculate liquidation price (approximate formula)
-  let liquidationPrice;
-  if (type === "long") {
-    liquidationPrice = entryPrice * (1 - 1 / leverage);
-  } else {
-    liquidationPrice = entryPrice * (1 + 1 / leverage);
+  // Set expiry time based on leverage
+  let expiryTime = new Date();
+  switch (leverage.toString()) {
+    case "10": expiryTime.setSeconds(expiryTime.getSeconds() + 30); break;
+    case "20": expiryTime.setSeconds(expiryTime.getSeconds() + 60); break;
+    case "30": expiryTime.setSeconds(expiryTime.getSeconds() + 120); break;
+    case "40": expiryTime.setSeconds(expiryTime.getSeconds() + 150); break;
+    case "50": expiryTime.setSeconds(expiryTime.getSeconds() + 180); break;
+    case "60": expiryTime.setHours(expiryTime.getHours() + 24); break;
+    case "70": expiryTime.setHours(expiryTime.getHours() + 48); break;
+    case "80": expiryTime.setHours(expiryTime.getHours() + 72); break;
+    case "90": expiryTime.setDate(expiryTime.getDate() + 7); break;
+    case "100": expiryTime.setDate(expiryTime.getDate() + 15); break;
+    default: expiryTime.setHours(expiryTime.getHours() + 24); break;
   }
 
-  // Calculate expiry time based on leverage value
- let expiryTime = new Date();
-
-switch (leverage.toString()) {
-  case "10": // 30s
-    expiryTime.setSeconds(expiryTime.getSeconds() + 30);
-    break;
-  case "20": // 60s
-    expiryTime.setSeconds(expiryTime.getSeconds() + 60);
-    break;
-  case "30": // 120s
-    expiryTime.setSeconds(expiryTime.getSeconds() + 120);
-    break;
-  case "40": // 150s
-    expiryTime.setSeconds(expiryTime.getSeconds() + 150);
-    break;
-  case "50": // 180s
-    expiryTime.setSeconds(expiryTime.getSeconds() + 180);
-    break;
-  case "60": // 24h
-    expiryTime.setHours(expiryTime.getHours() + 24);
-    break;
-  case "70": // 48h
-    expiryTime.setHours(expiryTime.getHours() + 48);
-    break;
-  case "80": // 72h
-    expiryTime.setHours(expiryTime.getHours() + 72);
-    break;
-  case "90": // 7d
-    expiryTime.setDate(expiryTime.getDate() + 7);
-    break;
-  case "100": // 15d
-    expiryTime.setDate(expiryTime.getDate() + 15);
-    break;
-  default:
-    expiryTime.setHours(expiryTime.getHours() + 24); // Default: 24h
-}
-
-
-  // Deduct margin from user's wallet
   wallet.futuresWallet -= marginUsed;
   await wallet.save();
 
-  // Save trade to database
   const futuresTrade = await FuturesTrade.create({
     userId,
     pair,
@@ -123,36 +212,105 @@ switch (leverage.toString()) {
     leverage,
     time,
     entryPrice,
-    quantity: calculatedQuantity, // Use calculated quantity
+    quantity: calculatedQuantity,
     marginUsed,
-    liquidationPrice,
-    expiryTime, // Add expiry time
+    liquidationPrice: type === "long"
+      ? entryPrice * (1 - 1 / leverage)
+      : entryPrice * (1 + 1 / leverage),
+    expiryTime,
     status: "open",
   });
 
-  // Emit events for real-time updates
   io.emit("newFuturesTrade", futuresTrade);
   io.emit("newPosition", futuresTrade);
 
   res.status(201).json({
-  message: "Futures position opened successfully",
-  trade: futuresTrade,
+    message: "Futures position opened successfully",
+    trade: futuresTrade,
+  });
 });
 
-});
+// export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
+//   const { tradeId, closePrice } = req.body;
+//   const userId = req.user._id;
+
+//   // Ensure closePrice is a valid number
+//   const parsedClosePrice = parseFloat(closePrice);
+//   if (isNaN(parsedClosePrice)) {
+//     return res.status(400).json({ message: "Invalid close price provided" });
+//   }
+
+//   const trade = await FuturesTrade.findOne({ _id: tradeId, userId });
+
+//   if (!trade) {
+//     return res.status(404).json({ message: "Trade not found" });
+//   }
+
+//   if (trade.status !== "open") {
+//     return res.status(400).json({ message: "Trade is already closed" });
+//   }
+
+//   const wallet = await Wallet.findOne({ userId });
+
+//   if (!wallet) {
+//     return res.status(404).json({ message: "Wallet not found" });
+//   }
+
+//   // Calculate profit/loss taking leverage into account
+//   let profitLoss=(trade.assetsAmount * trade.leverage)/100
+// //   if (trade.type === "long") {
+// //  profitLoss =(trade.assetsAmount * trade.leverage)/100
+// //       // (parsedClosePrice - trade.entryPrice) * trade.assetsAmount * trade.leverage;
+// //   } else {
+// //     profitLoss  =(trade.assetsAmount * trade.leverage)/100
+       
+// //       // (trade.entryPrice - parsedClosePrice) * trade.assetsAmount * trade.leverage;
+// //   }
+
+//   // Handle invalid calculation results
+//   if (isNaN(profitLoss)) {
+//     profitLoss = 0;
+//   }
+
+//   // Update wallet balance
+//   const updatedBalance = wallet.futuresWallet + trade.marginUsed + profitLoss;
+//   wallet.futuresWallet = isNaN(updatedBalance)
+//     ? wallet.futuresWallet
+//     : updatedBalance;
+
+//   // Make sure wallet doesn't go negative
+//   if (wallet.futuresWallet < 0) {
+//     wallet.futuresWallet = 0;
+//   }
+//   await wallet.save();
+//    // Close the trade and store PNL information
+//   trade.status = "closed";
+//   trade.closedAt = new Date();
+//   trade.profitLoss = profitLoss;
+//   trade.closePrice = parsedClosePrice;
+//   // console.log("the trade is going to save", trade);
+//   await trade.save();
+
+//   // Emit event for real-time updates
+//   io.emit("tradeClose", { tradeId, profitLoss });
+
+//   res.status(200).json({
+//     message: "Futures position closed successfully",
+//     profitLoss,
+//     tradeId,
+//   });
+// });
 
 export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   const { tradeId, closePrice } = req.body;
   const userId = req.user._id;
 
-  // Ensure closePrice is a valid number
   const parsedClosePrice = parseFloat(closePrice);
   if (isNaN(parsedClosePrice)) {
     return res.status(400).json({ message: "Invalid close price provided" });
   }
 
   const trade = await FuturesTrade.findOne({ _id: tradeId, userId });
-
   if (!trade) {
     return res.status(404).json({ message: "Trade not found" });
   }
@@ -162,47 +320,36 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   }
 
   const wallet = await Wallet.findOne({ userId });
-
   if (!wallet) {
     return res.status(404).json({ message: "Wallet not found" });
   }
 
-  // Calculate profit/loss taking leverage into account
-  let profitLoss;
-  if (trade.type === "long") {
- profitLoss =(trade.assetsAmount * trade.leverage)/100
-      // (parsedClosePrice - trade.entryPrice) * trade.assetsAmount * trade.leverage;
-  } else {
-    profitLoss  =(trade.assetsAmount * trade.leverage)/100
-       
-      // (trade.entryPrice - parsedClosePrice) * trade.assetsAmount * trade.leverage;
-  }
+  // 🎯 FIXED PNL using leverage %
+  const fixedPNL = Math.round((trade.assetsAmount * trade.leverage) / 100);
 
-  // Handle invalid calculation results
-  if (isNaN(profitLoss)) {
-    profitLoss = 0;
-  }
+  // 🎯 Only decide profit/loss direction using entry & close price
+  const isWin =
+    (trade.type === "long" && parsedClosePrice > trade.entryPrice) ||
+    (trade.type === "short" && parsedClosePrice < trade.entryPrice);
 
-  // Update wallet balance
+  const profitLoss = isWin ? fixedPNL : -fixedPNL;
+
+  // Update wallet
   const updatedBalance = wallet.futuresWallet + trade.marginUsed + profitLoss;
   wallet.futuresWallet = isNaN(updatedBalance)
     ? wallet.futuresWallet
     : updatedBalance;
 
-  // Make sure wallet doesn't go negative
-  if (wallet.futuresWallet < 0) {
-    wallet.futuresWallet = 0;
-  }
+  if (wallet.futuresWallet < 0) wallet.futuresWallet = 0;
   await wallet.save();
-   // Close the trade and store PNL information
+
+  // Update trade
   trade.status = "closed";
   trade.closedAt = new Date();
-  trade.profitLoss = profitLoss;
+  trade.profitLoss = profitLoss; // ✅ now strictly 10, -10, etc.
   trade.closePrice = parsedClosePrice;
-  // console.log("the trade is going to save", trade);
   await trade.save();
 
-  // Emit event for real-time updates
   io.emit("tradeClose", { tradeId, profitLoss });
 
   res.status(200).json({
@@ -211,6 +358,8 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
     tradeId,
   });
 });
+
+
 
 export const getOpenPositions = catchAsyncErrors(async (req, res) => {
   try {
