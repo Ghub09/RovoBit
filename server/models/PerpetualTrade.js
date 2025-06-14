@@ -10,6 +10,7 @@ const PerpetualTradeSchema = new mongoose.Schema({
   marginUsed: { type: Number, required: true },
   assetsAmount:{type:Number,required:true},
   liquidationPrice: { type: Number, required: true },
+  amountInUSDT:{type:String},
   fundingFee: { type: Number, default: 0 }, // Funding fee applied periodically
   profitLoss: { type: Number, default: 0 }, // PNL for the trade
   closePrice: { type: Number }, // Price at which position was closed

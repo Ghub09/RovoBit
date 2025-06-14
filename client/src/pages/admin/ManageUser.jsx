@@ -8,14 +8,17 @@
   import BooleanToggle from "../../components/toggle/Toggle";
 import HistoryModel from "../../components/mini/HistoryModel";
 import { toast } from "react-toastify";
+import RemoveToken from "../../components/RemoveToken/ReomoveToken";
    
   const ManageUser = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { users } = useSelector((state) => state.admin);
+    const [openModal, setOpenModal] = useState(false);
+
       // const { wallet } = useSelector((state) => state.assets);
-    
-    const [update, setUpdate] = useState([]);
+      // console.log(wallet)
+     const [update, setUpdate] = useState([]);
     const [openDialog, setOpenDialog] = useState(false);
     const [selectedUser, setSelectedUser] = useState(null);
     const [history, setHistory] = useState([]);
@@ -23,7 +26,7 @@ import { toast } from "react-toastify";
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleDialog = () => setIsModalOpen(!isModalOpen);
-
+    
     const handleAction = () => {
      handleDialog(); // close modal
     };
@@ -85,6 +88,12 @@ import { toast } from "react-toastify";
 
     return (
       <div>
+        <RemoveToken
+  openModal={openModal}
+  handleCloseModal={() => setOpenModal(false)}
+  userId={"sfsv xmvnsdjfsng"}
+/>
+
         <div className="p-6 min-h-screen  mb-6">
           <h2 className="text-2xl font-semibold mb-4">User Management</h2>
 
@@ -93,8 +102,9 @@ import { toast } from "react-toastify";
               <tr className=" border-b">
                 <th className="p-2 text-center">User</th>
                 <th className="p-2 text-center">Email</th>
-                <th className="p-2 text-center ">Token</th>
-                <th className="p-2 text-center">Profit</th>
+                <th className="p-2  ">Token</th>
+                <th className="p-2  text-center">Remove Token</th>
+                <th className="p-2 ">Profit</th>
                 <th className="p-2 text-center">Delete</th>
                 <th className="p-2 text-center">History</th>
               </tr>
@@ -107,25 +117,32 @@ import { toast } from "react-toastify";
                       <span>{user.firstName+" "+ user.lastName}</span>
                       <span>{truncateString(user._id,15)}</span>
                     </td>
-                    <td className=" h-[100px]  p-2 text-center" title={user.email}>
+                    <td className="    p-2 text-center" title={user.email}>
                       {truncateString(user.email, 15)}
                     </td>
-                    <td className=" h-[100px] ">
+                    <td className="   ">
                       <button
                         onClick={() =>
                           navigate(`/admin/users/add-tokens/${user._id}`)
                         }
-                        className="bg-green-400 w-[60px] h-[30px]  hover:bg-green-600  text-white rounded-full">
+                        className="bg-green-400 w-[60px]   hover:bg-green-600  text-white rounded-full">
                         Add
                       </button>
                     </td>
-                    <td className=" h-[100px]  py-5 flex justify-center items-center">
+                     <td className="  ">
+                      <button
+                        onClick={()=>setOpenModal(true)}
+                        className="bg-red-400 px-3  flex justify-self-center  hover:bg-red-600 text-center  text-white rounded-full">
+                        Remove
+                      </button>
+                    </td>
+                    <td >
                       <BooleanToggle
                         value={user.isActive}
                         onChange={() => handleToggle(user)}
                       />
                     </td>
-                    <td className=" h-[100px]  p-2 text-center">
+                    <td className="    p-2 text-center">
                       <button
                         onClick={() => {
                           setSelectedUser(user);
@@ -136,7 +153,7 @@ import { toast } from "react-toastify";
                         <RiDeleteBin5Line className="text-white" />
                       </button>
                     </td>
-                    <td className=" h-[100px]  p-2 text-center">
+                    <td className="    p-2 text-center">
                       <button
         onClick={() =>  handleHistory(user._id,user)}
         className="bg-blue-600 text-white px-4 py-2 rounded"

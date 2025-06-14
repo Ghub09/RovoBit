@@ -50,7 +50,7 @@ export const allSportHistory = async (userId) => {
       withCredentials: true
     });
     
-    console.log("Sport history fetched:", response.data);
+    // console.log("Sport history fetched:", response.data);
     return response.data;
   } catch (error) {
     console.error("Fetch sport history error:", error.response?.data || error.message);

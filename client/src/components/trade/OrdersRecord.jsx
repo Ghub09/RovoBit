@@ -22,7 +22,7 @@ const [activeTab, setActiveTab] = useState("history");
   );
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
-
+ console.log(openOrders)
   useEffect(() => {
 
     if (type === "spot") {

@@ -65,7 +65,7 @@ const HistoryModel = ({
       console.error("Error fetching history:", error);
     }
   };
- console.log(tradingHistory, sportHistory, perpetualHistory);
+//  console.log(tradingHistory, sportHistory, perpetualHistory);
   const getTableSelected = (table) =>
    selectedIds.find((entry) => entry.table === table)?.ids || [];
   // console.log(selectedIds);

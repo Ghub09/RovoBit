@@ -28,23 +28,39 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   useEffect(() => {
     dispatch(fetchOpenPerpetualTrades());
   }, [dispatch]);
+  const calculateLiquidationPrice = (entryPrice, leverage, type) => {
+  const maintenanceMarginRate = 0.005; // e.g., 0.5%
+  if (type === "long") {
+    return entryPrice * (1 - (1 / leverage) + maintenanceMarginRate);
+  } else {
+    return entryPrice * (1 + (1 / leverage) - maintenanceMarginRate);
+  }
+};
+
   const handleOpenTrade = () => {
     if (!quantity) {
       toast.error("Please enter all fields!");
       return;
     }
-     dispatch(
-      openPerpetualTrade({
-        pair: selectedPair,
-        type,
-        tradeType,
-        assetsAmount:Number(quantity),
-        limitPrice,
-        leverage,
-        amountInUSDT:quantity,
-        entryPrice: marketPrice,
-      })
-    );
+   const numericAmount = Number(quantity);
+const marginUsed = numericAmount / leverage;
+
+dispatch(
+  openPerpetualTrade({
+    pair: selectedPair,
+    type,
+    tradeType,
+    leverage,
+    entryPrice: marketPrice,
+    quantity: numericAmount,
+    assetsAmount, // the percentage like 100%
+    marginUsed,
+    liquidationPrice: calculateLiquidationPrice(marketPrice, leverage, type),
+    amountInUSDT: quantity.toString(),
+    limitPrice: tradeType === "limit" ? Number(limitPrice) : null,
+  })
+);
+
   };
 
   const handleCloseTrade = () => {
@@ -68,9 +84,9 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const assetsOptions = [25, 50, 75, 100];
 
   return (
-    <Card className="p-4 bg-transparent text-white w-full md:max-w-md border">
+    <Card className="p-1 bg-transparent text-white w-full md:max-w-md">
       <AnimatedHeading>
-        <h2>Perpetual</h2>
+        <h2 className="text-center pb-4">Perpetual</h2>
       </AnimatedHeading>
 
       <div className=" p-1 rounded-md flex gap-2">

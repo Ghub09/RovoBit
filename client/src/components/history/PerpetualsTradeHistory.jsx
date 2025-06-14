@@ -42,7 +42,7 @@ const PerpetualsTradeHistory = ({ trades }) => {
   };
   console.log(trades)
   return (
-    <div className="rounded-lg shadow-lg">
+    <div className="rounded-lg shadow-lg ">
       {/* Desktop Table */}
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
@@ -65,6 +65,9 @@ const PerpetualsTradeHistory = ({ trades }) => {
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Close Price
+              </th>
+              <th className="  py-2 text-sm font-medium text-gray-300">
+                Amount (USDT)
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 PNL (USDT)
@@ -114,6 +117,9 @@ const PerpetualsTradeHistory = ({ trades }) => {
                 <td className="px-4 py-2 text-sm text-gray-200">
                   {trade.closePrice ? `$${trade.closePrice.toFixed(2)}` : "--"}
                 </td>
+                 
+                <td className="py-2 text-center">${trade?.assetsAmount?.toFixed(2)}</td>
+
                 <td
                   className={`px-4 py-2 text-sm font-medium ${
                     trade.profitLoss > 0

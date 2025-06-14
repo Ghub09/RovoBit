@@ -70,8 +70,6 @@ const Wallet = () => {
   const [assetsType, setAssetsType] = useState("");
   const [transferAsset, setTransferAsset] = useState("USDT");
   const [totalValue, setTotalValue] = useState(0);
-
-  const [walletValueExchange, setWalletValueExchange] = useState(0);
   const [walletValueSpot, setWalletValueSpot] = useState(0);
   const [walletValueFutures, setWalletValueFutures] = useState(0);
   const [walletValuePerpetuals, setWalletValuePerpetuals] = useState(0);
