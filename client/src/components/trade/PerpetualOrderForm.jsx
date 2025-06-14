@@ -33,12 +33,12 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
       toast.error("Please enter all fields!");
       return;
     }
-    dispatch(
+     dispatch(
       openPerpetualTrade({
         pair: selectedPair,
         type,
         tradeType,
-        assetsAmount,
+        assetsAmount:Number(quantity),
         limitPrice,
         leverage,
         amountInUSDT:quantity,
@@ -68,7 +68,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const assetsOptions = [25, 50, 75, 100];
 
   return (
-    <Card className="p-4 bg-transparent text-white w-full md:max-w-md">
+    <Card className="p-4 bg-transparent text-white w-full md:max-w-md border">
       <AnimatedHeading>
         <h2>Perpetual</h2>
       </AnimatedHeading>
@@ -168,7 +168,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
           {assetsOptions.map((option, index) => (
             <p
               key={index}
-              className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
+              className={` rounded-sm border-[.2px] text-[9px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
                 assetsAmount === option
                   ? "bg-[#2c2c2c] text-white"
                   : "bg-transparent text-gray-500"

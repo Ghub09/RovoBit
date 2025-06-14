@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
-import { placeOrder } from "../../store/slices/tradeSlice";
+import { fetchPendingOrders, placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
 import { getWallet } from "../../store/slices/assetsSlice";
 import SmallLoader from "../layout/smallLoader";
@@ -103,7 +103,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
       coin: extractBase(selectedPair),
     };
-
+    dispatch(fetchPendingOrders());
     dispatch(placeOrder(orderData))
       .unwrap()
       .then((response) => {
@@ -122,11 +122,11 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   };
 
   return (
-    <Card className="md:p-4 border border-amber-200 bg-transparent text-white w-full text-lg  flex justify-center">
+    <Card className="  ml-2 bg-transparent  text-white w-full text-lg ">
                         {loading && <SmallLoader />}
 
       <AnimatedHeading>
-        <p className="hidden md:block">{t("spot")}</p>
+        <p className="hidden md:block m-4 text-center">{t("spot")}</p>
       </AnimatedHeading>
       <div className="mb-2 ">
         <div className=" p-1 rounded-md flex gap-2">
@@ -153,7 +153,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-4 ">
         <div className="p-1 rounded-md flex gap-2">
           <button
             onClick={() => setOrderType("market")}
@@ -191,7 +191,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
           />
         </div>
       ) : (
-        <div className="mb-4">
+        <div className="mb-4 ">
           <input
             type="number"
             className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-white border border-gray-800 w-full  text-center"
@@ -201,28 +201,28 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         </div>
       )}
 
-      <div className="relative w-full  mb-2">
-        <input
-          type="number"
-          value={usdtAmount}
-          onChange={(e) => {
-            setUsdtAmount(e.target.value);
-            setAssetsAmount(0);
-          }}
-          className="w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 pr-16 text-left"
-          placeholder={t("enter_quantity")}
-        />
-        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
-          {side === "buy" ? "USDT" : extractBase(selectedPair)}
-        </span>
-      </div>
+     <div className="relative mb-2 w-full max-w-xs  bg-gray-500 rounded-2xl ">
+  <input
+    type="number"
+    value={usdtAmount}
+    onChange={(e) => {
+      setUsdtAmount(e.target.value);
+      setAssetsAmount(0);
+    }}
+    className="w-full  focus:outline-none rounded-md px-3 py-2 text-white  pr-16 text-sm"
+    placeholder={t("enter_quantity")}
+  />
+  <span className="absolute right-3 top-1/2 -translate-y-1/2  text-xs">
+    {side === "buy" ? "USDT" : extractBase(selectedPair)}
+  </span>
+</div>
 
       <div className=" max-w-full text-sm mb-2">
         <div className="flex justify-evenly">
           {assetsOptions.map((option, index) => (
             <p
               key={index}
-              className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
+              className={` rounded-sm border-[.2px]  border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] text-[10px] ${
                 assetsAmount === option
                   ? "bg-[#2c2c2c] text-white"
                   : "bg-transparent text-gray-500"

@@ -40,7 +40,7 @@ const PerpetualsTradeHistory = ({ trades }) => {
     // Add a plus sign for positive values
     return `${numPnl >= 0 ? "+" : ""}${formattedValue}`;
   };
-
+  console.log(trades)
   return (
     <div className="rounded-lg shadow-lg">
       {/* Desktop Table */}

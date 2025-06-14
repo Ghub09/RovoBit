@@ -38,39 +38,85 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
     };
   }, []);
 
+  // useEffect(() => {
+  //   if (!socketMarketPrice || openTrades.length === 0) return;
+
+  //   const newPnlData = {};
+
+  //   openTrades.forEach((trade) => {
+  //     const { entryPrice, quantity, type, leverage } = trade;
+
+  //     // Calculate PNL based on market price
+  //     let pnl;
+  //     if (type === "long") {
+  //       pnl = (marketPrice - entryPrice) * quantity * leverage;
+  //     } else if (type === "short") {
+  //       pnl = (entryPrice - marketPrice) * quantity * leverage;
+  //     } else {
+  //       pnl = 0;
+  //     }
+
+  //     newPnlData[trade._id] = pnl;
+  //   });
+
+  //   setPnlData(newPnlData);
+  // }, [socketMarketPrice, openTrades]);
+
   useEffect(() => {
-    if (!socketMarketPrice || openTrades.length === 0) return;
+  if (!socketMarketPrice || openTrades.length === 0) return;
 
-    const newPnlData = {};
+  const newPnlData = {};
 
-    openTrades.forEach((trade) => {
-      const { entryPrice, quantity, type, leverage } = trade;
+  openTrades.forEach((trade) => {
+    const { entryPrice, quantity, type, leverage } = trade;
 
-      // Calculate PNL based on market price
-      let pnl;
-      if (type === "long") {
-        pnl = (marketPrice - entryPrice) * quantity * leverage;
-      } else if (type === "short") {
-        pnl = (entryPrice - marketPrice) * quantity * leverage;
-      } else {
-        pnl = 0;
-      }
+    let pnl = 0;
 
-      newPnlData[trade._id] = pnl;
-    });
-
-    setPnlData(newPnlData);
-  }, [socketMarketPrice, openTrades]);
-
-  const handleCloseTrade = (tradeId) => {
-    if (!tradeId) {
-      toast.error("Please select a trade to close!");
-      return;
+    if (type === "long") {
+      pnl = (socketMarketPrice - entryPrice) * quantity * leverage;
+    } else if (type === "short") {
+      pnl = (entryPrice - socketMarketPrice) * quantity * leverage;
     }
-    // console.log(marketPrice);
-    dispatch(closePerpetualTrade({ tradeId, closePrice: marketPrice }));
-    dispatch(fetchOpenPerpetualTrades());
-  };
+
+    newPnlData[trade._id] = pnl;
+  });
+
+  setPnlData(newPnlData);
+}, [socketMarketPrice, openTrades]);
+
+  // const handleCloseTrade = (tradeId,clodePrice) => {
+  //   if (!tradeId) {
+  //     toast.error("Please select a trade to close!");
+  //     return;
+  //   }
+   
+  //   // console.log(marketPrice);
+  //   // console.log("closeTradeId,marketPrice",marketPrice)
+  //   dispatch(closePerpetualTrade({ tradeId, closePrice: clodePrice }));
+  //   dispatch(fetchOpenPerpetualTrades());
+  // };
+// const handleCloseTrade = (tradeId) => {
+//   if (!marketPrice) {
+//     toast.error("Market price not available yet");
+//     return;
+//   }
+
+//   dispatch(closePerpetualTrade({
+//     tradeId: tradeId,
+//     closePrice: marketPrice,
+//   }));
+// };
+console.log(openTrades)
+
+const handleCloseTrade = (tradeId) => {
+  if (!tradeId || !socketMarketPrice) {
+    toast.error("Market price not available yet");
+    return;
+  }
+
+  dispatch(closePerpetualTrade({ tradeId, closePrice: socketMarketPrice }));
+  dispatch(fetchOpenPerpetualTrades());
+};
 
   return (
     <div>
@@ -83,6 +129,7 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
                 <th className="py-2">Type</th>
                 <th className="py-2">Leverage</th>
                 <th className="py-2">Entry Price</th>
+                <th className="py-2">Amount</th>
                 <th className="py-2 hidden md:table-cell">Liquidation Price</th>
                 <th className="py-2">PNL (USDT)</th>
                 {showBtn && (
@@ -113,11 +160,12 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
                       <td className="py-2 capitalize">{trade.type}</td>
                       <td className="py-2">{trade.leverage}x</td>
                       <td className="py-2">${trade?.entryPrice?.toFixed(2)}</td>
+                      <td className="py-2">${trade?.assetsAmount?.toFixed(2)}</td>
                       <td className="py-2 text-red-400 hidden md:table-cell">
                         ${trade?.liquidationPrice?.toFixed(2)}
                       </td>
                       <td
-                        className={`py-2 font-semibold ${
+                        className={` font-semibold ${
                           pnlData[trade._id] > 0
                             ? "text-green-500"
                             : "text-red-400"

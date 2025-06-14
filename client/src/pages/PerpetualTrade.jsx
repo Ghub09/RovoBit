@@ -55,7 +55,7 @@ const PerpetualTrade = () => {
           close: parseFloat(candle[4]),
           volume: parseFloat(candle[5]),
         }));
-
+       console.log(data)
         setMarketData(formattedData);
       } catch (error) {
         console.error("Error fetching market data:", error);

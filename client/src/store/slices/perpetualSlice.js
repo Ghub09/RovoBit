@@ -32,7 +32,7 @@ export const closePerpetualTrade = createAsyncThunk(
   async ({ tradeId, closePrice }, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
-
+      console.log("closeTradeId,marketPrice",tradeId,closePrice)
       const response = await API.post(
         "/perpetual/close",
         { tradeId, closePrice },

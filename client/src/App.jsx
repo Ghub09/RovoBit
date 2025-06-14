@@ -9,7 +9,7 @@ import SignUp from "./pages/SignUp";
 import About from "./pages/About";
 import Market from "./pages/Market";
 import Trade from "./pages/Trade";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Wallet from "./pages/finance/Wallet.jsx";
 import Deposit from "./pages/finance/Deposit.jsx";
 import RequestRelease from "./pages/finance/RequestRelease.jsx";
@@ -32,8 +32,12 @@ import Profile from "./pages/Profile.jsx";
 import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
+import ManageOrders from "./pages/admin/ManageOrders.jsx";
+import Loader from "./components/layout/Loader.jsx";
 const App = () => {
   const dispatch = useDispatch();
+    const { loading } = useSelector((state) => state.global);
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -46,6 +50,8 @@ const App = () => {
         <Router>
           <Navbar />
           <main className="pt-[82px]">
+                         {loading && <Loader />}
+
              <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LogIn />} />
@@ -55,6 +61,7 @@ const App = () => {
                <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />
+                <Route path="/admin/orders/manage" element={<ManageOrders />} />
                 <Route
                   path="/admin/transaction/manage"
                   element={<ManageTransactions />}

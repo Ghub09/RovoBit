@@ -202,6 +202,58 @@ export const fetchTransactions = async (req, res, next) => {
   }
 };
 
+// export const approveOrder = catchAsyncErrors(async (req, res) => {
+//   try {
+//     const { orderId } = req.params;
+
+//     const trade = await Trade.findById(orderId);
+//     if (!trade) return res.status(404).json({ message: "Order not found" });
+
+//     const wallet = await Wallet.findOne({ userId: trade.userId });
+//     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+//     let totalCost = trade.quantity * trade.price;
+
+//     if (trade.type === "buy") {
+//       if (wallet.spotWallet < totalCost) {
+//         return res
+//           .status(400)
+//           .json({ message: "Insufficient funds in spot wallet" });
+//       }
+//       wallet.spotWallet -= totalCost;
+//       const holding = wallet.holdings.find((h) => h.asset === trade.asset);
+//       if (holding) {
+//         holding.quantity += trade.quantity;
+//       } else {
+//         wallet.holdings.push({ asset: trade.asset, quantity: trade.quantity });
+//       }
+//     } else {
+//       const holding = wallet.holdings.find((h) => h.asset === trade.asset);
+//       if (!holding) {
+//         return res.status(400).json({ message: "Holding not found" });
+//       }
+//       holding.quantity -= trade.quantity;
+//       if (holding.quantity === 0) {
+//         wallet.holdings = wallet.holdings.filter(
+//           (h) => h.asset !== trade.asset
+//         );
+//       }
+//       wallet.spotWallet += totalCost;
+//     }
+
+//     await wallet.save();
+//     trade.status = "approved";
+//     await trade.save();
+
+//     io.emit("orderApproved", trade);
+
+//     res.status(200).json({ message: "Order approved successfully", trade });
+//   } catch (error) {
+//     res.status(500).json({ message: "Error approving order", error });
+//     console.log("error",error)
+//   }
+// });
+
 export const approveOrder = catchAsyncErrors(async (req, res) => {
   try {
     const { orderId } = req.params;
@@ -212,7 +264,19 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
     const wallet = await Wallet.findOne({ userId: trade.userId });
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
-    let totalCost = trade.quantity * trade.price;
+    // Validate and convert quantity and price
+    const quantity = Number(trade.quantity);
+    const price = Number(trade.price);
+
+    if (isNaN(quantity) || isNaN(price)) {
+      return res.status(400).json({ message: "Invalid trade data: price or quantity is NaN" });
+    }
+
+    const totalCost = quantity * price;
+
+    if (isNaN(totalCost)) {
+      return res.status(400).json({ message: "Invalid total cost calculation" });
+    }
 
     if (trade.type === "buy") {
       if (wallet.spotWallet < totalCost) {
@@ -220,36 +284,46 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
           .status(400)
           .json({ message: "Insufficient funds in spot wallet" });
       }
+
       wallet.spotWallet -= totalCost;
+
       const holding = wallet.holdings.find((h) => h.asset === trade.asset);
       if (holding) {
-        holding.quantity += trade.quantity;
+        holding.quantity += quantity;
       } else {
-        wallet.holdings.push({ asset: trade.asset, quantity: trade.quantity });
+        wallet.holdings.push({ asset: trade.asset, quantity });
       }
-    } else {
+    } else if (trade.type === "sell") {
       const holding = wallet.holdings.find((h) => h.asset === trade.asset);
-      if (!holding) {
-        return res.status(400).json({ message: "Holding not found" });
+      if (!holding || holding.quantity < quantity) {
+        return res.status(400).json({ message: "Not enough holdings to sell" });
       }
-      holding.quantity -= trade.quantity;
+
+      holding.quantity -= quantity;
+
       if (holding.quantity === 0) {
         wallet.holdings = wallet.holdings.filter(
           (h) => h.asset !== trade.asset
         );
       }
+
       wallet.spotWallet += totalCost;
+    } else {
+      return res.status(400).json({ message: "Invalid trade type" });
     }
 
     await wallet.save();
+
     trade.status = "approved";
     await trade.save();
 
     io.emit("orderApproved", trade);
 
     res.status(200).json({ message: "Order approved successfully", trade });
+
   } catch (error) {
-    res.status(500).json({ message: "Error approving order", error });
+    console.log("Error in approveOrder:", error);
+    res.status(500).json({ message: "Error approving order", error: error.message });
   }
 });
 

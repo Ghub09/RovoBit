@@ -8,6 +8,7 @@ const PerpetualTradeSchema = new mongoose.Schema({
   entryPrice: { type: Number, required: true },
   quantity: { type: Number, required: true },
   marginUsed: { type: Number, required: true },
+  assetsAmount:{type:Number,required:true},
   liquidationPrice: { type: Number, required: true },
   fundingFee: { type: Number, default: 0 }, // Funding fee applied periodically
   profitLoss: { type: Number, default: 0 }, // PNL for the trade

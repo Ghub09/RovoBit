@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketData } from "../../store/slices/marketSlice"; // Adjust the import path
+import AutoApproveSingleTrade from "../../pages/admin/AutoApproveUserSpot";
+import { fetchPendingOrders } from "../../store/slices/tradeSlice";
 
 const SpotTradesHistory = ({ trades }) => {
   const dispatch = useDispatch();
@@ -8,6 +10,8 @@ const SpotTradesHistory = ({ trades }) => {
 
   useEffect(() => {
     dispatch(fetchMarketData());
+    dispatch(fetchPendingOrders());
+    
   }, [dispatch]);
   const getCoinImage = (symbol) => {
     let foundCoin = coins.find(
@@ -20,10 +24,11 @@ const SpotTradesHistory = ({ trades }) => {
     const base = asset.slice(0, 3);
     return `${base}`;
   };
-
+console.log(trades)
   return (
     <div className="rounded-lg shadow-lg">
       {/* Desktop Table */}
+      
       <div className="hidden md:block overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-700">
           <thead>
@@ -40,14 +45,18 @@ const SpotTradesHistory = ({ trades }) => {
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Quantity
               </th>
+               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
+                TotalCost ($)
+              </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Price
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-700">
+          <tbody className="divide-y divide-gray-700 ">
             {trades?.map((trade, index) => (
               <tr key={index} className="hover:bg-gray-800 transition-colors">
+                <AutoApproveSingleTrade  trade={trade}/>
                 <td className="px-4 py-2 text-sm text-gray-200 flex items-center gap-3">
                   <img
                     src={getCoinImage(extractBase(trade.asset))}
@@ -76,6 +85,9 @@ const SpotTradesHistory = ({ trades }) => {
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
                   {trade.quantity}
+                </td>
+                 <td className="px-4 py-2 text-sm text-gray-200">
+                  {trade.totalCost}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
                   {trade.price}
