@@ -4,6 +4,7 @@ import Trade from "../../models/Trade.js";
 import PerpetualTrade from "../../models/PerpetualTrade.js";
 import TradeHistory from "../../models/TradeHistory.js";
 import DepositWithdrawRequest from "../../models/RequestMessage.js";
+import Wallet from "../../models/Wallet.js";
 
 export const deleteUserHistoryByUserId = async (userId) => {
   try {
@@ -74,3 +75,61 @@ export const deleteUserAndArchive = async (req, res) => {
     return res.status(500).json({ error: "Server error" });
   }
 };
+export const fetchUserWallets = async (req, res) => {
+  const userId = req.params.userId;
+
+  try {
+    const wallet = await Wallet.findOne({ userId }); // correct lookup
+
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found for user" });
+    }
+
+    return res.status(200).json({
+      message: "User wallet fetched successfully",
+      holdings: wallet.holdings,
+      spotWallet: wallet.spotWallet,
+      futuresWallet: wallet.futuresWallet,
+      perpetualsWallet: wallet.perpetualsWallet,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Please retry to fetch all data" });
+  }
+};
+
+ 
+export const updateUserWallets = async (req, res) => {
+  const { userId } = req.params;
+  const { spotWallet, futuresWallet, perpetualsWallet, holdings } = req.body;
+
+  try {
+    // Validate existence of wallet
+    const wallet = await Wallet.findOne({ userId });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallets not found for user" });
+    }
+
+    // Update wallet fields if provided
+    if (typeof spotWallet === "number") wallet.spotWallet = spotWallet;
+    if (typeof futuresWallet === "number") wallet.futuresWallet = futuresWallet;
+    if (typeof perpetualsWallet === "number") wallet.perpetualsWallet = perpetualsWallet;
+    if (Array.isArray(holdings)) wallet.holdings = holdings;
+
+    await wallet.save();
+
+    return res.status(200).json({
+      message: "Wallets updated successfully",
+      spotWallet: wallet.spotWallet,
+      futuresWallet: wallet.futuresWallet,
+      perpetualsWallet: wallet.perpetualsWallet,
+      holdings: wallet.holdings,
+    });
+  } catch (error) {
+    console.error("Wallet update error:", error);
+    return res.status(500).json({ message: "Error updating wallet" });
+  }
+};
+
+
+

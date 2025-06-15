@@ -8,16 +8,40 @@ const WalletSchema = new mongoose.Schema({
   },
   balanceUSDT: { type: Number, default: 0 }, // General balance
   marginBalance: { type: Number, default: 0 },
-  // exchangeWallet: { type: Number, default: 0 }, // Exchange wallet for deposits/withdrawals
-  // exchangeHoldings: [
-  //   {
-  //     asset: String,
-  //     quantity: Number,
-  //   },
-  // ],
   spotWallet: { type: Number, default: 0 }, // Spot trading wallet
   futuresWallet: { type: Number, default: 0 }, // Futures trading wallet
   perpetualsWallet: { type: Number, default: 0 }, // Perpetuals trading wallet
+  walletChangeHistory: [
+  {
+    adminId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    changes: {
+      spotWallet: [
+        {
+          asset: String, // e.g., "USDT", "BTC", "ETN"
+          oldValue: Number,
+          newValue: Number,
+        },
+      ],
+      futuresWallet: [
+        {
+          asset: String,
+          oldValue: Number,
+          newValue: Number,
+        },
+      ],
+      perpetualsWallet: [
+        {
+          asset: String,
+          oldValue: Number,
+          newValue: Number,
+        },
+      ],
+    },
+    note: String, // Optional note
+    timestamp: { type: Date, default: Date.now },
+  },
+],
+
   holdings: [
     {
       asset: String,
@@ -48,7 +72,6 @@ const WalletSchema = new mongoose.Schema({
   updatedAt: { type: Date, default: Date.now },
 });
 
-// Middleware to update the timestamp on save
 WalletSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();

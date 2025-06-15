@@ -72,7 +72,7 @@ const Assets = ({ type }) => {
     switch (type) {
       case "exchange":
         // Add base USDT value
-        value = wallet.exchangeWallet || 0;
+        value = wallet.spotWallet || 0;
 
         // Add value of all exchange holdings
         if (wallet.holdings && wallet.holdings.length > 0) {
@@ -275,7 +275,7 @@ const Assets = ({ type }) => {
           )
         ) : type === "exchange" ? (
           wallet?.holdings?.length > 0 ||
-          (wallet?.exchangeWallet && wallet.exchangeWallet > 0) ? (
+          (wallet?.spotWallet && wallet.spotWallet > 0) ? (
             <div className="mt-6 overflow-x-auto">
               <div className="border-b text-gray-500">
                 {/* Left Section */}
@@ -293,7 +293,7 @@ const Assets = ({ type }) => {
                   <div className="text-sm text-center flex flex-col gap-2">
                     <span>Available Balance</span>
                     <p className="font-semibold text-gray-300">
-                      {wallet?.exchangeWallet?.toFixed(2)}
+                      {wallet?.spotWallet?.toFixed(2)}
                     </p>
                   </div>
                   <div className="text-sm text-center flex flex-col gap-2">
@@ -309,7 +309,7 @@ const Assets = ({ type }) => {
                   <div className="text-sm text-center flex flex-col gap-2">
                     <span>Valuation</span>
                     <p className="font-semibold text-gray-300">
-                      ≈ ${wallet?.exchangeWallet?.toFixed(2) || "0"}
+                      ≈ ${wallet?.spotWallet?.toFixed(2) || "0"}
                     </p>
                   </div>
                 </div>
@@ -519,7 +519,7 @@ const Assets = ({ type }) => {
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
                 Your Holdings
               </h2>
-              <div className="mt-4">
+              <div className="mt-4 border">
                 <table className="w-full text-left text-white">
                   <thead>
                     <tr className="text-gray-400 border-b border-gray-700">
@@ -655,7 +655,7 @@ const Assets = ({ type }) => {
 
         {type === "exchange" &&
           (wallet?.holdings?.length > 0 ||
-            (wallet?.exchangeWallet && wallet.exchangeWallet > 0)) && (
+            (wallet?.spotWallet && wallet.spotWallet > 0)) && (
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
                 Exchange Holdings
@@ -671,7 +671,7 @@ const Assets = ({ type }) => {
                   </thead>
                   <tbody>
                     {/* Always show USDT if it has a balance */}
-                    {wallet?.exchangeWallet > 0 && (
+                    {wallet?.spotWallet > 0 && (
                       <tr className="border-b border-gray-700 font-semibold">
                         <td className="py-2 flex items-center gap-2">
                           <img
@@ -682,10 +682,10 @@ const Assets = ({ type }) => {
                           USDT
                         </td>
                         <td className="py-2">
-                          {wallet.exchangeWallet?.toFixed(2)}
+                          {wallet.spotWallet?.toFixed(2)}
                         </td>
                         <td className="py-2">
-                          ${wallet.exchangeWallet?.toFixed(2)}
+                          ${wallet.spotWallet?.toFixed(2)}
                         </td>
                       </tr>
                     )}
@@ -727,7 +727,7 @@ const Assets = ({ type }) => {
         {type === "exchange" &&
           !(
             wallet?.holdings?.length > 0 ||
-            (wallet?.exchangeWallet && wallet.exchangeWallet > 0)
+            (wallet?.spotWallet && wallet.spotWallet > 0)
           ) && (
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-red-500">

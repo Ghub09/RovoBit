@@ -16,7 +16,7 @@ import perpetualTradeRouter from "./routers/perpetualRoutes.js";
 import walletRouter from "./routers/walletRoutes.js";
 import kycRouter from "./routers/kycRoutes.js";
 import newsRouter from "./routers/newsRoutes.js";
-import userDelete from "./routers/users/userDelete.js";
+import userManagement from "./routers/users/userManagement.js";
 
 import { safariCompatibilityMiddleware } from "./middlewares/safariCompatibility.js";
  
@@ -70,7 +70,7 @@ app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
 // Apply Safari compatibility middleware before routes
 app.use(safariCompatibilityMiddleware);
 app.use("/api/user", userRouter);
-app.use("/api/account", userDelete)
+app.use("/api/account", userManagement)
 app.use("/api/trade", tradeRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/funds", depositWithdrawRouter);

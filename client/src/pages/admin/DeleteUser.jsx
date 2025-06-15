@@ -1,4 +1,6 @@
+import axios from "axios";
 import API from "../../utils/api";
+import { toast } from "react-toastify";
 
 export const deleteUser = async (id) => {
   try {
@@ -98,4 +100,23 @@ export const alltradingHistory = async (userId) => {
     throw error.response?.data || { message: "Server error" };
   }
 };
+
+export const fetchUserWallet =async(userId)=>{
+     try {
+       const response=await API.get(`/account/${userId}`,{
+          withCredentials: true    
+       })
+     return response.data
+     } catch (error) {
+      return error.data
+     }
+}
+export const updateUserWallets =async(finalUpdate,userId)=>{
+  try {
+    const response =await API.put(`/account/update/${userId}`,finalUpdate)
+    console.log(response?.data)
+  } catch (error) {
+    console.log(error.message)
+  }
+}
 
