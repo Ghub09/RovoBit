@@ -13,8 +13,7 @@ const WalletSchema = new mongoose.Schema({
   perpetualsWallet: { type: Number, default: 0 }, // Perpetuals trading wallet
   walletChangeHistory: [
   {
-    adminId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    changes: {
+     changes: {
       spotWallet: [
         {
           asset: String, // e.g., "USDT", "BTC", "ETN"
@@ -37,7 +36,6 @@ const WalletSchema = new mongoose.Schema({
         },
       ],
     },
-    note: String, // Optional note
     timestamp: { type: Date, default: Date.now },
   },
 ],

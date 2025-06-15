@@ -46,6 +46,7 @@ const ManageUser = () => {
       setUpdate(updatedUsers);
       console.log(`Deleted user: ${user._id}`);
       toast.success(res.message || "User deleted successfully");
+      
     } catch (err) {
       console.log(err.message || "Failed to delete user");
     }

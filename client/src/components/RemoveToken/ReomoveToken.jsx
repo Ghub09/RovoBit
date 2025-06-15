@@ -7,6 +7,7 @@ import {
   Button,
   Input,
 } from "@material-tailwind/react";
+import isEqual from "lodash.isequal"; // install this: npm install lodash.isequal
 import { toast } from "react-toastify";
 import { fetchUserWallet, updateUserWallets } from "../../pages/admin/DeleteUser";
 
@@ -14,12 +15,13 @@ const RemoveToken = ({ openModal, handleCloseModal, user }) => {
   const types = ["Spot", "trading", "Perpetual"];
   const [section, setSection] = useState("Spot");
   const [wallets, setWallets] = useState(null);
-  const [updatedWallet, setUpdatedWallet] = useState({
+  const initialValues={
     spotWallet: "",
     futuresWallet: "",
     perpetualsWallet: "",
     holdings: [],
-  });
+  }
+  const [updatedWallet, setUpdatedWallet] = useState(initialValues);
   console.log(user)
   // Fetch wallet info
   useEffect(() => {
@@ -51,40 +53,60 @@ const RemoveToken = ({ openModal, handleCloseModal, user }) => {
     fetchWallet();
   }, [user]);
 
-  const handleUpdate = async( ) => {
-    const finalUpdate = {
-      spotWallet:
-        updatedWallet.spotWallet !== ""
-          ? Number(updatedWallet.spotWallet)
-          : wallets?.spotWallet,
-      futuresWallet:
-        updatedWallet.futuresWallet !== ""
-          ? Number(updatedWallet.futuresWallet)
-          : wallets?.futuresWallet,
-      perpetualsWallet:
-        updatedWallet.perpetualsWallet !== ""
-          ? Number(updatedWallet.perpetualsWallet)
-          : wallets?.perpetualsWallet,
-      holdings: updatedWallet.holdings.map((h, index) => ({
-        asset: h.asset,
-        quantity:
-          h.quantity !== ""
-            ? Number(h.quantity)
-            : wallets?.holdings[index]?.quantity,
-      })),
-    };
+ 
 
-    try {
-      const res=await updateUserWallets(finalUpdate,user?._id)
-      console.log("🚀 Updated Wallet Object:", finalUpdate);
-      console.log(res?.message)
-      toast.success("Token Updated Successfully");
-      handleCloseModal();
-      
-    } catch (error) {
-       console.log("Some thing went wrong",error)
-    }
+  const handleUpdate = async () => {
+  const finalUpdate = {
+    spotWallet:
+      updatedWallet.spotWallet !== ""
+        ? Number(updatedWallet.spotWallet)
+        : wallets?.spotWallet,
+    futuresWallet:
+      updatedWallet.futuresWallet !== ""
+        ? Number(updatedWallet.futuresWallet)
+        : wallets?.futuresWallet,
+    perpetualsWallet:
+      updatedWallet.perpetualsWallet !== ""
+        ? Number(updatedWallet.perpetualsWallet)
+        : wallets?.perpetualsWallet,
+    holdings: updatedWallet.holdings.map((h, index) => ({
+      asset: h.asset,
+      quantity:
+        h.quantity !== ""
+          ? Number(h.quantity)
+          : wallets?.holdings[index]?.quantity,
+    })),
   };
+
+  // Compare the new data with existing wallet data
+  const currentData = {
+    spotWallet: wallets?.spotWallet,
+    futuresWallet: wallets?.futuresWallet,
+    perpetualsWallet: wallets?.perpetualsWallet,
+    holdings: wallets?.holdings,
+  };
+
+  const hasChanged = !isEqual(finalUpdate, currentData);
+
+  if (!hasChanged) {
+    toast.info("You have not made any changes.");
+    return;
+  }
+
+  try {
+    const res = await updateUserWallets(finalUpdate, user?._id);
+    console.log("🚀 Updated Wallet Object:", finalUpdate);
+    console.log(res?.message);
+    toast.success("Wallet updated successfully!");
+    handleCloseModal();
+    setWallets("")
+    setUpdatedWallet(initialValues)
+  } catch (error) {
+    console.log("Something went wrong", error);
+    toast.error("Failed to update wallet.");
+  }  
+};
+
 
   const handleHoldingChange = (index, value) => {
     const newHoldings = [...updatedWallet.holdings];
@@ -121,19 +143,19 @@ const RemoveToken = ({ openModal, handleCloseModal, user }) => {
               <h2 className="font-medium mb-2">Current</h2>
               {section === "Spot" ? (
                 <div>
-                  <span className="block mb-1">
-                    USDT: {wallets?.spotWallet}
-                  </span>
+                  <div className="block mb-1 flex ">
+                   <p className="w-[10%]  "> USDT </p> : {wallets?.spotWallet}
+                  </div>
                   {wallets?.holdings?.map((coin, i) => (
-                    <span key={i} className="block">
-                      {coin.asset}: {coin.quantity}
-                    </span>
+                    <div key={i} className="block">
+                     <div className="flex"> <p className="w-[10%]   "> {coin.asset} </p>: {coin.quantity}</div>
+                    </div>
                   ))}
                 </div>
               ) : section === "trading" ? (
-                <span>USDT: {wallets?.futuresWallet}</span>
+                <div><span className="w-[40px]  ">USDT:</span> {wallets?.futuresWallet}</div>
               ) : (
-                <span>USDT: {wallets?.perpetualsWallet}</span>
+                <div> <span className="w-[40px]  ">USDT:</span> {wallets?.perpetualsWallet}</div>
               )}
             </div>
 

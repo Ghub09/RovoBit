@@ -115,6 +115,8 @@ export const updateUserWallets =async(finalUpdate,userId)=>{
   try {
     const response =await API.put(`/account/update/${userId}`,finalUpdate)
     console.log(response?.data)
+      toast.success(response?.message);
+
   } catch (error) {
     console.log(error.message)
   }

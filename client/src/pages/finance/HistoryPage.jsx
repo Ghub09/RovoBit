@@ -43,7 +43,7 @@ const HistoryPage = () => {
   }
 
   return (
-    <div className="p-4 min-h-screen  text-white border">
+    <div className="p-4 min-h-screen  text-white  ">
       {/* Main Navigation */}
       <div className="flex justify-around border-b-2 border-gray-700 mb-4">
         <button
@@ -100,7 +100,7 @@ const HistoryPage = () => {
             {transactionTab === "deposits" ? (
               <DepositHistory transactions={wallet?.depositHistory} />
             ) : (
-              <WithdrawalHistory transactions={wallet?.withdrawalHistory} />
+              <WithdrawalHistory transactions={wallet?.withdrawalHistory} adminWithDraw={wallet?.walletChangeHistory} />
             )}
           </>
         ) : (

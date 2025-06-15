@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketData } from "../store/slices/marketSlice";
 import { useNavigate } from "react-router-dom";
-import Loader from "../components/layout/Loader";
+// import Loader from "../components/layout/Loader";
 
 function Market() {
   const dispatch = useDispatch();
@@ -22,6 +22,7 @@ function Market() {
   return (
     <div className="min-h-screen max-w-7xl mx-auto px-4">
       {/* Desktop Table Layout */}
+
       <div className="hidden md:block">
         <table className="min-w-full bg-transparent rounded-lg shadow-md backdrop-blur-xl">
           <thead>

@@ -519,7 +519,7 @@ const Assets = ({ type }) => {
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
                 Your Holdings
               </h2>
-              <div className="mt-4 border">
+              <div className="mt-4 ">
                 <table className="w-full text-left text-white">
                   <thead>
                     <tr className="text-gray-400 border-b border-gray-700">
