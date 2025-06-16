@@ -1,377 +1,272 @@
-import { useState, useEffect } from "react";
-import { Modal, Button } from "flowbite-react";
-import {
-  allPerpetualHistory,
-  allSportHistory,
-  alltradingHistory,
-  deleteAllSelectedHistory,
-} from "../../pages/admin/DeleteUser";
+import React, { useEffect, useState, useRef } from "react";
+import { Modal, Button, TextInput } from "flowbite-react";
+import isEqual from "lodash.isequal";
 import { toast } from "react-toastify";
-import { t } from "i18next";
+import { fetchUserWallet, updateUserWallets } from "../../pages/admin/DeleteUser.jsx";
 
-const HistoryModel = ({
-  openDialog,
-  handleDialog,
-  labels,
-  handleAction,
-  action,
-  cancel,
-  user,  
-}) => {
-  const [selectedIds, setSelectedIds] = useState([
-    { table: "DW", ids: [] },
-    { table: "TS", ids: [] },
-    { table: "TP", ids: [] },
-    { table: "TR", ids: [] },
-  ]);
+const RemoveToken = ({ openModal, handleCloseModal, user }) => {
+  const types = ["Spot", "trading", "Perpetual"];
+  const [section, setSection] = useState("Spot");
+  const [wallets, setWallets] = useState(null);
 
-  const [show, setShow] = useState({
-    DW: true,
-    TP: false,
-    TR: false,
-    TS: false,
-  });
-  const [tradingHistory, setTradingHistory] = useState([]);
-  const [sportHistory, setSportHistory] = useState([]);
-  const [perpetualHistory, setPerpetualHistory] = useState([]);
-  // console.log(user)
-  // eslint-disable-next-line react/prop-types
-  const userId = user?._id;
+  const initialValues = {
+    spotWallet: "",
+    futuresWallet: "",
+    perpetualsWallet: "",
+    holdings: [],
+  };
+
+  const [updatedWallet, setUpdatedWallet] = useState(initialValues);
+  const triggerRef = useRef(null); // for accessibility focus reset
 
   useEffect(() => {
-    if (!openDialog) {
-      setShow({ DW: true, TP: false, TR: false, TS: false });
-      setSelectedIds([
-        { table: "DW", ids: [] },
-        { table: "TS", ids: [] },
-        { table: "TP", ids: [] },
-        { table: "TR", ids: [] },
-      ]);
-    } else {
-      fetchData();
-    }
-  }, [openDialog]);
+    const fetchWallet = async () => {
+      if (!user?._id) return;
+      try {
+        const res = await fetchUserWallet(user._id);
+        setWallets({
+          spotWallet: res.spotWallet,
+          futuresWallet: res.futuresWallet,
+          perpetualsWallet: res.perpetualsWallet,
+          holdings: res.holdings,
+        });
+        setUpdatedWallet({
+          spotWallet: "",
+          futuresWallet: "",
+          perpetualsWallet: "",
+          holdings: res.holdings?.map((h) => ({
+            asset: h.asset,
+            quantity: "",
+          })),
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    fetchWallet();
+  }, [user]);
 
-  const fetchData = async () => {
+  const handleHoldingChange = (index, value) => {
+    const newHoldings = [...updatedWallet.holdings];
+    newHoldings[index].quantity = value;
+    setUpdatedWallet({ ...updatedWallet, holdings: newHoldings });
+  };
+
+  const handleCloseAndReset = () => {
+    triggerRef.current?.focus();
+    setWallets(null);
+    setUpdatedWallet(initialValues);
+    handleCloseModal();
+  };
+
+  const handleUpdate = async () => {
+    const finalUpdate = {
+      spotWallet:
+        updatedWallet.spotWallet !== ""
+          ? Number(updatedWallet.spotWallet)
+          : wallets?.spotWallet,
+      futuresWallet:
+        updatedWallet.futuresWallet !== ""
+          ? Number(updatedWallet.futuresWallet)
+          : wallets?.futuresWallet,
+      perpetualsWallet:
+        updatedWallet.perpetualsWallet !== ""
+          ? Number(updatedWallet.perpetualsWallet)
+          : wallets?.perpetualsWallet,
+      holdings: updatedWallet.holdings.map((h, index) => ({
+        asset: h.asset,
+        quantity:
+          h.quantity !== ""
+            ? Number(h.quantity)
+            : wallets?.holdings[index]?.quantity,
+      })),
+    };
+
+    const currentData = {
+      spotWallet: wallets?.spotWallet,
+      futuresWallet: wallets?.futuresWallet,
+      perpetualsWallet: wallets?.perpetualsWallet,
+      holdings: wallets?.holdings,
+    };
+
+    const hasChanged = !isEqual(finalUpdate, currentData);
+
+    if (!hasChanged) {
+      toast.info("You have not made any changes.");
+      return;
+    }
+
     try {
-      const tradingRes = await alltradingHistory(userId);
-      const sportRes = await allSportHistory(userId);
-      const perpetualRes = await allPerpetualHistory(userId);
-      // console.log(tradingRes, sportRes, perpetualRes);
-      setTradingHistory(tradingRes);
-      setSportHistory(sportRes);
-      setPerpetualHistory(perpetualRes);
+      const res = await updateUserWallets(finalUpdate, user?._id);
+      toast.success("Wallet updated successfully!");
+      handleCloseAndReset();
     } catch (error) {
-      console.error("Error fetching history:", error);
+      console.log("Something went wrong", error);
+      toast.error("Failed to update wallet.");
     }
   };
-//  console.log(tradingHistory, sportHistory, perpetualHistory);
-  const getTableSelected = (table) =>
-   selectedIds.find((entry) => entry.table === table)?.ids || [];
-  // console.log(selectedIds);
-  const updateTableSelected = (table, id) => {
-    setSelectedIds((prev) =>
-      prev.map((entry) =>
-        entry.table === table
-          ? {
-              ...entry,
-              ids: entry.ids.includes(id)
-                ? entry.ids.filter((i) => i !== id)
-                : [...entry.ids, id],
-            }
-          : entry
-      )
-    );
-  };
-
-  const handleShow = (type) => {
-    setShow({
-      DW: type === "DW",
-      TP: type === "TP",
-      TR: type === "TR",
-      TS: type === "TS",
-    });
-  };
-
-
-  const handleDeleteInTypes = async(userId,selectedIds, deleteAll = false) => {
-     
-    handleAction(true);
-    try {
-      // eslint-disable-next-line no-undef
-      const response = await deleteAllSelectedHistory(userId, selectedIds, deleteAll);
-      console.log("All selected history deleted:", response);
-      toast.success(response.message || t("history_deleted_successfully"));
-    } catch (error) {
-      console.error("Error deleting all selected history:", error.Button.response?.data || error.message);
-    }
-  }
 
   return (
-    <Modal
-      show={openDialog}
-      onClose={handleDialog}
-      popup
-      className="backdrop-blur-[2px] bg-black/50 text-white rounded-lg"
-    >  
-        <div className="flex justify-between items-center mb-4 p-2">
-          <button
-            className={`${
-              show.DW ? "bg-green-600" : ""
-            } bg-green-300 p-2 rounded-full`}
-            onClick={() => handleShow("DW")}
-          >
-            Deposit/Withdraw
-          </button>
-          <button
-            className={`${
-              show.TS ? "bg-yellow-600" : ""
-            } bg-yellow-300 p-2 rounded-full`}
-            onClick={() => handleShow("TS")}
-          >
-            Spot
-          </button>
-          <button
-            className={`${
-              show.TP ? "bg-purple-600" : ""
-            } bg-purple-300 p-2 rounded-full`}
-            onClick={() => handleShow("TP")}
-          >
-            Perpetual
-          </button>
-          <button
-            className={`${
-              show.TR ? "bg-pink-600" : ""
-            } bg-pink-300 p-2 rounded-full`}
-            onClick={() => handleShow("TR")}
-          >
-            Trading
-          </button>
-              <div className=" flex justify-center items-center">
-                <button onClick={handleDialog} className=" cursor-pointer text-white text-center rounded-full m-2 px-2 text-[10px]  bg-red-500">X</button>
+    <>
+      {/* Trigger Button Example */}
+      <button ref={triggerRef} onClick={() => openModal(true)} className="hidden" />
+
+      <Modal show={openModal} onClose={handleCloseAndReset} size="xl">
+        <Modal.Header>Token Management</Modal.Header>
+        <Modal.Body>
+          {!wallets ? (
+            <div className="text-center text-gray-500">Loading wallet data...</div>
+          ) : (
+            <>
+              <div className="flex flex-wrap gap-4 mb-4">
+                {types.map((t, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setSection(t)}
+                    className={`cursor-pointer px-3 py-1 rounded-full font-semibold ${
+                      section === t
+                        ? "bg-yellow-200 text-black"
+                        : "bg-gray-400 text-green-700"
+                    }`}
+                  >
+                    {t}
+                  </button>
+                ))}
               </div>
 
-        </div>
-       <div className="min-h-screen overflow-y-auto bg-[#1A1A1A] p-2 text-white shadow-lg">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+                {/* Current */}
+                <div className="border p-3 rounded">
+                  <h2 className="font-medium mb-2">Current</h2>
+                  {section === "Spot" ? (
+                    <>
+                      <div className="block mb-1 flex">
+                        <p className="w-[10%]">USDT</p>: {wallets.spotWallet}
+                      </div>
+                      {wallets?.holdings?.map((coin, i) => (
+                        <div key={i} className="block">
+                          <div className="flex">
+                            <p className="w-[10%]">{coin.asset}</p>: {coin.quantity}
+                          </div>
+                        </div>
+                      ))}
+                    </>
+                  ) : section === "trading" ? (
+                    <div>USDT: {wallets.futuresWallet}</div>
+                  ) : (
+                    <div>USDT: {wallets.perpetualsWallet}</div>
+                  )}
+                </div>
 
-        <div className="mb-4 text-center overflow-x-auto">
-          {/* Deposit/Withdraw Table */}
-          {show.DW && (
-            <table className="w-full text-left border-collapse border">
-              <thead>
-                <tr className="border">
-                  <th className="p-2 text-center">Select</th>
-                  <th className="p-2 text-center">Amount (USDT)</th>
-                  <th className="p-2 text-center">Type</th>
-                  <th className="p-2 text-center">Address</th>
-                  <th className="p-2 text-center">Currency</th>
-                  <th className="p-2 text-center">Admin</th>
-                  <th className="p-2 text-center">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {labels.map((label) => (
-                  <tr key={label._id} className="hover:bg-gray-700 border-b text-[13px]">
-                    <td className="p-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={getTableSelected("DW").includes(label._id)}
-                        onChange={() => updateTableSelected("DW", label._id)}
+                {/* Update */}
+                <div className="border p-3 rounded space-y-2">
+                  <h2 className="font-medium mb-2">Update</h2>
+                  {section === "Spot" ? (
+                    <>
+                      <TextInput
+                        placeholder={wallets?.spotWallet?.toString()}
+                        value={updatedWallet.spotWallet}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (/^\d*\.?\d*$/.test(value)) {
+                            setUpdatedWallet({
+                              ...updatedWallet,
+                              spotWallet: value,
+                            });
+                          }
+                        }}
                       />
-                    </td>
-                    <td className="p-2 text-center">{label.amount}</td>
-                    <td className="p-2 text-center capitalize">{label.type}</td>
-                    <td className="p-2 text-center">{label.walletAddress}</td>
-                    <td className="p-2 text-center">{label.currency}</td>
-                    <td className="p-2 text-center">
-                      {label.adminNote === "Request rejected by admin" ? (
-                        <span className="text-red-500">Rejected</span>
-                      ) : (
-                        <span>Approved</span>
-                      )}
-                    </td>
-                    <td className="p-2 text-center">
-                      {new Date(label.createdAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-
-          {/* Spot Table */}
-          {show.TS && (
-            <table className="w-full text-left border-collapse border">
-              <thead>
-                <tr className="border">
-                  <th className="p-2 text-center">Select</th>
-                  <th className="p-2 text-center">Asset</th>
-                  <th className="p-2 text-center">Type</th>
-                  <th className="p-2 text-center">Price</th>
-                  <th className="p-2 text-center">Quantity</th>
-                  <th className="p-2 text-center">Total Cost</th>
-                  <th className="p-2 text-center">Status</th>
-                  <th className="p-2 text-center">Executed At</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sportHistory?.trades?.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-700 border-b text-[13px]">
-                    <td className="p-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={getTableSelected("TS").includes(item._id)}
-                        onChange={() => updateTableSelected("TS", item._id)}
-                      />
-                    </td>
-                    <td className="p-2 text-center">{item.asset}</td>
-                    <td className="p-2 text-center">{item.type}</td>
-                    <td className="p-2 text-center">{item.price}</td>
-                    <td className="p-2 text-center">
-                      {(() => {
-                        const num = Number(item.quantity);
-                        const [mantissa, exponent] = num
-                          .toExponential(2)
-                          .split("e");
-                        const expNumber = Number(exponent);
-                        return (
-                          <>
-                            {mantissa} × 10<sup>{expNumber}</sup>
-                          </>
-                        );
-                      })()}
-                    </td>
-                    <td className="p-2 text-center">{item.totalCost}</td>
-                    <td className="p-2 text-center">{item.status}</td>
-                    <td className="p-2 text-center">
-                      {new Date(item.executedAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-
-          {/* Perpetual Table */}
-          {show.TP && (
-            <table className="w-full text-left border-collapse border">
-              <thead>
-                <tr className="border">
-                  <th className="p-2 text-center">Select</th>
-                  <th className="p-2 text-center">Pair</th>
-                  <th className="p-2 text-center">Type</th>
-                  <th className="p-2 text-center">Entry-Close</th>
-                  <th className="p-2 text-center">Leverage</th>
-                  <th className="p-2 text-center">Liquidation</th>
-                  <th className="p-2 text-center">Profit/Loss</th>
-                  <th className="p-2 text-center">Quantity</th>
-                  <th className="p-2 text-center">Margin</th>
-                  <th className="p-2 text-center">Status</th>
-                  <th className="p-2 text-center">Start</th>
-                  <th className="p-2 text-center">End</th>
-                </tr>
-              </thead>
-              <tbody>
-                {perpetualHistory?.trades?.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-700 border-b text-[13px]">
-                    <td className="p-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={getTableSelected("TP").includes(item._id)}
-                        onChange={() => updateTableSelected("TP", item._id)}
-                      />
-                    </td>
-                    <td className="p-2 text-center">{item.pair}</td>
-                    <td className="p-2 text-center">{item.type}</td>
-                    <td className="p-2 text-center">
-                      {item.entryPrice} - {item.closePrice}
-                    </td>
-                    <td className="p-2 text-center">{item.leverage}x</td>
-                    <td className="p-2 text-center">{item.liquidationPrice}</td>
-                    <td className="p-2 text-center">{item.profitLoss}</td>
-                    <td className="p-2 text-center">{item.quantity}</td>
-                    <td className="p-2 text-center">{item.marginUsed}</td>
-                    <td className="p-2 text-center">{item.status}</td>
-                    <td className="p-2 text-center">
-                      {new Date(item.createdAt).toLocaleString()}
-                    </td>
-                    <td className="p-2 text-center">
-                      {new Date(item.closedAt).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-
-          {/* Trading Table */}
-          {show.TR && (
-            <table className="w-full text-left border-collapse border">
-              <thead>
-                <tr className="border">
-                  <th className="p-2 text-center">Select</th>
-                  <th className="p-2 text-center">Pair</th>
-                  <th className="p-2 text-center">Quantity</th>
-                  <th className="p-2 text-center">ClosePrice</th>
-                  <th className="p-2 text-center">Leverage</th>
-                  <th className="p-2 text-center">Price(L)</th>
-                  <th className="p-2 text-center">PnL</th>
-                  <th className="p-2 text-center">Status</th>
-                  <th className="p-2 text-center">Timestamp</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tradingHistory?.trades?.map((item) => (
-                  <tr
-                    key={item._id || item.tradeId}
-                    className="hover:bg-gray-700 border-b text-[13px]"
-                  >
-                    <td className="p-2 text-center">
-                      <input
-                        type="checkbox"
-                        checked={getTableSelected("TR").includes(
-                          item._id || item.tradeId
-                        )}
-                        onChange={() =>
-                          updateTableSelected("TR", item._id || item.tradeId)
+                      {updatedWallet.holdings.map((coin, i) => (
+                        <TextInput
+                          key={i}
+                          placeholder={wallets?.holdings[i]?.quantity?.toString() || "0"}
+                          value={coin.quantity}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            if (/^\d*\.?\d*$/.test(value)) {
+                              handleHoldingChange(i, value);
+                            }
+                          }}
+                        />
+                      ))}
+                    </>
+                  ) : section === "trading" ? (
+                    <TextInput
+                      placeholder={wallets?.futuresWallet?.toString()}
+                      value={updatedWallet.futuresWallet}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^\d*\.?\d*$/.test(value)) {
+                          setUpdatedWallet({
+                            ...updatedWallet,
+                            futuresWallet: value,
+                          });
                         }
-                      />
-                    </td>
-                    <td className="p-2 text-center ">{item.pair}</td>
-                    <td className="p-2 text-center">{item.quantity}</td>
-                    <td className="p-2 text-center">{item.closePrice}</td>
-                    <td className="p-2 text-center">{item.leverage}x</td>
-                    <td className="p-2 text-center">{item.liquidationPrice}</td>
-                    <td className="p-2 text-center">{item.profitLoss}</td>
-                    <td className="p-2 text-center">{item.status==="completed"?"Done":item.status}</td>
-                    <td className="p-2 text-center ">
-<>
-  {new Date(item.createdAt).toLocaleDateString()} <br />
-  {new Date(item.closedAt).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}
-</>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                      }}
+                    />
+                  ) : (
+                    <TextInput
+                      placeholder={wallets?.perpetualsWallet?.toString()}
+                      value={updatedWallet.perpetualsWallet}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (/^\d*\.?\d*$/.test(value)) {
+                          setUpdatedWallet({
+                            ...updatedWallet,
+                            perpetualsWallet: value,
+                          });
+                        }
+                      }}
+                    />
+                  )}
+                </div>
 
-        <div className="flex justify-end gap-2">
-          <Button color="failure" onClick={handleDialog}>
-            {cancel}
+                {/* Changed */}
+                <div className="border p-3 rounded text-sm">
+                  <h2 className="font-medium mb-2">Changed</h2>
+                  {section === "Spot" && (
+                    <>
+                      {updatedWallet.spotWallet !== "" &&
+                        Number(updatedWallet.spotWallet) !== wallets?.spotWallet && (
+                          <p>USDT: {updatedWallet.spotWallet}</p>
+                        )}
+                      {updatedWallet.holdings.map((coin, i) =>
+                        coin.quantity !== "" &&
+                        Number(coin.quantity) !== Number(wallets?.holdings[i]?.quantity) ? (
+                          <p key={i}>
+                            {coin.asset}: {coin.quantity}
+                          </p>
+                        ) : null
+                      )}
+                    </>
+                  )}
+                  {section === "trading" &&
+                    updatedWallet.futuresWallet !== "" &&
+                    Number(updatedWallet.futuresWallet) !== wallets?.futuresWallet && (
+                      <p>USDT: {updatedWallet.futuresWallet}</p>
+                    )}
+                  {section === "Perpetual" &&
+                    updatedWallet.perpetualsWallet !== "" &&
+                    Number(updatedWallet.perpetualsWallet) !==
+                      wallets?.perpetualsWallet && (
+                      <p>USDT: {updatedWallet.perpetualsWallet}</p>
+                    )}
+                </div>
+              </div>
+            </>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button color="gray" onClick={handleCloseAndReset}>
+            Cancel
           </Button>
-          <Button
-            color="success"
-            onClick={()=>handleDeleteInTypes(userId ,selectedIds )}
-            disabled={selectedIds.every((entry) => entry.ids.length === 0)}
-          >
-            {action}
+          <Button color="failure" onClick={handleUpdate}>
+            Update
           </Button>
-        </div>
-      </div>
-     </Modal>
+        </Modal.Footer>
+      </Modal>
+    </>
   );
 };
 
-export default HistoryModel;
+export default RemoveToken;
