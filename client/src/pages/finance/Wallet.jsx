@@ -275,7 +275,7 @@ const Wallet = () => {
   // console.log(showAssets)
   console.log(wallet?.withdrawalHistory);
   return (
-    <div className="min-h-[100vh] mx-auto md:px-6 py-4 border">
+    <div className="min-h-[100vh] mx-auto md:px-6 py-4  ">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

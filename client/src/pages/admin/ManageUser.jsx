@@ -8,7 +8,7 @@ import CustomModel from "../../components/mini/Model";
 import BooleanToggle from "../../components/toggle/Toggle";
 import HistoryModel from "../../components/mini/HistoryModel";
 import { toast } from "react-toastify";
-import RemoveToken from "../../components/RemoveToken/ReomoveToken";
+import RemoveToken from "../../components/RemoveToken/ReomoveToken.jsx";
 
 const ManageUser = () => {
   const dispatch = useDispatch();
@@ -87,7 +87,11 @@ const ManageUser = () => {
     }
     return str;
   };
-
+const handleRemoveToken=(user)=>{
+  console.log(user)
+  setOpenModal(true)
+  setSelectedUser(user)
+}
   return (
     <div>
       <div className="p-6 min-h-screen  mb-6">
@@ -108,15 +112,14 @@ const ManageUser = () => {
           <tbody>
             {update.length > 0 ? (
               update.map((user) => (
+                <>
+                
+                
                 <tr
                   key={user._id}
                   className="hover:bg-gray-500 h-[30px]     transition-colors duration-300"
                 >
-                  <RemoveToken
-                    openModal={openModal}
-                    handleCloseModal={() => setOpenModal(false)}
-                    user={user}
-                  />
+                
                   <td
                     className="  p-2 text-center flex flex-col"
                     title={user.firstName}
@@ -139,7 +142,7 @@ const ManageUser = () => {
                   </td>
                   <td className="  ">
                     <button
-                      onClick={() => setOpenModal(true)}
+                      onClick={() =>handleRemoveToken(user)}
                       className="bg-red-400 px-3  flex justify-self-center  hover:bg-red-600 text-center  text-white rounded-full"
                     >
                       Remove
@@ -171,6 +174,7 @@ const ManageUser = () => {
                     </button>
                   </td>
                 </tr>
+                </>
               ))
             ) : (
               <tr>
@@ -200,6 +204,11 @@ const ManageUser = () => {
               setOpenDialog(false); // close modal
             }}
           />
+            <RemoveToken
+                    openModal={openModal}
+                    handleCloseModal={() => setOpenModal(false)}
+                    user={selectedUser}
+                  />
         </table>
       </div>
     </div>

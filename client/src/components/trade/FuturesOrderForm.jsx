@@ -90,7 +90,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const assetsOptions = [25, 50, 75, 100];
 
   return (
-    <Card className="p-4 bg-transparent text-lg text-white w-full md:max-w-md">
+    <Card className="p-4 bg-transparent text-lg text-white w-full md:max-w-md  ">
       <AnimatedHeading>
         <div className="flex justify-center">
         <h2 className="mb-4">Open Position</h2>
