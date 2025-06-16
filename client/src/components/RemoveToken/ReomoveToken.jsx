@@ -116,6 +116,8 @@ const RemoveToken = ({ openModal, handleCloseModal, user }) => {
 
   return (
     <Dialog open={openModal} handler={handleCloseModal} size="lg">
+        <div onClick={(e) => e.stopPropagation()}>
+
       <DialogHeader className="text-black">Token Management</DialogHeader>
       <DialogBody className="text-black">
         <div className="h-[300px] overflow-y-auto">
@@ -283,6 +285,7 @@ const RemoveToken = ({ openModal, handleCloseModal, user }) => {
           Update
         </Button>
       </DialogFooter>
+      </div>
     </Dialog>
   );
 };

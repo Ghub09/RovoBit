@@ -189,7 +189,7 @@ export const getWallet = createAsyncThunk(
 
       const safeWallet = {
         spotWallet: walletData.spotWallet || 0,
-        exchangeWallet: walletData.exchangeWallet || 0,
+        // exchangeWallet: walletData.exchangeWallet || 0,
         futuresWallet: walletData.futuresWallet || 0,
         perpetualsWallet: walletData.perpetualsWallet || 0,
         holdings: Array.isArray(walletData.holdings) ? walletData.holdings : [],

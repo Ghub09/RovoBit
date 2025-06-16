@@ -234,10 +234,10 @@ const Wallet = () => {
       setTransferOpen(false);
 
       // Reset fields after successful transfer
-      setFromWallet("");
-      setToWallet("");
-      setTransferAsset("USDT");
-      setTransferAmount("");
+      // setFromWallet("");
+      // setToWallet("");
+      // setTransferAsset("USDT");
+      // setTransferAmount("");
     } catch {
       setTransferOpen(false);
     }
@@ -275,7 +275,7 @@ const Wallet = () => {
   // console.log(showAssets)
   console.log(wallet?.withdrawalHistory);
   return (
-    <div className="min-h-[100vh] mx-auto md:px-6 py-4">
+    <div className="min-h-[100vh] mx-auto md:px-6 py-4 border">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -700,6 +700,7 @@ const Wallet = () => {
           )}
         </div>
         {/* Swap Funds */}
+        
         <Dialog open={open} handler={() => setOpen(false)} size="sm">
           <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between ">
             <span>Swap</span>
@@ -779,7 +780,7 @@ const Wallet = () => {
           size="sm"
         >
           <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between">
-            <span>Transfer Funds</span>
+            <span>Transfer Funds (USDT)</span>
             <button onClick={() => setTransferOpen(false)}>✖</button>
           </DialogHeader>
           <DialogBody className="bg-[#1a1a1a] text-white p-6">
@@ -836,8 +837,9 @@ const Wallet = () => {
                 </option>
               </select>
             </div>
-
-            {(fromWallet === "exchangeWallet" && toWallet === "spotWallet") ||
+        {/* Remove exchangeWallet from transfer options: nothing to add here, just ensure it's not in the dropdowns above. */}
+        {/* No extra UI needed here since all exchangeWallet transfers are now handled by spotWallet. */}
+            {/* {(fromWallet === "exchangeWallet" && toWallet === "spotWallet") ||
             (fromWallet === "spotWallet" && toWallet === "exchangeWallet") ? (
               <div className="mb-4">
                 <label className="block mb-1">Select Currency</label>
@@ -856,7 +858,7 @@ const Wallet = () => {
                   ))}
                 </select>
               </div>
-            ) : null}
+            ) : null} */}
 
             {/* Amount Input */}
             <div className="mb-4">

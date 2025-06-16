@@ -285,82 +285,82 @@ export const getTransactions = async (req, res) => {
     res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
-// export const swapCrypto = async (req, res) => {
-//   try {
-//     const { fromAsset, toAsset, amount, exchangeRate } = req.body;
-//     const userId = req.user._id;
+export const swapCrypto = async (req, res) => {
+  try {
+    const { fromAsset, toAsset, amount, exchangeRate } = req.body;
+    const userId = req.user._id;
 
-//     // Validate required fields
-//     if (!fromAsset || !toAsset || !amount || !exchangeRate) {
-//       return res.status(400).json({ message: "All fields are required" });
-//     }
+    // Validate required fields
+    if (!fromAsset || !toAsset || !amount || !exchangeRate) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
 
-//     // Fetch user's wallet
-//      const userWallet = await Wallet.findOne({ userId });
-//     if (!userWallet) {
-//       return res.status(404).json({ message: "Wallet not found" });
-//     }
+    // Fetch user's wallet
+     const userWallet = await Wallet.findOne({ userId });
+    if (!userWallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
 
-//     // Calculate the amount to receive
-//     const toAmount = amount * exchangeRate;
+    // Calculate the amount to receive
+    const toAmount = amount * exchangeRate;
 
-//     // Handle 'fromAsset' logic
-//     if (fromAsset === "USDT") {
-//       // Check if the user has enough USDT in the spotWallet
-//       if (userWallet.spotWallet < amount) {
-//         return res.status(400).json({ message: "Insufficient balance" });
-//       }
-//       // Deduct from spotWallet
-//       userWallet.spotWallet -= amount;
-//     } else {
-//       // Find the 'fromAsset' in the assets array
-//       const fromAssetIndex = userWallet.holdings.findIndex(
-//         (holding) => holding.asset === fromAsset
-//       );
+    // Handle 'fromAsset' logic
+    if (fromAsset === "USDT") {
+      // Check if the user has enough USDT in the spotWallet
+      if (userWallet.spotWallet < amount) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+      // Deduct from spotWallet
+      userWallet.spotWallet -= amount;
+    } else {
+      // Find the 'fromAsset' in the assets array
+      const fromAssetIndex = userWallet.holdings.findIndex(
+        (holding) => holding.asset === fromAsset
+      );
 
-//       if (
-//         fromAssetIndex === -1 ||
-//         userWallet.holdings[fromAssetIndex].quantity < amount
-//       ) {
-//         return res
-//           .status(400)
-//           .json({ message: "Insufficient balance in exchange wallet" });
-//       }
-//       // Deduct from the existing asset balance
-//       userWallet.holdings[fromAssetIndex].quantity -= amount;
-//     }
+      if (
+        fromAssetIndex === -1 ||
+        userWallet.holdings[fromAssetIndex].quantity < amount
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Insufficient balance in exchange wallet" });
+      }
+      // Deduct from the existing asset balance
+      userWallet.holdings[fromAssetIndex].quantity -= amount;
+    }
 
-//     // Handle 'toAsset' logic
-//     // if (toAsset === "USDT") {
-//     //   // Add to spotWallet
-//     //   userWallet.spotWallet += toAmount;
-//     // } else {
-//     //   // Find the 'toAsset' in the assets array
-//     //   const toAssetIndex = userWallet.holdings.findIndex(
-//     //     (holding) => holding.asset === toAsset
-//     //   );
+    // Handle 'toAsset' logic
+    if (toAsset === "USDT") {
+      // Add to spotWallet
+      userWallet.spotWallet += toAmount;
+    } else {
+      // Find the 'toAsset' in the assets array
+      const toAssetIndex = userWallet.holdings.findIndex(
+        (holding) => holding.asset === toAsset
+      );
 
-//     //   if (toAssetIndex === -1) {
-//     //     // If the asset doesn't exist, add it to the assets array
-//     //     userWallet.holdings.push({
-//     //       asset: toAsset,
-//     //       quantity: toAmount,
-//     //     });
-//     //   } else {
-//     //     // If the asset exists, increment its balance
-//     //     userWallet.holdings[toAssetIndex].quantity += toAmount;
-//     //   }
-//     // }
+      if (toAssetIndex === -1) {
+        // If the asset doesn't exist, add it to the assets array
+        userWallet.holdings.push({
+          asset: toAsset,
+          quantity: toAmount,
+        });
+      } else {
+        // If the asset exists, increment its balance
+        userWallet.holdings[toAssetIndex].quantity += toAmount;
+      }
+    }
 
-//     // // Save the updated wallet
-//     // await userWallet.save();
+    // Save the updated wallet
+    await userWallet.save();
 
-//     // Ensure holdings is an array
-// if (!Array.isArray(userWallet.holdings)) {
-//   userWallet.holdings = [];
-// }
+    // Ensure holdings is an array
+if (!Array.isArray(userWallet.holdings)) {
+  userWallet.holdings = [];
+}
 
-// // Handle 'toAsset' logic
+// Handle 'toAsset' logic
 // if (toAsset === "USDT") {
 //   // Add to spotWallet
 //   userWallet.spotWallet += toAmount;
@@ -388,104 +388,7 @@ export const getTransactions = async (req, res) => {
 // await userWallet.save();
 
 
-//     // Save transaction details
-//     const transaction = new Transaction({
-//       userId,
-//       type: "swap",
-//       fromAsset,
-//       toAsset,
-//       fromAmount: amount,
-//       toAmount,
-//       exchangeRate,
-//       status: "completed",
-//       transactionId: uuidv4(),
-//       timestamp: new Date(),
-//     });
-//     await transaction.save();
-
-//     return res.status(200).json({
-//       message: "Swap successful",
-//       fromAmount: amount,
-//       toAmount,
-//     });
-//   } catch (error) {
-//     console.error("Error in swapCrypto:", error);
-//     return res.status(500).json({ message: "Internal server error" });
-//   }
-// };
-
- 
-
-export const swapCrypto = async (req, res) => {
-  try {
-    const { fromAsset, toAsset, amount, exchangeRate } = req.body;
-    const userId = req.user._id;
-
-    // ✅ Validate inputs
-    if (!fromAsset || !toAsset || !amount || !exchangeRate) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-
-    if (isNaN(amount) || isNaN(exchangeRate) || exchangeRate <= 0) {
-      return res.status(400).json({ message: "Invalid amount or exchange rate" });
-    }
-
-    // ✅ Fetch wallet
-    const userWallet = await Wallet.findOne({ userId });
-    if (!userWallet) {
-      return res.status(404).json({ message: "Wallet not found" });
-    }
-
-    const toAmount = parseFloat((amount * exchangeRate).toFixed(8)); // handle precision
-
-    console.log("Swap:", { fromAsset, toAsset, amount, exchangeRate, toAmount });
-
-    // ✅ Deduct from `fromAsset`
-    if (fromAsset === "USDT") {
-      if (userWallet.spotWallet < amount) {
-        return res.status(400).json({ message: "Insufficient USDT balance" });
-      }
-      userWallet.spotWallet -= amount;
-    } else {
-      const fromAssetIndex = userWallet.holdings.findIndex(
-        (holding) => holding.asset === fromAsset
-      );
-
-      if (
-        fromAssetIndex === -1 ||
-        userWallet.holdings[fromAssetIndex].quantity < amount
-      ) {
-        return res.status(400).json({ message: "Insufficient balance in exchange wallet" });
-      }
-
-      userWallet.holdings[fromAssetIndex].quantity -= amount;
-    }
-
-    // ✅ Add to `toAsset`
-    if (!Array.isArray(userWallet.holdings)) {
-      userWallet.holdings = [];
-    }
-
-    if (toAsset === "USDT") {
-      userWallet.spotWallet += toAmount;
-    } else {
-      const toAssetIndex = userWallet.holdings.findIndex(
-        (holding) => holding.asset === toAsset
-      );
-
-      if (toAssetIndex === -1) {
-        userWallet.holdings.push({ asset: toAsset, quantity: toAmount });
-      } else {
-        userWallet.holdings[toAssetIndex].quantity += toAmount;
-      }
-
-      userWallet.markModified("holdings");
-    }
-
-    // ✅ Save wallet
-    await userWallet.save();
-
-    // ✅ Save transaction
+    // Save transaction details
     const transaction = new Transaction({
       userId,
       type: "swap",
@@ -498,7 +401,6 @@ export const swapCrypto = async (req, res) => {
       transactionId: uuidv4(),
       timestamp: new Date(),
     });
-
     await transaction.save();
 
     return res.status(200).json({
@@ -511,3 +413,101 @@ export const swapCrypto = async (req, res) => {
     return res.status(500).json({ message: "Internal server error" });
   }
 };
+
+ 
+
+// export const swapCrypto = async (req, res) => {
+//   try {
+//     const { fromAsset, toAsset, amount, exchangeRate } = req.body;
+//     const userId = req.user._id;
+
+//     // ✅ Validate inputs
+//     if (!fromAsset || !toAsset || !amount || !exchangeRate) {
+//       return res.status(400).json({ message: "All fields are required" });
+//     }
+
+//     if (isNaN(amount) || isNaN(exchangeRate) || exchangeRate <= 0) {
+//       return res.status(400).json({ message: "Invalid amount or exchange rate" });
+//     }
+
+//     // ✅ Fetch wallet
+//     const userWallet = await Wallet.findOne({ userId });
+//     if (!userWallet) {
+//       return res.status(404).json({ message: "Wallet not found" });
+//     }
+
+//     const toAmount = parseFloat((amount * exchangeRate).toFixed(8)); // handle precision
+
+//     console.log("Swap:", { fromAsset, toAsset, amount, exchangeRate, toAmount });
+
+//     // ✅ Deduct from `fromAsset`
+//     if (fromAsset === "USDT") {
+//       if (userWallet.spotWallet < amount) {
+//         return res.status(400).json({ message: "Insufficient USDT balance" });
+//       }
+//       userWallet.spotWallet -= amount;
+//     } else {
+//       const fromAssetIndex = userWallet.holdings.findIndex(
+//         (holding) => holding.asset === fromAsset
+//       );
+
+//       if (
+//         fromAssetIndex === -1 ||
+//         userWallet.holdings[fromAssetIndex].quantity < amount
+//       ) {
+//         return res.status(400).json({ message: "Insufficient balance in exchange wallet" });
+//       }
+
+//       userWallet.holdings[fromAssetIndex].quantity -= amount;
+//     }
+
+//     // ✅ Add to `toAsset`
+//     if (!Array.isArray(userWallet.holdings)) {
+//       userWallet.holdings = [];
+//     }
+
+//     if (toAsset === "USDT") {
+//       userWallet.spotWallet += toAmount;
+//     } else {
+//       const toAssetIndex = userWallet.holdings.findIndex(
+//         (holding) => holding.asset === toAsset
+//       );
+
+//       if (toAssetIndex === -1) {
+//         userWallet.holdings.push({ asset: toAsset, quantity: toAmount });
+//       } else {
+//         userWallet.holdings[toAssetIndex].quantity += toAmount;
+//       }
+
+//       userWallet.markModified("holdings");
+//     }
+
+//     // ✅ Save wallet
+//     await userWallet.save();
+
+//     // ✅ Save transaction
+//     const transaction = new Transaction({
+//       userId,
+//       type: "swap",
+//       fromAsset,
+//       toAsset,
+//       fromAmount: amount,
+//       toAmount,
+//       exchangeRate,
+//       status: "completed",
+//       transactionId: uuidv4(),
+//       timestamp: new Date(),
+//     });
+
+//     await transaction.save();
+
+//     return res.status(200).json({
+//       message: "Swap successful",
+//       fromAmount: amount,
+//       toAmount,
+//     });
+//   } catch (error) {
+//     console.error("Error in swapCrypto:", error);
+//     return res.status(500).json({ message: "Internal server error" });
+//   }
+// };

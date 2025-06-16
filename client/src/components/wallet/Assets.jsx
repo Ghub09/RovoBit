@@ -162,7 +162,7 @@ const Assets = ({ type }) => {
     return pair;
   };
   return (
-    <div className="min-h-screen max-w-7xl mx-auto">
+    <div className="min-h-screen max-w-7xl mx-auto ">
       {/* Display wallet-specific total valuation at the top */}
       <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md mb-4">
         <p className="text-lg text-gray-400">Total</p>
