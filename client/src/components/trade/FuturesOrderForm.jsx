@@ -16,12 +16,21 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const [leverage, setLeverage] = useState(10);
   const [quantity, setQuantity] = useState("");
   const [assetsAmount, setAssetsAmount] = useState(100);
+  const [usdtAmount, setUsdtAmount] = useState("");
   const { wallet } = useSelector((state) => state.assets);
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString()
   );
+  
 
-  const extractBase = (pair) => {
+ 
+  const handleAssetsClick = (value) => {
+    setAssetsAmount(value);
+    setUsdtAmount((wallet.futuresWallet / 100) * value);
+  };
+ 
+ 
+   const extractBase = (pair) => {
     if (pair.length <= 3) return pair; // Handle edge cases
     const base = pair.slice(0, 3);
     return `${base}`;
@@ -83,9 +92,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         socket.off("newPosition");
       };
     }, [dispatch]);
-  const handleAssetsClick = (value) => {
-    setAssetsAmount(value);
-  };
+   
 
   const assetsOptions = [25, 50, 75, 100];
 
@@ -186,21 +193,32 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </select>
       </div>
       <div className="mb-2">
-        <label className="block text-sm text-gray-300 mb-1">Amount</label>
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
-          placeholder="0"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-        />
-      </div>
+  <label className="block text-sm text-gray-300 mb-1">Amount (USDT)</label>
+
+  <div className="h-[35px] flex justify-between bg-gray-500 rounded-2xl p-2 mb-2">
+  <input
+    type="number"
+    value={usdtAmount}
+    
+    onChange={(e) => {
+      setUsdtAmount(e.target.value);
+      setQuantity(e.target.value); // sync to quantity
+      setAssetsAmount(0); // clear selected %
+    }}
+    className="w-full bg-transparent focus:outline-none text-white text-sm px-2"
+    placeholder="Select / Enter"
+  />
+  
+</div>
+
+
+  
       <div className=" max-w-full text-sm mb-2">
         <div className="flex justify-evenly">
-          {assetsOptions.map((option, index) => (
+           {assetsOptions.map((option, index) => (
             <p
               key={index}
-              className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer text-[9px] hover:scale-[1.2] ${
+              className={` rounded-sm border-[.2px]  border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] text-[10px] ${
                 assetsAmount === option
                   ? "bg-[#2c2c2c] text-white"
                   : "bg-transparent text-gray-500"
@@ -210,8 +228,10 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
               {option}%
             </p>
           ))}
-        </div>
+         </div>
       </div>
+</div>
+
 
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Latest Price:</span>

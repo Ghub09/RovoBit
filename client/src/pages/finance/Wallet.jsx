@@ -73,7 +73,8 @@ const Wallet = () => {
   const [walletValueSpot, setWalletValueSpot] = useState(0);
   const [walletValueFutures, setWalletValueFutures] = useState(0);
   const [walletValuePerpetuals, setWalletValuePerpetuals] = useState(0);
-
+  const [transferPercent, setTransferPercent] = useState(0);
+  const [swapPercent, setSwapPercent] = useState(0);
   useEffect(() => {
     // Initial data fetch
     dispatch(fetchMarketData());
@@ -102,6 +103,38 @@ const Wallet = () => {
     calculateWalletValues();
   }, [coins, wallet]);
 
+  // const handleSwapPercent = (percent) => {
+  //   const balance = wallet?.[fromAsset.toLowerCase() + "Wallet"] || 0;
+  //   const calculated = (balance * percent) / 100;
+  //   setAmount(calculated.toFixed(4));
+  //   setSwapPercent(percent);
+  // };
+   
+  
+
+  const handleSwapPercent = (percent) => {
+    if (!fromAsset) {
+      toast.error("Please select a 'From' asset first");
+      return;
+    }
+    
+    const walletKey = fromAsset.toLowerCase() + "Wallet";
+    const balance = wallet?.spotWallet || 0;
+    const calculated = (balance * percent) / 100;
+    setAmount(calculated.toFixed(4));
+    setSwapPercent(percent);
+  };
+  const handleTransferPercent = (percent) => {
+    if (!fromWallet) {
+      toast.error("Please select a 'From' wallet first");
+      return;
+    }
+    
+    const balance = wallet?.[fromWallet] || 0;
+    const calculated = (balance * percent) / 100;
+    setTransferAmount(calculated.toFixed(2));
+    setTransferPercent(percent);
+  };
   const calculateWalletValues = () => {
     if (!wallet || !coins.length) return;
 
@@ -273,9 +306,9 @@ const Wallet = () => {
   };
   // console.log(wallet)
   // console.log(showAssets)
-  console.log(wallet?.withdrawalHistory);
+  // console.log(wallet?.withdrawalHistory);
   return (
-    <div className="min-h-[100vh] mx-auto md:px-6 py-4  ">
+    <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -307,22 +340,6 @@ const Wallet = () => {
                   My Account
                 </h2>
                 <div className=" grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4  flex justify-between  ">
-                  {/* <div
-                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
-                    onClick={() => handleAssetsRendering("exchange")}
-                  >
-                    <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                      Exchange Wallet
-                    </h2>
-                    <div className="flex flex-col md:flex-row justify-between items-center">
-                      <div>
-                        <p className="text-3xl font-bold text-white">
-                          ${walletValueExchange?.toFixed(2) || "0.00"}{" "}
-                          <span className="text-gray-400 text-sm">USDT</span>
-                        </p>
-                      </div>
-                    </div>
-                  </div> */}
                   <div
                     className="bg-[#242424] p-6 w-[30%] rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
                     onClick={() => handleAssetsRendering("spot")}
@@ -627,23 +644,7 @@ const Wallet = () => {
             <div className="max-w-lg mx-auto">
               <h2 className="text-xl font-semibold mb-2">My account</h2>
               <div className="space-y-2">
-                {/* <div
-                  className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
-                  onClick={() => {
-                    handleAssetsRendering("exchange");
-                  }}
-                >
-                  <div>
-                    <p className="text-lg">Exchange Wallet</p>
-                    <p className="text-2xl font-bold">
-                      ${walletValueSpot?.toFixed(2) || "0.00"}{" "}
-                      <span className="text-sm">USDT</span>
-                    </p>
-                  </div>
-                  <div className="text-3xl">
-                    <IoIosArrowForward />
-                  </div>
-                </div> */}
+                
                 <div
                   className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
                   onClick={() => {
@@ -701,186 +702,212 @@ const Wallet = () => {
         </div>
         {/* Swap Funds */}
         
-        <Dialog open={open} handler={() => setOpen(false)} size="sm">
-          <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between ">
-            <span>Swap</span>
-            <button onClick={() => setOpen(false)}>✖</button>
-          </DialogHeader>
-          <DialogBody className="bg-[#1a1a1a] text-white p-6">
-            {/* From Currency */}
-            <div className="mb-4">
-              <label className="block mb-1">From</label>
-              <select
-                className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                value={fromAsset}
-                onChange={(e) => setFromAsset(e.target.value)}
-              >
-                <option value="" disabled>
-                  Select a Currency
-                </option>
-                {Object.keys(validPairs).map((asset) => (
-                  <option key={asset} value={asset} className="bg-[#1a1a1a]">
-                    {asset}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* To Currency */}
-            <div className="mb-4">
-              <label className="block mb-1">To</label>
-              <select
-                className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                value={toAsset}
-                onChange={(e) => setToAsset(e.target.value)}
-                disabled={!fromAsset} // Disable if 'fromAsset' is not selected
-              >
-                <option value="" disabled>
-                  Select a Currency
-                </option>
-                {validPairs[fromAsset]?.map((asset) => (
-                  <option key={asset} value={asset} className="bg-[#1a1a1a]">
-                    {asset}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Amount Input */}
-            <div className="mb-4">
-              <label className="block mb-1">Exchange Amount</label>
-              <input
-                type="number"
-                className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
-              />
-            </div>
-
-            {/* Exchange Rate Display */}
-            <p className="text-sm mb-4">
-              Current Exchange Rate: {amount} {fromAsset} ={" "}
-              {amount * exchangeRate} {toAsset}
-            </p>
-
-            {/* Swap Button */}
-            <button
-              onClick={handleSwap}
-              className="bg-blue-500 w-full py-2 rounded"
-            >
-              Exchange
-            </button>
-          </DialogBody>
-        </Dialog>
         {/* Transfer Funds */}
-        <Dialog
-          open={transferOpen}
-          handler={() => setTransferOpen(false)}
-          size="sm"
-        >
-          <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between">
-            <span>Transfer Funds (USDT)</span>
-            <button onClick={() => setTransferOpen(false)}>✖</button>
-          </DialogHeader>
-          <DialogBody className="bg-[#1a1a1a] text-white p-6">
-            {/* From Wallet (Dropdown) */}
-            <div className="mb-4">
-              <label className="block mb-1">From Wallet</label>
-              <select
-                className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                value={fromWallet}
-                onChange={(e) => setFromWallet(e.target.value)}
-              >
-                <option value="" disabled>
-                  Select Wallet
-                </option>
-                {/* Default empty option */}
-                {/* <option className="bg-[#1a1a1a]" value="exchangeWallet">
-                  Exchange Wallet
-                </option> */}
-                <option className="bg-[#1a1a1a]" value="spotWallet">
-                  Spot Wallet
-                </option>
-                <option className="bg-[#1a1a1a]" value="futuresWallet">
-                  Trading Wallet
-                </option>
-                <option className="bg-[#1a1a1a]" value="perpetualsWallet">
-                  Perpetual Wallet
-                </option>
-              </select>
-            </div>
+<Dialog
+  open={transferOpen}
+  size="sm"
+   className="bg-[#1a1a1a] border border-[#2d2d2d]"
+>
+  <DialogHeader className="text-white bg-[#1e1e1e] border-b border-[#2d2d2d] flex justify-between items-center p-4">
+    <span className="text-lg font-medium">Transfer Funds (USDT)</span>
+    <button 
+      onClick={() => setTransferOpen(false)}
+      className="text-gray-400 hover:text-white transition-colors"
+    >
+      ✖
+    </button>
+  </DialogHeader>
+  <DialogBody className="bg-[#1a1a1a] text-white p-6">
+    {/* From Wallet (Dropdown) */}
+    <div className="mb-4">
+      <label className="block mb-2 text-sm text-gray-300">From Wallet</label>
+     {/* From Wallet Dropdown */}
+<select
+  className="w-full border-[.2px] border-gray-400 p-2 rounded"
+  value={fromWallet}
+  onChange={(e) => setFromWallet(e.target.value)}
+>
+  <option value="" disabled className="bg-[#1a1a1a] text-gray-400">
+    Select Wallet
+  </option>
+  <option className="bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" value="spotWallet">
+    Spot Wallet
+  </option>
+  <option className="bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" value="futuresWallet">
+    Trading Wallet
+  </option>
+  <option className="bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" value="perpetualsWallet">
+    Perpetual Wallet
+  </option>
+</select>
 
-            {/* To Wallet (Dropdown) */}
-            <div className="mb-4">
-              <label className="block mb-1">To Wallet</label>
-              <select
-                className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                value={toWallet}
-                onChange={(e) => setToWallet(e.target.value)}
-              >
-                <option value="" disabled>
-                  Select Wallet
-                </option>{" "}
-                {/* Default empty option */}
-                {/* <option className="bg-[#1a1a1a]" value="exchangeWallet">
-                  Exchange Wallet
-                </option> */}
-                <option className="bg-[#1a1a1a]" value="spotWallet">
-                  Spot Wallet
-                </option>
-                <option className="bg-[#1a1a1a]" value="futuresWallet">
-                  Trading Wallet
-                </option>
-                <option className="bg-[#1a1a1a]" value="perpetualsWallet">
-                  Perpetual Wallet
-                </option>
-              </select>
-            </div>
-        {/* Remove exchangeWallet from transfer options: nothing to add here, just ensure it's not in the dropdowns above. */}
-        {/* No extra UI needed here since all exchangeWallet transfers are now handled by spotWallet. */}
-            {/* {(fromWallet === "exchangeWallet" && toWallet === "spotWallet") ||
-            (fromWallet === "spotWallet" && toWallet === "exchangeWallet") ? (
-              <div className="mb-4">
-                <label className="block mb-1">Select Currency</label>
-                <select
-                  className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                  value={transferAsset}
-                  onChange={(e) => setTransferAsset(e.target.value)}
-                >
-                  <option className="bg-[#1a1a1a]" value="" disabled>
-                    Select Currency
-                  </option>
-                  {transferablePairs.map((asset) => (
-                    <option key={asset} value={asset} className="bg-[#1a1a1a]">
-                      {asset}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : null} */}
+{/* To Wallet Dropdown */}
+    </div>
 
-            {/* Amount Input */}
-            <div className="mb-4">
-              <label className="block  mb-1">Amount</label>
-              <input
-                type="number"
-                className="w-full border-[.2px] border-gray-400 p-2 rounded"
-                placeholder="Enter amount"
-                value={transferAmount}
-                onChange={(e) => setTransferAmount(e.target.value)}
-              />
-            </div>
+    {/* To Wallet (Dropdown) */}
+    <div className="mb-4">
+      <label className="block mb-2 text-sm text-gray-300">To Wallet</label>
+      <select
+  className="w-full border-[.2px] border-gray-400 p-2 rounded"
+  value={toWallet}
+  onChange={(e) => setToWallet(e.target.value)}
+>
+  <option value="" disabled className="bg-[#1a1a1a] text-gray-400">
+    Select Wallet
+  </option>
+  <option className="bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" value="spotWallet">
+    Spot Wallet
+  </option>
+  <option className="bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" value="futuresWallet">
+    Trading Wallet
+  </option>
+  <option className="bg-[#1a1a1a] text-white hover:bg-[#2a2a2a]" value="perpetualsWallet">
+    Perpetual Wallet
+  </option>
+</select>
 
-            {/* Transfer Button */}
-            <button
-              onClick={handleTransfer}
-              className="bg-blue-500 w-full py-2 rounded"
-            >
-              Transfer Funds
-            </button>
-          </DialogBody>
-        </Dialog>
+    </div>
+    
+    {/* Amount Input with Percentage Options */}
+    <div className="mb-4">
+
+      <div className="flex gap-2 mb-1">
+      <label className="  text-gray-300">Amount</label>
+        {[25, 50, 75, 100].map((percent) => (
+          <button
+            key={percent}
+            className={` p-2 text-[10px] rounded-lg transition-all ${
+              transferPercent === percent 
+                ? 'bg-blue-600 text-white shadow-md' 
+                : 'bg-[#242424] text-gray-300 hover:bg-[#2d2d2d]'
+            }`}
+            onClick={() => handleTransferPercent(percent)}
+          >
+            {percent}%
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center bg-[#1e1e1e] border border-[#2d2d2d] rounded-lg mb-3 overflow-hidden">
+        <input
+          type="number"
+          className="w-full bg-transparent p-3 text-white focus:outline-none"
+          placeholder="Enter amount"
+          value={transferAmount}
+          onChange={(e) => {
+            setTransferAmount(e.target.value);
+            setTransferPercent(0);
+          }}
+        />
+       </div>
+      
+      
+    </div>
+
+      <button
+      onClick={handleTransfer}
+      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-lg"
+    >
+      Transfer Funds
+    </button>
+  </DialogBody>
+</Dialog>
+{/* Swap Funds */}
+<Dialog open={open} handler={() => setOpen(false)} size="sm">
+  <DialogHeader className="text-white bg-[#1a1a1a] flex justify-between">
+    <span>Swap Assets</span>
+    <button onClick={() => setOpen(false)}>✖</button>
+  </DialogHeader>
+  <DialogBody className="bg-[#1a1a1a] text-white p-6">
+    {/* From Currency */}
+    <div className="mb-4">
+      <label className="block mb-1">From</label>
+      <select
+        className="w-full border-[.2px] border-gray-400 p-2 rounded"
+        value={fromAsset}
+        onChange={(e) => {
+          setFromAsset(e.target.value);
+          setSwapPercent(0); // Reset percentage when changing asset
+        }}
+      >
+        <option value="" disabled>
+          Select a Currency
+        </option>
+        {Object.keys(validPairs).map((asset) => (
+          <option key={asset} value={asset} className="bg-[#1a1a1a]">
+            {asset}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* To Currency */}
+    <div className="mb-4">
+      <label className="block mb-1">To</label>
+      <select
+        className="w-full border-[.2px] border-gray-400 p-2 rounded"
+        value={toAsset}
+        onChange={(e) => setToAsset(e.target.value)}
+        disabled={!fromAsset}
+      >
+        <option value="" disabled>
+          Select a Currency
+        </option>
+        {validPairs[fromAsset]?.map((asset) => (
+          <option key={asset} value={asset} className="bg-[#1a1a1a]">
+            {asset}
+          </option>
+        ))}
+      </select>
+    </div>
+
+    {/* Amount Input with Percentage Options */}
+    <div className="mb-4">
+      <label className="block mb-1 flex"><span className="mr-3"> Amount</span> <div className="flex justify-between gap-2 mb-4">
+        {[25, 50, 75, 100].map((percent) => (
+          <button
+            key={percent}
+            className={` w-[30px] py-1 text-xs rounded ${
+              swapPercent === percent 
+                ? 'bg-blue-500 text-white' 
+                : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+            }`}
+            onClick={() => handleSwapPercent(percent)}
+          >
+            {percent}%
+          </button>
+        ))}
+      </div></label>
+      <div className="flex items-center border-[.2px] border-gray-400 rounded mb-2">
+        <input
+          type="number"
+          className="w-full bg-transparent p-2 focus:outline-none"
+          placeholder="Enter / select"
+          value={amount}
+          onChange={(e) => {
+            setAmount(e.target.value);
+            setSwapPercent(0); // Clear percentage when manually entering amount
+          }}
+        />
+       </div>
+      
+      {/* Percentage Buttons */}
+     
+    </div>
+
+   
+
+    {/* Swap Button */}
+    <button
+      onClick={handleSwap}
+      className="bg-blue-500 w-full py-2 rounded hover:bg-blue-600 transition"
+      disabled={!amount || !fromAsset || !toAsset}
+    >
+      Swap
+    </button>
+  </DialogBody>
+</Dialog>
+        
+        
       </motion.div>
     </div>
   );

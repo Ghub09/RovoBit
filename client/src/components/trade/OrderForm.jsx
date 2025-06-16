@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { fetchPendingOrders, placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
 import { getWallet } from "../../store/slices/assetsSlice";
-import SmallLoader from "../layout/smallLoader";
+import SmallLoader from "../layout/SmallLoader.jsx";
 
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
@@ -200,7 +200,11 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
           />
         </div>
       )}
-
+   
+      <label htmlFor="usdtAmount" className="text-sm border  text-gray-300 mb-1">
+        <span className=" top-1/2 -translate-y-1/2  text-xs">
+      <span className="text-sm text-2xl"> Amount (</span>{side === "buy" ? "USDT" : extractBase(selectedPair)})
+  </span> </label>
      <div className="relative mb-2 w-full max-w-xs  bg-gray-500 rounded-2xl ">
   <input
     type="number"
@@ -209,12 +213,10 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       setUsdtAmount(e.target.value);
       setAssetsAmount(0);
     }}
-    className="w-full  focus:outline-none rounded-md px-3 py-2 text-white  pr-16 text-sm"
+    className="w-full  focus:outline-none rounded-md px-3 py-2 text-white   text-sm"
     placeholder={t("enter_quantity")}
   />
-  <span className="absolute right-3 top-1/2 -translate-y-1/2  text-xs">
-    {side === "buy" ? "USDT" : extractBase(selectedPair)}
-  </span>
+  
 </div>
 
       <div className=" max-w-full text-sm mb-2">

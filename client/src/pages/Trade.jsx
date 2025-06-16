@@ -120,7 +120,7 @@ function Trade() {
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
   return (
-    <div className="min-h-screen max-w-7xl mx-auto md:px-4 ">
+    <div className="min-h-screen max-w-7xl mx-auto md:px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

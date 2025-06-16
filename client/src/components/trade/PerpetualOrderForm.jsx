@@ -24,6 +24,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const [openModal, setOpenModal] = useState(false);
   const [assetsAmount, setAssetsAmount] = useState(100);
   const { wallet } = useSelector((state) => state.assets);
+  const [usdtAmount, setUsdtAmount] = useState("");
 
   useEffect(() => {
     dispatch(fetchOpenPerpetualTrades());
@@ -77,8 +78,13 @@ dispatch(
     setLeverage(value);
   };
   const handleAssetsClick = (value) => {
+    const base = wallet?.perpetualsWallet || 0;
+    const calculated = (base * value) / 100;
     setAssetsAmount(value);
+    setUsdtAmount(calculated.toFixed(2));
+    setQuantity(calculated.toFixed(2)); // sync quantity
   };
+  
 
   const leverageOptions = [1, 25, 50, 75, 100, 125, 150, 175, 200];
   const assetsOptions = [25, 50, 75, 100];
@@ -169,16 +175,26 @@ dispatch(
       )}
 
      
-      <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Amount</label>
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
-          placeholder="0"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-        />
-      </div>
+<div className="my-4">
+  <label className="block text-sm text-gray-300 mb-1">Amount (USDT)</label>
+
+  {/* Input Field Styled Compact */}
+  <div className="h-[40px] flex justify-between bg-gray-500 rounded-2xl p-2 mb-2">
+    <input
+      type="number"
+      value={usdtAmount}
+      onChange={(e) => {
+        setUsdtAmount(e.target.value);
+        setQuantity(e.target.value); // update quantity
+        setAssetsAmount(0); // clear selected %
+      }}
+      className="w-full bg-transparent focus:outline-none text-white text-sm px-2"
+      placeholder="Enter / select"
+    />
+    
+  </div>
+
+  {/* Percentage Buttons */}
       <div className=" max-w-full text-sm mb-2">
         <div className="flex justify-evenly">
           {assetsOptions.map((option, index) => (
@@ -196,6 +212,9 @@ dispatch(
           ))}
         </div>
       </div>
+   
+</div>
+
 
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Available USDT:</span>
