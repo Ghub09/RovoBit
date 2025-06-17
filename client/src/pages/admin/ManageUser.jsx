@@ -112,7 +112,7 @@ const handleRemoveToken=(user)=>{
           <tbody>
             {update.length > 0 ? (
               update.map((user) => (
-                <>
+              
                 
                 
                 <tr
@@ -174,7 +174,7 @@ const handleRemoveToken=(user)=>{
                     </button>
                   </td>
                 </tr>
-                </>
+                
               ))
             ) : (
               <tr>

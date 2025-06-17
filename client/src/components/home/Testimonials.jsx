@@ -40,9 +40,9 @@ const Testimonials = () => {
     },
   ];
   return (
-    <section className="testimonials min-h-screen flex flex-col items-center justify-center bg-gradient-reverse text-white text-center">
+    <section className="testimonials min-h-screen py-10 flex flex-col items-center justify-center bg-gradient-reverse text-white text-center">
       <AnimatedHeading>
-        <h2 className="text-4xl font-bold mb-8 text-white">Testimonials</h2>
+        <h2 className="text-4xl font-bold mb-8 text-white my-20">Testimonials</h2>
       </AnimatedHeading>
      <Swiper
   loop={true}

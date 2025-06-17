@@ -146,6 +146,44 @@ setInterval(async () => {
   await checkExpiredTrades();
 }, 60000);
 
+const connectedUsers = new Map(); // Map<userId, socketId>
+
+io.on("connection", (socket) => {
+  console.log("New socket connected:", socket.id);
+
+  socket.on("user_connected", ({ _id, firstName, role }) => {
+    if (_id) {
+      connectedUsers.set(_id, { socketId: socket.id, firstName, role });
+      console.log(`User connected: ${firstName} (${_id})`);
+      broadcastActiveUsers();
+    }
+  });
+
+  socket.on("disconnect", () => {
+    for (const [userId, userData] of connectedUsers.entries()) {
+      if (userData.socketId === socket.id) {
+        connectedUsers.delete(userId);
+        console.log(`User disconnected: ${userId}`);
+        break;
+      }
+    }
+    broadcastActiveUsers();
+  });
+
+  const broadcastActiveUsers = () => {
+    const activeUsers = Array.from(connectedUsers.entries()).map(([userId, userData]) => ({
+      userId,
+      ...userData
+    }));
+    io.emit("active_users", activeUsers);
+  };
+});
+
+
+
+
+
+
 console.log("process.env.PORT----", process.env.PORT);
 // Start the server
 const PORT = process.env.PORT || 3000;

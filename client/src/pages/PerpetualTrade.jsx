@@ -10,6 +10,7 @@ import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 import OpenPerpetualPositions from "../components/trade/OpenPerpetualPositions";
 import OrdersRecord from "../components/trade/OrdersRecord";
+
 const socket = io(import.meta.env.VITE_API_URL);
 
 const PerpetualTrade = () => {
@@ -70,7 +71,7 @@ const PerpetualTrade = () => {
 
   // WebSocket for real-time updates
   useEffect(() => {
-    const ws = new WebSocket(
+    const ws = new socket(
       `wss://stream.binance.us:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
     );
 
