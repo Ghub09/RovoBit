@@ -9,7 +9,7 @@ import "./i18n.js";
 import { ThemeProvider } from "./context/ThemeContext.jsx";
 import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
+  <>
     <TranslationWrapper>
         <Provider store={store}>
       <ThemeProvider>
@@ -17,5 +17,5 @@ createRoot(document.getElementById("root")).render(
       </ThemeProvider>
         </Provider>
     </TranslationWrapper>
-  </StrictMode>
+  </>
 );

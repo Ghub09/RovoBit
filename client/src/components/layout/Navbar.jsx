@@ -161,6 +161,14 @@ return (
             >
               {t("market")}
             </Link>
+            <Link
+              to={"/chat"}
+              className={`  hover:text-[#0077ff] m-2 ${getModeColor(
+                "t"
+              )} text-center  `}
+            >
+              Contact
+            </Link>
             <Menu
               open={tradeMenu}
               handler={setTradeMenu}

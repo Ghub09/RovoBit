@@ -34,10 +34,28 @@ import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 import ManageOrders from "./pages/admin/ManageOrders.jsx";
 import Loader from "./components/layout/Loader.jsx";
+import { io } from "socket.io-client";
+import ChatBox from "./pages/ChatBox.jsx";
+import AdminChat from "./pages/admin/AdminChat.jsx";
 const App = () => {
   const dispatch = useDispatch();
     const { loading } = useSelector((state) => state.global);
+    const socket = io("http://localhost:5000");
+    useEffect(() => {
+      // socket.on("connect", () => {
+      //   console.log("Connected",socket.id);
+      // });
 
+      // socket.on("WelCome", (message) => {
+      //   console.log(message);
+      // });
+      socket.on("user_connected", (message) => {
+        console.log("user_connected",message);
+      });
+      return () => {
+        socket.disconnect();
+      };
+    }, []);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -51,13 +69,14 @@ const App = () => {
           <Navbar />
           <main className="pt-[82px]">
                          {loading && <Loader />}
-
+              
              <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LogIn />} />
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/market" element={<Market />} />
+              <Route path="/chat" element={<ChatBox/>} />
                <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />
@@ -65,6 +84,10 @@ const App = () => {
                 <Route
                   path="/admin/transaction/manage"
                   element={<ManageTransactions />}
+                />
+                <Route
+                  path="/admin/messages"
+                  element={<AdminChat />}
                 />
                   <Route
                   path="/admin/users/add-tokens/:userId"

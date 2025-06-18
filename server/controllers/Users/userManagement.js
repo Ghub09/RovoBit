@@ -5,7 +5,7 @@ import PerpetualTrade from "../../models/PerpetualTrade.js";
 import TradeHistory from "../../models/TradeHistory.js";
 import DepositWithdrawRequest from "../../models/RequestMessage.js";
 import Wallet from "../../models/Wallet.js";
-
+import Messages from "../../models/Messages.js";
 export const deleteUserHistoryByUserId = async (userId) => {
   try {
     const userIdString = userId.toString();
@@ -55,27 +55,36 @@ export const deleteUserAndArchive = async (req, res) => {
     return res.status(400).json({ error: "Invalid user ID" });
   }
 
- 
-  const deleteHistoryResult = await deleteUserHistoryByUserId(userId);
-  console.log("User history deletion result:", deleteHistoryResult);
-
-  if (!deleteHistoryResult.success) {
-    return res.status(500).json({ error: "Failed to delete user history", details: deleteHistoryResult.error });
-  }
-
   try {
-    const wallet = await Wallet.findOne( {userId} );
     const user = await User.findById(userId);
-    if (!user || !wallet) return res.status(404).json({ error: "User not found" });
+    const wallet = await Wallet.findOne({ userId });
 
+    if (!user || !wallet) {
+      return res.status(404).json({ error: "User or wallet not found" });
+    }
+
+    // ✅ Delete messages between admin and the user
+    const deletedMessages = await Messages.deleteMany({
+      $or: [
+        { senderId: userId, receiverId: "admin" },
+        { senderId: "admin", receiverId: userId },
+      ],
+    });
+
+    // ✅ Delete user and wallet
     await User.findByIdAndDelete(userId);
     await Wallet.findOneAndDelete({ userId });
-    return res.status(200).json({ message: "User deleted and history cleaned up", history: deleteHistoryResult.counts });
+
+    return res.status(200).json({
+      message: "User and related chat with admin deleted",
+      deletedMessages: deletedMessages.deletedCount,
+    });
   } catch (err) {
     console.error("❌ Delete Error:", err);
     return res.status(500).json({ error: "Server error" });
   }
 };
+
 export const fetchUserWallets = async (req, res) => {
   const userId = req.params.userId;
 
@@ -316,4 +325,24 @@ export const updateUserWallets = async (req, res) => {
   }
 };
 
+// Controller function to fetch messages between two parties
+// export const getChatBetweenUsers = async (req, res) => {
+//   const { userId} = req.params;
 
+//   try {
+//     const messages = await Messages.find({
+//       $or: [
+//         { senderId: userId, receiverId: targetId },
+//         { senderId: targetId, receiverId: userId }
+//       ]
+//     }).sort({ timestamp: 1 });
+
+//     res.status(200).json({ messages });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).json({ error: "Failed to fetch messages." });
+//   }
+// };
+
+
+  

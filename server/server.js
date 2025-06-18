@@ -7,7 +7,9 @@ import app from "./app.js";
 import {
   checkLiquidations,
   checkExpiredTrades,
+
 } from "./controllers/futuresTradeController.js";
+import Messages from "./models/Messages.js";
 
 dotenv.config();
 
@@ -146,38 +148,56 @@ setInterval(async () => {
   await checkExpiredTrades();
 }, 60000);
 
-const connectedUsers = new Map(); // Map<userId, socketId>
+ 
+// io.on("connection", (socket) => {
+//   // console.log("New socket connected:", socket.id);
+
+//   socket.emit("WelCome", `${socket.id} WelCome to the server`);
+//   socket.broadcast.emit("user_connected",` ${socket.id} is connected`);
+//   socket.on("disconnect", () => {
+//     console.log("User disconnected:", socket.id);
+//   });
+//   socket.on("sendMessage", (message) => {
+//     io.emit("message", message);
+//   });
+
+// });
+
+const users = {}; // { socketId: userId }
 
 io.on("connection", (socket) => {
-  console.log("New socket connected:", socket.id);
+  socket.on("register", ({ userId }) => {
+    users[socket.id] = userId;
+    socket.join(userId);
+    console.log(`User ${userId} connected`);
+  });
 
-  socket.on("user_connected", ({ _id, firstName, role }) => {
-    if (_id) {
-      connectedUsers.set(_id, { socketId: socket.id, firstName, role });
-      console.log(`User connected: ${firstName} (${_id})`);
-      broadcastActiveUsers();
-    }
+  socket.on("getChatHistory", async ({ senderId, receiverId }, callback) => {
+    const history = await Messages.find({
+      $or: [
+        { senderId, receiverId },
+        { senderId: receiverId, receiverId: senderId },
+      ]
+    }).sort({ timestamp: 1 });
+  
+    callback(history);
+  });
+  
+  
+
+  socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
+    const message = await Messages.create({ senderId, receiverId, text });
+    io.to(receiverId).emit("message", message);
+    socket.emit("message", message); // echo back
   });
 
   socket.on("disconnect", () => {
-    for (const [userId, userData] of connectedUsers.entries()) {
-      if (userData.socketId === socket.id) {
-        connectedUsers.delete(userId);
-        console.log(`User disconnected: ${userId}`);
-        break;
-      }
-    }
-    broadcastActiveUsers();
+    const userId = users[socket.id];
+    delete users[socket.id];
+    console.log(`User ${userId} disconnected`);
   });
-
-  const broadcastActiveUsers = () => {
-    const activeUsers = Array.from(connectedUsers.entries()).map(([userId, userData]) => ({
-      userId,
-      ...userData
-    }));
-    io.emit("active_users", activeUsers);
-  };
 });
+
 
 
 

@@ -19,17 +19,7 @@ const AdminDashboard = () => {
             </p>
           </Link>
         </Card>
-        {/* <Card className="rounded-lg  flex flex-col justify-between bg-[#2A2A2A] text-gray-500 p-6 hover:scale-105 transition duration-300 ease-in-out">
-          <h2 className="text-2xl font-bold mb-2 text-white">
-            Users
-          </h2>
-          <p className="min-h-[70px]">Users messages here for reply.</p>
-          <Link to={"/admin/users/messages"}>
-            <p className="text-blue-500 hover:underline cursor-pointer">
-             Messages
-            </p>
-          </Link>
-        </Card> */}
+       
         <Card className="rounded-lg flex flex-col justify-between bg-[#2A2A2A] text-gray-500 p-6 hover:scale-105 transition duration-300 ease-in-out">
           <h2 className="text-2xl font-bold mb-2 text-white">
             Transaction Approval

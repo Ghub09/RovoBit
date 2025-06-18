@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchUsers } from "../../store/slices/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { deleteUser, profitUser, userHistory } from "./DeleteUser";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import CustomModel from "../../components/mini/Model";
@@ -9,7 +9,8 @@ import BooleanToggle from "../../components/toggle/Toggle";
 import HistoryModel from "../../components/mini/HistoryModel";
 import { toast } from "react-toastify";
 import RemoveToken from "../../components/RemoveToken/ReomoveToken.jsx";
-
+import { Card } from "@material-tailwind/react";
+ 
 const ManageUser = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -95,6 +96,14 @@ const handleRemoveToken=(user)=>{
   return (
     <div>
       <div className="p-6 min-h-screen  mb-6">
+        <div className="flex justify-end">
+        <Link to="/admin/messages" className="no-underline">
+  <Card className="rounded-lg flex flex-col justify-between bg-[#2A2A2A] text-gray-500 p-2 hover:scale-105 transition duration-300 ease-in-out cursor-pointer">
+    Messages
+  </Card>
+</Link>
+
+        </div>
         <h2 className="text-2xl font-semibold mb-4">User Management</h2>
 
         <table className="w-full text-left bg-gray-700  ">
