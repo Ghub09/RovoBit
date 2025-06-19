@@ -51,7 +51,7 @@ const Faqs = () => {
 
   const handleOpen = (value) => setOpen(open === value ? 0 : value);
   return (
-    <section className="faqs h-[120vh] px-8 bg-gradient-reverse  w-full text-white flex flex-col justify-around text-start items-center">
+    <section className=" faqs px-8 bg-gradient-reverse  w-full text-white flex flex-col justify-around text-start items-center">
       <AnimatedHeading>
         <h2 className="text-4xl font-bold  text-blue-500 text-center">
           Frequently Asked Questions

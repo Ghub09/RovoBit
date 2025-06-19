@@ -17,11 +17,11 @@ import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import {
   MdCandlestickChart,
-  MdOutlinePersonOutline,
+  // MdOutlinePersonOutline,
   MdPerson,
 } from "react-icons/md";
 import { setShowChart } from "../../store/slices/globalSlice";
-import { LuMessageCircleQuestion } from "react-icons/lu";
+// import { LuMessageCircleQuestion } from "react-icons/lu";
 import { useTheme } from "../../context/ThemeContext";
 
 const Navbar = () => {
@@ -104,7 +104,7 @@ return (
       <nav className="container mx-auto flex justify-between items-center items-center p-4 ">
         <div className="logo-container flex items-center ">
           <Link to={"/"} className=" h-[70px] flex items-center w-[100px]">
-                <img src={logoSrc} className="w-[8vw]" alt="Logo" />           </Link>
+                <img src={logoSrc} className="md:w-[8vw] w-[100px]" alt="Logo" />           </Link>
           {showSelectOption && (
             <div className="flex md:hidden border border-[#fffff] items-center ml-auto">
               <select
@@ -161,14 +161,7 @@ return (
             >
               {t("market")}
             </Link>
-            <Link
-              to={"/chat"}
-              className={`  hover:text-[#0077ff] m-2 ${getModeColor(
-                "t"
-              )} text-center  `}
-            >
-              Contact
-            </Link>
+             
             <Menu
               open={tradeMenu}
               handler={setTradeMenu}
@@ -311,10 +304,8 @@ return (
                   </MenuItem>
                 </MenuList>
               </Menu>
-              <div className="flex items-center justify-center">
-                <a href="mailto:bitex.helpdesk@gmail.com">
-                  <LuMessageCircleQuestion className={`${getModeColor("t")}`} />
-                </a>
+              <div className="flex items-center justify-center ">
+                <Link to={"/chat"}>👨‍💼</Link>
               </div>
               
             </>

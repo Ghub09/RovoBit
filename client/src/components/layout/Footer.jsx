@@ -13,7 +13,7 @@ const Footer = () => {
             <div className="logo-container flex items-center">
               <Link to={"/"} className="">
                 <i>
-                  <img className="w-[8vw]" src={LogoSrc} alt="LOGO" />
+                  <img className="md:w-[8vw]  w-[100px]" src={LogoSrc} alt="LOGO" />
                 </i>
               </Link>
             </div>
