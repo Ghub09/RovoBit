@@ -24,10 +24,11 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
     !entryPrice ||
     !tradeType ||
     !assetsAmount ||
-    (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
+    (!quantity && !amountInUSDT)
   ) {
     return res.status(400).json({ message: "Kindly fill in all fields" });
   }
+  
   if (!["long", "short"].includes(type)) {
     return res.status(400).json({ message: "Invalid trade type" });
   }

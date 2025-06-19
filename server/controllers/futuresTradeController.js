@@ -4,7 +4,6 @@ import FundingRate from "../models/FundingRate.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 import { io } from "../server.js"; // Import WebSocket instance
-import axios from "axios";
 
 // export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
 //   const {
@@ -18,19 +17,21 @@ import axios from "axios";
 //     tradeType,
 //     amountInUSDT, // New field: Amount of USDT to allocate
 //   } = req.body;
+//   console.log(req.body)
 //   const userId = req.user._id;
 
 //   // Validate required fields
-//   if (
-//     !pair ||
-//     !type ||
-//     !leverage ||
-//     !entryPrice ||
-//     !assetsAmount ||
-//     (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
-//   ) {
-//     return res.status(400).json({ message: "Kindly fill in all fields" });
-//   }
+//  if (
+//   !pair ||
+//   !type ||
+//   !leverage ||
+//   !entryPrice ||
+//   !assetsAmount ||
+//   (!quantity && !amountInUSDT)
+// ) {
+//   return res.status(400).json({ message: "Kindly fill in all fields" });
+// }
+
 
 //   // Validate trade type
 //   if (!["long", "short"].includes(type)) {
@@ -362,14 +363,10 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
 
 
 export const getOpenPositions = catchAsyncErrors(async (req, res) => {
-  try {
-    const userId = req.user._id;
-    const openTrades = await FuturesTrade.find({ userId, status: "open" });
+  const userId = req.user._id;
+  const openTrades = await FuturesTrade.find({ userId, status: "open" });
 
-    res.status(200).json({ trades: openTrades });
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
+  res.status(200).json({ trades: openTrades }); // ✅ returns correct shape
 });
 
 export const getFuturesTradeHistory = async (req, res) => {

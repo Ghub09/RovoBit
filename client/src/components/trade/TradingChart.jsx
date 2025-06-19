@@ -27,28 +27,40 @@ const TradingChart = ({
   };
 
   // Function to fetch historical market data (initial chart load)
-  const fetchMarketData = async () => {
-    try {
-      const response = await fetch(
-        `https://api.binance.us/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
-      );
-      const data = await response.json();
+ 
+const fetchMarketData = async () => {
+  try {
+    const response = await axios.get(
+      `https://corsproxy.io/?https://api.binance.com/api/v3/klines`,
+      {
+        params: {
+          symbol: selectedPair,
+          interval: selectedInterval,
+        },
+      }
+    );
 
-      const formattedData = data.map((candle) => ({
-        time: Math.floor(candle[0] / 1000),
-        open: parseFloat(candle[1]),
-        high: parseFloat(candle[2]),
-        low: parseFloat(candle[3]),
-        close: parseFloat(candle[4]),
-        volume: parseFloat(candle[5]),
-      }));
+    const formattedData = response.data.map((candle) => ({
+      time: Math.floor(candle[0] / 1000),
+      open: parseFloat(candle[1]),
+      high: parseFloat(candle[2]),
+      low: parseFloat(candle[3]),
+      close: parseFloat(candle[4]),
+      volume: parseFloat(candle[5]),
+    }));
 
-      setMarketData(formattedData);
+    console.log("Market data:", formattedData);
+    setMarketData(formattedData);
+
+    if (candleSeriesRef?.current) {
       candleSeriesRef.current.setData(formattedData);
-    } catch (error) {
-      console.error("Error fetching historical market data:", error);
     }
-  };
+  } catch (error) {
+    console.error("Full Error:", error);
+  }
+};
+
+  
 
   // Initialize chart on first render
   useEffect(() => {

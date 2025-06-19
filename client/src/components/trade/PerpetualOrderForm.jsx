@@ -7,87 +7,72 @@ import {
 } from "../../store/slices/perpetualSlice";
 import { Card } from "@material-tailwind/react";
 import { Button, Modal, Dropdown } from "flowbite-react";
-
 import { toast } from "react-toastify";
 import AnimatedHeading from "../animation/AnimateHeading";
 
 const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const dispatch = useDispatch();
-  const { loading, openTrades } = useSelector((state) => state.perpetual);
+  const { openTrades } = useSelector((state) => state.perpetual);
+  const { wallet } = useSelector((state) => state.assets);
 
   const [type, setType] = useState("long");
   const [leverage, setLeverage] = useState(50);
-  const [quantity, setQuantity] = useState("");
-  const [closeTradeId, setCloseTradeId] = useState("");
   const [tradeType, setTradeType] = useState("market");
   const [limitPrice, setLimitPrice] = useState(null);
   const [openModal, setOpenModal] = useState(false);
-  const [assetsAmount, setAssetsAmount] = useState(100);
-  const { wallet } = useSelector((state) => state.assets);
+  const [assetsAmount, setAssetsAmount] = useState(0);
   const [usdtAmount, setUsdtAmount] = useState("");
+
+  const leverageOptions = [1, 25, 50, 75, 100, 125, 150, 175, 200];
+  const assetsOptions = [25, 50, 75, 100];
 
   useEffect(() => {
     dispatch(fetchOpenPerpetualTrades());
   }, [dispatch]);
+
   const calculateLiquidationPrice = (entryPrice, leverage, type) => {
-  const maintenanceMarginRate = 0.005; // e.g., 0.5%
-  if (type === "long") {
-    return entryPrice * (1 - (1 / leverage) + maintenanceMarginRate);
-  } else {
-    return entryPrice * (1 + (1 / leverage) - maintenanceMarginRate);
-  }
-};
-
-  const handleOpenTrade = () => {
-    if (!quantity) {
-      toast.error("Please enter all fields!");
-      return;
-    }
-   const numericAmount = Number(quantity);
-const marginUsed = numericAmount / leverage;
-
-dispatch(
-  openPerpetualTrade({
-    pair: selectedPair,
-    type,
-    tradeType,
-    leverage,
-    entryPrice: marketPrice,
-    quantity: numericAmount,
-    assetsAmount, // the percentage like 100%
-    marginUsed,
-    liquidationPrice: calculateLiquidationPrice(marketPrice, leverage, type),
-    amountInUSDT: quantity.toString(),
-    limitPrice: tradeType === "limit" ? Number(limitPrice) : null,
-  })
-);
-
+    const maintenanceMarginRate = 0.005;
+    return type === "long"
+      ? entryPrice * (1 - 1 / leverage + maintenanceMarginRate)
+      : entryPrice * (1 + 1 / leverage - maintenanceMarginRate);
   };
 
-  const handleCloseTrade = () => {
-    if (!closeTradeId) {
-      toast.error("Please select a trade and enter close price!");
-      return;
-    }
-    dispatch(
-      closePerpetualTrade({ tradeId: closeTradeId, closePrice: marketPrice })
-    );
-    dispatch(fetchOpenPerpetualTrades());
-  };
   const handleLeverageClick = (value) => {
     setLeverage(value);
   };
+
   const handleAssetsClick = (value) => {
     const base = wallet?.perpetualsWallet || 0;
     const calculated = (base * value) / 100;
     setAssetsAmount(value);
     setUsdtAmount(calculated.toFixed(2));
-    setQuantity(calculated.toFixed(2)); // sync quantity
   };
-  
 
-  const leverageOptions = [1, 25, 50, 75, 100, 125, 150, 175, 200];
-  const assetsOptions = [25, 50, 75, 100];
+  const handleOpenTrade = () => {
+    if (!usdtAmount || parseFloat(usdtAmount) <= 0) {
+      toast.error("Please enter a valid USDT amount!");
+      return;
+    }
+
+    const amount = parseFloat(usdtAmount);
+    const calculatedQuantity = amount / marketPrice;
+    const marginUsed = (calculatedQuantity * marketPrice) / leverage;
+
+    dispatch(
+      openPerpetualTrade({
+        pair: selectedPair,
+        type,
+        tradeType,
+        leverage,
+        entryPrice: marketPrice,
+        assetsAmount:amount,
+        amountInUSDT: amount.toString(),
+        marginUsed,
+        liquidationPrice: calculateLiquidationPrice(marketPrice, leverage, type),
+        ...(tradeType === "limit" && { limitPrice: Number(limitPrice) }),
+      })
+    );
+  };
 
   return (
     <Card className="p-1 bg-transparent text-white w-full md:max-w-md">
@@ -95,7 +80,8 @@ dispatch(
         <h2 className="text-center pb-4">Perpetual</h2>
       </AnimatedHeading>
 
-      <div className=" p-1 rounded-md flex gap-2">
+      {/* Long/Short Toggle */}
+      <div className="p-1 rounded-md flex gap-2">
         <button
           onClick={() => setType("long")}
           className={`w-1/2 text-center py-2 rounded-md ${
@@ -118,6 +104,7 @@ dispatch(
         </button>
       </div>
 
+      {/* Trade Type & Leverage */}
       <div className="mb-2 flex gap-2">
         <div className="border-[.2px] border-[#2d2d2d] rounded-md w-full p-1">
           <Dropdown
@@ -127,30 +114,23 @@ dispatch(
             inline
             className="bg-transparent text-sm w-[100%]"
           >
-            <Dropdown.Item
-              onClick={() => {
-                setTradeType("market");
-              }}
-            >
+            <Dropdown.Item onClick={() => setTradeType("market")}>
               Market
             </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                setTradeType("limit");
-              }}
-            >
+            <Dropdown.Item onClick={() => setTradeType("limit")}>
               Limit
             </Dropdown.Item>
           </Dropdown>
         </div>
         <button
           onClick={() => setOpenModal(true)}
-          className="bg-gray-700 bg-transparent cursor-pointer focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-fit text-center"
+          className="bg-transparent cursor-pointer focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-fit text-center"
         >
           {leverage}X
         </button>
       </div>
 
+      {/* Limit Price */}
       {tradeType === "limit" ? (
         <div className="mb-4">
           <label className="block text-sm text-gray-300 mb-1">
@@ -160,51 +140,48 @@ dispatch(
             type="number"
             value={limitPrice}
             onChange={(e) => setLimitPrice(e.target.value)}
-            className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-center text-white border border-gray-800"
+            className="w-full bg-gray-700 rounded-md px-2 py-2 text-center text-white border border-gray-800"
           />
         </div>
       ) : (
         <div className="mb-2">
           <input
             type="number"
-            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full  text-center"
+            className="bg-gray-700 rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
             value={marketPrice?.toFixed(0)}
             readOnly
           />
         </div>
       )}
 
-     
-<div className="my-4">
-  <label className="block text-sm text-gray-300 mb-1">Amount (USDT)</label>
+      {/* Amount in USDT */}
+      <div className="my-4">
+        <label className="block text-sm text-gray-300 mb-1">
+          Amount (USDT)
+        </label>
+        <div className="h-[40px] flex justify-between bg-gray-500 rounded-2xl p-2 mb-2">
+          <input
+            type="number"
+            value={usdtAmount}
+            onChange={(e) => {
+              setUsdtAmount(e.target.value);
+              setAssetsAmount(0); // Reset selected % when manually entered
+            }}
+            className="w-full bg-transparent focus:outline-none text-white text-sm px-2"
+            placeholder="Enter / select"
+          />
+        </div>
 
-  {/* Input Field Styled Compact */}
-  <div className="h-[40px] flex justify-between bg-gray-500 rounded-2xl p-2 mb-2">
-    <input
-      type="number"
-      value={usdtAmount}
-      onChange={(e) => {
-        setUsdtAmount(e.target.value);
-        setQuantity(e.target.value); // update quantity
-        setAssetsAmount(0); // clear selected %
-      }}
-      className="w-full bg-transparent focus:outline-none text-white text-sm px-2"
-      placeholder="Enter / select"
-    />
-    
-  </div>
-
-  {/* Percentage Buttons */}
-      <div className=" max-w-full text-sm mb-2">
-        <div className="flex justify-evenly">
-          {assetsOptions.map((option, index) => (
+        {/* % Selector */}
+        <div className="flex justify-evenly text-sm mb-2">
+          {assetsOptions.map((option) => (
             <p
-              key={index}
-              className={` rounded-sm border-[.2px] text-[9px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
+              key={option}
+              className={`rounded-sm border-[.2px] text-[9px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
                 assetsAmount === option
                   ? "bg-[#2c2c2c] text-white"
                   : "bg-transparent text-gray-500"
-              } `}
+              }`}
               onClick={() => handleAssetsClick(option)}
             >
               {option}%
@@ -212,14 +189,12 @@ dispatch(
           ))}
         </div>
       </div>
-   
-</div>
 
-
+      {/* Wallet Info */}
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Available USDT:</span>
         <span className="text-white">
-          {wallet?.perpetualsWallet.toFixed(2) || "0.00"}
+          {wallet?.perpetualsWallet?.toFixed(2) || "0.00"}
         </span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
@@ -231,6 +206,7 @@ dispatch(
         <span className="text-white">0</span>
       </div>
 
+      {/* Leverage Modal */}
       <Modal
         show={openModal}
         onClose={() => setOpenModal(false)}
@@ -271,7 +247,7 @@ dispatch(
                 key={option}
                 onClick={() => handleLeverageClick(option)}
                 className={`w-full py-2 text-sm rounded-md text-white ${
-                  leverage === option ? "bg-[#313131]" : "bg-[#222] "
+                  leverage === option ? "bg-[#313131]" : "bg-[#222]"
                 } hover:bg-[#313131] transition`}
               >
                 {option}x
@@ -290,9 +266,10 @@ dispatch(
         </div>
       </Modal>
 
+      {/* Open Position Button */}
       <button
         onClick={handleOpenTrade}
-        className={` w-full py-2 rounded-md text-sm ${
+        className={`w-full py-2 rounded-md text-sm ${
           type === "long"
             ? "bg-[#26bb8c] hover:bg-green-500"
             : "bg-[#ff5e5a] hover:bg-red-500"

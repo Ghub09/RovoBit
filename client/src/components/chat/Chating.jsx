@@ -3,7 +3,7 @@ import useChat from '../../store/slices/useChat';
 
 const Chating = ({ userId, targetId,classes }) => {
   const messagesEndRef = useRef(null);
-  const { messages, sendMessage, loadChatHistory,loading } = useChat(userId);
+  const { messages, sendMessage, loadChatHistory, loading } = useChat(userId);
   const [input, setInput] = useState("");
    useEffect(() => {
     if (targetId) loadChatHistory(targetId); // 👈 Correct usage

@@ -20,11 +20,13 @@ const [activeTab, setActiveTab] = useState("history");
   const { openOrders, spotHistoryTrades } = useSelector(
     (state) => state.trade
   );
+  // console.log(openOrders)
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
- console.log(openOrders)
-  useEffect(() => {
-
+  // console.log(perpetualsHistoryTrades)
+//  console.log(openOrders)
+ useEffect(() => {
+  const fetchData = () => {
     if (type === "spot") {
       dispatch(fetchSpotTradesHistory());
       dispatch(fetchUsersOpenOrders());
@@ -33,7 +35,15 @@ const [activeTab, setActiveTab] = useState("history");
     } else if (type === "perpetual") {
       dispatch(fetchPerpetualTradesHistory());
     }
-  }, [dispatch, type]);
+  };
+
+  fetchData(); 
+
+  const interval = setInterval(fetchData, 5000); // Reload every 5 seconds
+
+  return () => clearInterval(interval); // Cleanup on unmount
+}, [dispatch, type]);
+
 
   return (
     <div className="p-4 text-white shadow-lg w-full">

@@ -164,6 +164,9 @@ const tradeSlice = createSlice({
     addTrade: (state, action) => {
       state.recentTrades.unshift(action.payload);
     },
+    updateOpenOrders: (state, action) => {
+    state.openOrders.unshift(action.payload);
+  },
   },
   extraReducers: (builder) => {
     builder

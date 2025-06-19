@@ -1,25 +1,27 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import TradingChart from "../components/trade/TradingChart";
 import OrderBook from "../components/trade/OrderBook";
 import PerpetualOrderForm from "../components/trade/PerpetualOrderForm";
-import API from "../utils/api";
-import { fetchMarketData } from "../store/slices/marketSlice";
-import { useDispatch, useSelector } from "react-redux";
+// import API from "../utils/api";
+// import { fetchMarketData } from "../store/slices/marketSlice";
+import {  useSelector } from "react-redux";
 import { motion } from "framer-motion";
-import io from "socket.io-client";
+import io, { WebSocket } from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
-import OpenPerpetualPositions from "../components/trade/OpenPerpetualPositions";
+// import OpenPerpetualPositions from "../components/trade/OpenPerpetualPositions.jsx";
 import OrdersRecord from "../components/trade/OrdersRecord";
+import axios from "axios";
 
 const socket = io(import.meta.env.VITE_API_URL);
-
 const PerpetualTrade = () => {
   const [marketData, setMarketData] = useState([]);
   const [selectedPair, setSelectedPair] = useState("BTCUSDT");
   const [selectedInterval, setSelectedInterval] = useState("1h");
-  const { openPositions } = useSelector((state) => state.futures);
+  const candleSeriesRef = useRef(null);
+
+  // const { openPositions } = useSelector((state) => state.futures);
   const showChart = useSelector((state) => state.global.showChart);
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   const tradingPairs = [
     "BTCUSDT",
     "ETHUSDT",
@@ -34,21 +36,27 @@ const PerpetualTrade = () => {
   ];
   const formatTradingPair = (pair) => {
     if (pair.length <= 4) return pair; // Handle edge cases (e.g., "USDT")
-
+    
     const index = pair.length - 4; // Find the index where "/" should be inserted
 
     return `${pair.slice(0, index)}/${pair.slice(index)}`; // Insert "/" before "USDT"
   };
 
   useEffect(() => {
-    const fetchMarketData = async () => {
-      try {
-        const response = await fetch(
-          `https://api.binance.us/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
-        );
-        const data = await response.json();
+ const fetchMarketData = async () => {
 
-        const formattedData = data.map((candle) => ({
+      try {
+        const response = await axios.get(
+          `https://api.binance.com/api/v3/klines`, // ✅ Global Binance
+          {
+            params: {
+              symbol: selectedPair,
+              interval: selectedInterval,
+            },
+          }
+        );
+    
+        const formattedData = response.data.map((candle) => ({
           time: Math.floor(candle[0] / 1000),
           open: parseFloat(candle[1]),
           high: parseFloat(candle[2]),
@@ -56,13 +64,19 @@ const PerpetualTrade = () => {
           close: parseFloat(candle[4]),
           volume: parseFloat(candle[5]),
         }));
-       console.log(data)
+    
+        // console.log("Fetched candles:", response.data);
         setMarketData(formattedData);
+    
+        // If using a chart ref (like Lightweight Charts):
+        if (candleSeriesRef?.current) {
+          candleSeriesRef.current.setData(formattedData);
+        }
       } catch (error) {
-        console.error("Error fetching market data:", error);
+        console.error("Error fetching market data:", error?.message);
       }
     };
-
+    
     fetchMarketData();
     const interval = setInterval(fetchMarketData, 60000);
 
@@ -71,9 +85,8 @@ const PerpetualTrade = () => {
 
   // WebSocket for real-time updates
   useEffect(() => {
-    const ws = new socket(
-      `wss://stream.binance.us:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
-    );
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`);
+
 
     ws.onmessage = (event) => {
       const response = JSON.parse(event.data);

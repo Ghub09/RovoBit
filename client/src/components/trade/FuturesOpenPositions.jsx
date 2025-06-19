@@ -40,6 +40,22 @@ function FuturesOpenPosition({ showBtn = false }) {
   
   // console.log(user.isActive)//check it and apply PNL according to this as true and false if true then profit always exist if use goes to loss else false then then user is in profit then should be in loss
   const dispatch = useDispatch();
+useEffect(() => {
+  const hasActivePositions = openPositions.some((trade) => {
+    const cd = countdowns[trade._id];
+    return !trade.isExpired && cd && cd.total > 0;
+  });
+
+  if (!hasActivePositions) return;
+
+  const interval = setInterval(() => {
+    dispatch(fetchOpenPositions());
+  }, 5000); // poll every 5s
+
+  return () => clearInterval(interval);
+}, [openPositions, countdowns, dispatch]);
+
+
 
   useEffect(() => {
     dispatch(fetchOpenPositions());

@@ -50,7 +50,7 @@ export const fetchMarketData = createAsyncThunk(
 
       return processedData;
     } catch (error) {
-      console.error("Error fetching market data:", error);
+      console.error("Error fetching market data:", error?.message, error?.response);
       return rejectWithValue(error.message || "Failed to fetch market data");
     }
   }

@@ -6,13 +6,21 @@ import Chating from "../../components/chat/Chating";
 
 const AdminChat = () => {
   const adminId = "admin";
-  const [selectedUser, setSelectedUser] = useState("admin");
+  const [selectedUser, setSelectedUser] = useState(null);
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.admin);
 
+  // Fetch all users on mount
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
+
+  // Automatically select first user once users are fetched
+  useEffect(() => {
+    if (users.length > 0 && !selectedUser) {
+      setSelectedUser(users[0]._id); // default to first user
+    }
+  }, [users, selectedUser]);
 
   return (
     <div className="p-4 min-h-screen flex flex-col items-center justify-center bg-gray-100">
@@ -25,11 +33,11 @@ const AdminChat = () => {
             {users.map((u) => (
               <button
                 key={u._id}
-                className={`w-full px-4 py-2 text-left mb-1 rounded-md transition-all duration-200
-                  ${selectedUser === u._id
+                className={`w-full px-4 py-2 text-left mb-1 rounded-md transition-all duration-200 ${
+                  selectedUser === u._id
                     ? "bg-blue-600 text-white"
                     : "bg-white text-black border"
-                  }`}
+                }`}
                 onClick={() => setSelectedUser(u._id)}
               >
                 {u.firstName + " " + u.lastName}

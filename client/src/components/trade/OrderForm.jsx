@@ -73,48 +73,38 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     }
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
-  const handleSubmit = async () => {
-    
-    // Check if neither assetsAmount nor usdtAmount is set
-    if (assetsAmount <= 0 && usdtAmount <= 0) {
-      return toast.error(t("enter_amount"));
-    }
+ const handleSubmit = async () => {
+  const numericUSDT = parseFloat(usdtAmount);
 
-    // Check if usdtAmount is set but invalid
-    if (usdtAmount > 0 && usdtAmount <= 0) {
-      return toast.error(t("enter_valid_usdt"));
-    }
+  if (!numericUSDT || isNaN(numericUSDT) || numericUSDT <= 0) {
+    toast.error(t("enter_valid_usdt"));
+    return;
+  }
 
-    // Check if assetsAmount is set but invalid
-    if (assetsAmount > 0 && assetsAmount <= 0) {
-      return toast.error(t("enter_valid_assets"));
-    }
+  if (orderType === "limit" && (!price || parseFloat(price) <= 0)) {
+    toast.error(t("enter_valid_price"));
+    return;
+  }
 
-    // Check if orderType is limit and price is invalid
-    if (orderType === "limit" && (!price || price <= 0)) {
-      return toast.error(t("enter_valid_price"));
-    }
-
-    const orderData = {
-      type: side,
-      orderType,
-      price: orderType === "market" ? marketPrice : price,
-      usdtAmount: usdtAmount > 0 ? usdtAmount : 0,
-      assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
-      coin: extractBase(selectedPair),
-    };
-    dispatch(fetchPendingOrders());
-    dispatch(placeOrder(orderData))
-      .unwrap()
-      .then((response) => {
-        socket.emit("placeOrder", response.trade);
-        toast.success(t("order_placed_success"));
-      })
-      .catch((error) => {
-        // console.log(error.message);
-        toast.error(error.message);
-      });
+  const orderData = {
+    type: side,
+    orderType,
+    price: orderType === "market" ? marketPrice : parseFloat(price),
+    usdtAmount: numericUSDT,
+    assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
+    coin: extractBase(selectedPair),
   };
+
+  try {
+    dispatch(fetchPendingOrders());
+    const response = await dispatch(placeOrder(orderData)).unwrap();
+    socket.emit("placeOrder", response.trade);
+    toast.success(t("order_placed_success"));
+  } catch (error) {
+    toast.error(error.message || "Failed to place order.");
+  }
+};
+
 
   const handleAssetsClick = (value) => {
     setAssetsAmount(value);
