@@ -163,40 +163,100 @@ setInterval(async () => {
 
 // });
 
-const users = {}; // { socketId: userId }
+ 
+  
+  
 
+// Server-side socket handlers
+// Socket.IO server
 io.on("connection", (socket) => {
-  socket.on("register", ({ userId }) => {
-    users[socket.id] = userId;
-    socket.join(userId);
-    console.log(`User ${userId} connected`);
+  console.log("✅ User connected:", socket.id);
+
+  socket.on("register", async ({ userId }) => {
+    try {
+      socket.join(userId);
+      console.log(`User ${userId} joined their room`);
+      
+      // Only send initial history for admin
+      if (userId === "admin") {
+        // Admin doesn't need initial history for all conversations
+        return;
+      }
+      
+      // For regular users, fetch their chat history with admin
+      const history = await Messages.find({
+        $or: [
+          { sender: userId, receiver: "admin" },
+          { sender: "admin", receiver: userId }
+        ]
+      }).sort('createdAt');
+      
+      socket.emit("chat_history", history);
+    } catch (err) {
+      console.error("Error fetching chat history:", err);
+    }
   });
 
-  socket.on("getChatHistory", async ({ senderId, receiverId }, callback) => {
-    const history = await Messages.find({
-      $or: [
-        { senderId, receiverId },
-        { senderId: receiverId, receiverId: senderId },
-      ]
-    }).sort({ timestamp: 1 });
-  
-    callback(history);
-  });
-  
-  
 
-  socket.on("sendMessage", async ({ senderId, receiverId, text }) => {
-    const message = await Messages.create({ senderId, receiverId, text });
-    io.to(receiverId).emit("message", message);
-    socket.emit("message", message); // echo back
+  socket.on("sendMessage", async ({ senderId, receiverId, text, tempId }) => {
+    try {
+      // Create new message
+      const message = new Messages({
+        sender: senderId,
+        receiver: receiverId,
+        content: text,
+        isAdminMessage: senderId === "admin"
+      });
+      
+      const savedMessage = await message.save();
+      
+      // Construct message object for clients
+      const messageData = {
+        _id: savedMessage._id,
+        sender: savedMessage.sender,
+        receiver: savedMessage.receiver,
+        content: savedMessage.content,
+        isAdminMessage: savedMessage.isAdminMessage,
+        createdAt: savedMessage.createdAt,
+      };
+
+      // Emit to receiver
+      io.to(receiverId).emit("message", messageData);
+      
+      // Emit to sender with tempId for reconciliation
+      io.to(senderId).emit("message", {
+        ...messageData,
+        tempId
+      });
+    } catch (err) {
+      console.error("Error saving message:", err);
+      // Notify sender of the error
+      io.to(senderId).emit("message_error", { tempId, error: err.message });
+    }
   });
+  socket.on("get_conversation_history", async ({ adminId, userId }) => {
+    try {
+      const history = await Messages.find({
+        $or: [
+          { sender: adminId, receiver: userId },
+          { sender: userId, receiver: adminId }
+        ]
+      }).sort('createdAt');
+      
+      // Send to the requesting socket only
+      socket.emit("conversation_history", history);
+    } catch (err) {
+      console.error("Error fetching conversation history:", err);
+    }
+  });
+
+
 
   socket.on("disconnect", () => {
-    const userId = users[socket.id];
-    delete users[socket.id];
-    console.log(`User ${userId} disconnected`);
+    console.log("❌ User disconnected:", socket.id);
   });
 });
+
 
 
 

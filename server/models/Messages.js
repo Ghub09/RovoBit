@@ -1,14 +1,25 @@
-// models/Message.js
-import mongoose from "mongoose";
+// Message.js
+import mongoose from 'mongoose';
 
 const messageSchema = new mongoose.Schema({
-  senderId: String,       // e.g., 'admin' or user ID
-  receiverId: String,     // e.g., user ID or 'admin'
-  text: String,
-  timestamp: {
-    type: Date,
-    default: Date.now
+  sender: {
+    type: String,
+    required: true
+  },
+  receiver: {
+    type: String,
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  },
+  isAdminMessage: {
+    type: Boolean,
+    default: false
   }
+}, {
+  timestamps: true
 });
 
-export default mongoose.model('Messages', messageSchema);
+export default mongoose.model("Messages", messageSchema);

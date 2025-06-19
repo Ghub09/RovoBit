@@ -3,42 +3,54 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchUsers } from "../../store/slices/adminSlice";
 import Chating from "../../components/chat/Chating";
+import useChat from "../../store/slices/useChat";
 
 const AdminChat = () => {
-  const adminId = "admin";
-  const [selectedUser, setSelectedUser] = useState(null);
   const dispatch = useDispatch();
   const { users } = useSelector((state) => state.admin);
+  const [selectedUser, setSelectedUser] = useState(null);
 
-  // Fetch all users on mount
+  const {
+    messages,
+    sendMessage,
+    isConnected,
+    fetchConversation
+  } = useChat("admin");
+
   useEffect(() => {
     dispatch(fetchUsers());
   }, [dispatch]);
 
-  // Automatically select first user once users are fetched
   useEffect(() => {
     if (users.length > 0 && !selectedUser) {
-      setSelectedUser(users[0]._id); // default to first user
+      const firstUserId = users[0]._id;
+      setSelectedUser(firstUserId);
+      fetchConversation(firstUserId);
     }
-  }, [users, selectedUser]);
+  }, [users, selectedUser, fetchConversation]);
+
+  const handleUserSelect = (userId) => {
+    setSelectedUser(userId);
+    fetchConversation(userId);
+  };
 
   return (
-    <div className="p-4 min-h-screen flex flex-col items-center justify-center bg-gray-100">
-      <div className="w-[90%] border rounded-lg shadow-md bg-white p-4">
-        <h2 className="text-2xl font-semibold mb-4 text-center">Admin Chat Board</h2>
-        <div className="flex gap-4">
-          
-          {/* Sidebar - User List */}
-          <div className="w-[300px] max-h-[500px] overflow-y-auto bg-gray-100 border border-gray-300 rounded-lg p-2">
+    <div className="p-4 min-h-screen flex flex-col items-center justify-center bg-black text-white">
+      <div className="w-[90%] border border-gray-500 rounded-lg shadow-md bg-[#1a1a1a] p-4">
+        <h2 className="text-2xl   font-semibold md:mb-4 text-center text-blue-400">Admin Chat Board</h2>
+        <div className="flex  gap-4 ">
+          {/* User List Sidebar */}
+          <div className="w-[300px] max-h-[500px]  overflow-y-auto bg-gray-400 border border-gray-700  p-2">
+            
             {users.map((u) => (
               <button
                 key={u._id}
                 className={`w-full px-4 py-2 text-left mb-1 rounded-md transition-all duration-200 ${
                   selectedUser === u._id
                     ? "bg-blue-600 text-white"
-                    : "bg-white text-black border"
+                    : "bg-gray-800 text-gray-200 hover:bg-gray-700"
                 }`}
-                onClick={() => setSelectedUser(u._id)}
+                onClick={() => handleUserSelect(u._id)}
               >
                 {u.firstName + " " + u.lastName}
               </button>
@@ -46,13 +58,15 @@ const AdminChat = () => {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 w-[400px] h-[600px]">
+          <div className="flex-1 w-[400px] ">
             {selectedUser && (
               <Chating
-                userId={adminId}
+                userId="admin"
                 targetId={selectedUser}
+                messages={messages}
+                sendMessage={sendMessage}
                 isAdmin={true}
-                classes="w-full h-[500px]"
+                classes="w-full h-[500px]  m-0 bg-gray-400"
               />
             )}
           </div>
