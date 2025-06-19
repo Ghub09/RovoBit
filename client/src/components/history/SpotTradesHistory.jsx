@@ -26,7 +26,7 @@ const SpotTradesHistory = ({ trades }) => {
   };
 console.log(trades)
   return (
-    <div className="rounded-lg shadow-lg">
+    <div className="rounded-lg shadow-lg ">
       {/* Desktop Table */}
       
       <div className="hidden md:block overflow-x-auto">

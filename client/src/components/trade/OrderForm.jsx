@@ -191,7 +191,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         </div>
       )}
    
-      <label htmlFor="usdtAmount" className="text-sm border  text-gray-300 mb-1">
+      <label htmlFor="usdtAmount" className="text-sm    text-gray-300 mb-1">
         <span className=" top-1/2 -translate-y-1/2  text-xs">
       <span className="text-sm text-2xl"> Amount (</span>{side === "buy" ? "USDT" : extractBase(selectedPair)})
   </span> </label>

@@ -5,9 +5,9 @@ import { useSelector } from 'react-redux';
 const ChatBox = () => {
     const {user} = useSelector((state) => state.user);
   return (
-    <div>
+    <div className=''>
        
-        <Chating userId={user._id} targetId={"admin"} classes={"w-full h-full"} />
+        <Chating userId={user._id} targetId={"admin"} classes={"w-full h-[70vh]"} />
     </div>
   )
 }

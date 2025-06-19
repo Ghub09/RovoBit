@@ -36,7 +36,7 @@ export const placeOrder = createAsyncThunk(
       return response.data;
     } catch (error) {
       // console.log(error.response.data);
-      
+
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request
@@ -55,7 +55,6 @@ export const fetchPendingOrders = createAsyncThunk(
         withCredentials: true,
       });
 
-
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -73,9 +72,12 @@ export const approveOrder = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.put(`/admin/approve-order/${orderId}`, {});
+      toast.dismiss();
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
+      toast.dismiss();
+
       toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     } finally {
@@ -123,8 +125,7 @@ export const fetchSpotTradesHistory = createAsyncThunk(
     }
   }
 );
-  //  fetchSpotTradesHistory();
-
+//  fetchSpotTradesHistory();
 
 export const fetchUsersOpenOrders = createAsyncThunk(
   "trade/fetchUsersOpenOrders",
@@ -165,8 +166,8 @@ const tradeSlice = createSlice({
       state.recentTrades.unshift(action.payload);
     },
     updateOpenOrders: (state, action) => {
-    state.openOrders.unshift(action.payload);
-  },
+      state.openOrders.unshift(action.payload);
+    },
   },
   extraReducers: (builder) => {
     builder

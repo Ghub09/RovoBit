@@ -53,132 +53,38 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     return () => clearInterval(interval);
   }, []);
 
-  // const handleSubmit = (e) => {
-  //   e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  //   if (quantity <= 0 || leverage < 1) {
-  //     return toast.error("Invalid trade details");
-  //   }
-  //  dispatch(
-  //     openFuturesTrade({
-  //       pair: selectedPair,
-  //       type: orderType,
-  //       assetsAmount,
-  //       leverage,
-  //       amountInUSDT: quantity,
-  //       entryPrice: marketPrice,
-  //     })
-  //   ).then((result) => {
-  //     if (result.meta.requestStatus === "fulfilled") {
-  //        socket.emit("newPosition", result.payload);
-  //        console.log(result.payload)
-  //      }
-  //     // toast.dismiss();
-  //     toast.success("Trade is open successfully");
-  //   }).catch((err)=>{
-  //     console.log(err,"something went wrong")
-  //     toast.error("Some thing is wrong");
-
-  //   })
-     
-  // };
- 
-//   const handleSubmit = (e) => {
-//   e.preventDefault();
-
-//   const numericAmount = parseFloat(usdtAmount);
-//   const price = parseFloat(marketPrice);
-
-//   if (!numericAmount || numericAmount <= 0 || price <= 0) {
-//     return toast.error("Invalid trade details");
-//   }
-
-//   const calculatedQuantity = numericAmount / price;
-//    console.log({
-//   pair: selectedPair,
-//   type: orderType,
-//   assetsAmount,
-//   leverage,
-//   amountInUSDT: numericAmount,
-//   quantity: calculatedQuantity,
-//   entryPrice: price,
-// });
-
-//   dispatch(
-//     openFuturesTrade({
-//       pair: selectedPair,
-//       type: orderType,
-//       assetsAmount: assetsAmount > 0 ? assetsAmount : 100, 
-//       leverage,
-//       amountInUSDT: numericAmount,
-//       quantity: calculatedQuantity,
-//       entryPrice: price,
-//     })
-//   )
-//     .then((result) => {
-//       if (result.meta.requestStatus === "fulfilled") {
-//         socket.emit("newPosition", result.payload);
-//         toast.success("Trade is open successfully");
-//       }
-//     })
-//     .catch((err) => {
-//       console.error("Trade error:", err);
-//       toast.error("Something went wrong");
-//     });
-// };
-
-const handleSubmit = (e) => {
-  e.preventDefault();
-
-  const numericAmount = parseFloat(usdtAmount);
-  const price = parseFloat(marketPrice);
-
-  if (!numericAmount || numericAmount <= 0 || price <= 0) {
-    return toast.error("Invalid trade details");
-  }
-
-  const calculatedQuantity = numericAmount / price;
-
-  // ✅ Dynamically calculate assetsAmount from input
-  const dynamicAssetsAmount = wallet?.futuresWallet
-    ? (numericAmount / wallet.futuresWallet) * 100
-    : 100;
-
-  const finalAssetsAmount = dynamicAssetsAmount > 0 ? dynamicAssetsAmount : 100;
-
-  console.log({
-    pair: selectedPair,
-    type: orderType,
-    assetsAmount: finalAssetsAmount,
-    leverage,
-    amountInUSDT: numericAmount,
-    quantity: calculatedQuantity,
-    entryPrice: price,
-  });
-
-  dispatch(
-    openFuturesTrade({
-      pair: selectedPair,
-      type: orderType,
-      assetsAmount: finalAssetsAmount.toFixed(2),
-      leverage,
-      amountInUSDT: numericAmount,
-      quantity: calculatedQuantity,
-      entryPrice: price,
-    })
-  )
-    .then((result) => {
+    if (quantity <= 0 || leverage < 1) {
+      return toast.error("Invalid trade details");
+    }
+   dispatch(
+      openFuturesTrade({
+        pair: selectedPair,
+        type: orderType,
+        assetsAmount:usdtAmount,
+        leverage,
+        amountInUSDT: quantity,
+        entryPrice: marketPrice,
+      })
+    ).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
-        socket.emit("newPosition", result.payload);
-        toast.success("Trade is open successfully");
-      }
-    })
-    .catch((err) => {
-      console.error("Trade error:", err);
-      toast.error("Something went wrong");
-    });
-};
+         socket.emit("newPosition", result.payload);
+         console.log(result.payload)
+       }
+      // toast.dismiss();
+      toast.success("Trade is open successfully");
+    }).catch((err)=>{
+      console.log(err,"something went wrong")
+            // toast.dismiss();
 
+      toast.error("Some thing is wrong");
+
+    })
+     
+  };
+ 
   useEffect(() => {
       socket.on("liquidationUpdate", () => dispatch(fetchOpenPositions()));
       socket.on("newPosition", () => dispatch(fetchOpenPositions()));

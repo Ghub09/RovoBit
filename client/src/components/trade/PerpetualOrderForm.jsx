@@ -140,7 +140,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
             type="number"
             value={limitPrice}
             onChange={(e) => setLimitPrice(e.target.value)}
-            className="w-full bg-gray-700 rounded-md px-2 py-2 text-center text-white border border-gray-800"
+            className="w-full bg-gray-700 rounded-md  px-2 py-2 text-center text-white"
           />
         </div>
       ) : (
@@ -159,19 +159,17 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         <label className="block text-sm text-gray-300 mb-1">
           Amount (USDT)
         </label>
-        <div className="h-[40px] flex justify-between bg-gray-500 rounded-2xl p-2 mb-2">
-          <input
+           <input
             type="number"
             value={usdtAmount}
             onChange={(e) => {
               setUsdtAmount(e.target.value);
               setAssetsAmount(0); // Reset selected % when manually entered
             }}
-            className="w-full bg-transparent focus:outline-none text-white text-sm px-2"
-            placeholder="Enter / select"
+            className="w-full rounded-full h-[35px] bg-gray-500 focus:outline-none my-1 text-white text-sm px-3"
+            placeholder="Enter or select"
           />
-        </div>
-
+ 
         {/* % Selector */}
         <div className="flex justify-evenly text-sm mb-2">
           {assetsOptions.map((option) => (
