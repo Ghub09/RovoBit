@@ -17,7 +17,7 @@ import walletRouter from "./routers/walletRoutes.js";
 import kycRouter from "./routers/kycRoutes.js";
 import newsRouter from "./routers/newsRoutes.js";
 import userManagement from "./routers/users/userManagement.js";
-
+ 
 import { safariCompatibilityMiddleware } from "./middlewares/safariCompatibility.js";
  
 const app = express();
@@ -59,7 +59,8 @@ app.use(
 
 // Handle OPTIONS requests explicitly for Safari
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+  // console.log('Checking path:', path.join(__dirname, '../client/dist/index.html'));
+  res.sendFile(path.join(__dirname, ".././client/dist/index.html"));
 });
 
 app.use(express.json());
