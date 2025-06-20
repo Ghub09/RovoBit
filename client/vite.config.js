@@ -1,15 +1,9 @@
-// vite.config.js
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "@tailwindcss/vite";
+
+// https://vite.dev/config/
 export default defineConfig({
-  build: {
-    chunkSizeWarningLimit: 1000, // Increase warning threshold if needed
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          // Example: Split vendor libraries
-          react: ['react', 'react-dom'],
-          chartjs: ['chart.js'],
-        }
-      }
-    }
-  }
-})
+  plugins: [tailwindcss(), react()],
+  
+});
