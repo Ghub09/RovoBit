@@ -41,6 +41,7 @@ const App = () => {
   const dispatch = useDispatch();
     const { loading } = useSelector((state) => state.global);
     const socket = io("http://localhost:5000");
+    
     useEffect(() => {
       // socket.on("connect", () => {
       //   console.log("Connected",socket.id);
