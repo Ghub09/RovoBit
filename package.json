@@ -2,7 +2,7 @@
   "name": "bitex-trading-web",
   "version": "1.0.0",
   "main": "index.js",
-   "scripts": {
+  "scripts": {
     "client": "yarn --cwd client dev",
     "server": "yarn --cwd server dev",
     "dev": "concurrently \"yarn client\" \"yarn server\""
