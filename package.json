@@ -3,12 +3,10 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "scripts": {
-    "client": "yarn --cwd client dev",
-    "server": "yarn --cwd server dev",
-    "dev": "concurrently \'yarn client\' \'yarn server\'"
-}
-
+    "client": "yarn --cwd client build",
+    "server": "yarn --cwd server start",
+    "build": "yarn client",
+    "start": "yarn server"
   },
   "keywords": [],
   "author": "",
