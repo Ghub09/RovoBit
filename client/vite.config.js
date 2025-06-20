@@ -1,16 +1,15 @@
-// client/vite.config.js
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import path from 'path';
-
+// vite.config.js
 export default defineConfig({
-  plugins: [react()],
   build: {
-    outDir: '../server/public'  // VERY IMPORTANT
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
-  },
-});
+    chunkSizeWarningLimit: 1000, // Increase warning threshold if needed
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Example: Split vendor libraries
+          react: ['react', 'react-dom'],
+          chartjs: ['chart.js'],
+        }
+      }
+    }
+  }
+})
