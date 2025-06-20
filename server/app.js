@@ -58,8 +58,8 @@ app.use(
 );
 
 // Handle OPTIONS requests explicitly for Safari
-app.options("*", (req, res) => {
-  res.status(200).send();
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.use(express.json());
