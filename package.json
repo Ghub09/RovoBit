@@ -2,11 +2,13 @@
   "name": "bitex-trading-web",
   "version": "1.0.0",
   "main": "index.js",
-  "scripts": {
-    "client": "yarn --cwd client dev",
-    "server": "yarn --cwd server dev",
-    "dev": "concurrently \"yarn client\" \"yarn server\""
-  },
+ "scripts": {
+  "client": "yarn --cwd client install && yarn --cwd client build",
+  "server": "yarn --cwd server install",
+  "build": "yarn client && yarn server",
+  "start": "node server/index.js",
+  "dev": "concurrently \"yarn --cwd client dev\" \"yarn --cwd server dev\""
+},
   "keywords": [],
   "author": "",
   "license": "ISC",
