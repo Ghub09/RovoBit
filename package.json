@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "yarn --cwd client dev"
-  },
+  "client": "yarn --cwd client dev",
+  "server": "yarn --cwd server dev"
+ },
   "keywords": [],
   "author": "",
   "license": "ISC",
