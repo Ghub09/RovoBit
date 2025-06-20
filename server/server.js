@@ -184,6 +184,25 @@ io.on("connection", (socket) => {
     }
   });
 
+  socket.on("delete_conversation", async ({ userId }) => {
+  try {
+    const deletedMessages = await Messages.deleteMany({
+      $or: [
+        { sender: userId, receiver: "admin" },
+        { sender: "admin", receiver: userId },
+      ],
+    });
+
+    console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages between admin and ${userId}`);
+
+    // Notify both user and admin
+    io.to(userId).emit("conversation_deleted", { success: true });
+    io.to("admin").emit("conversation_deleted", { userId, success: true });
+  } catch (err) {
+    console.error("❌ Error deleting conversation:", err);
+    socket.emit("delete_error", { error: err.message });
+  }
+});
 
   socket.on("sendMessage", async ({ senderId, receiverId, text, tempId }) => {
     try {

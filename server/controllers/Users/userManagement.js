@@ -62,14 +62,15 @@ export const deleteUserAndArchive = async (req, res) => {
     if (!user || !wallet) {
       return res.status(404).json({ error: "User or wallet not found" });
     }
+     // ✅ Delete messages between admin and the user
+   
+      const deletedMessages = await Messages.deleteMany({
+        $or: [
+          { sender: userId, receiver: "admin" },
+          { sender: "admin", receiver: userId },
+        ],
+      });
 
-    // ✅ Delete messages between admin and the user
-    const deletedMessages = await Messages.deleteMany({
-      $or: [
-        { senderId: userId, receiverId: "admin" },
-        { senderId: "admin", receiverId: userId },
-      ],
-    });
 
     // ✅ Delete user and wallet
     await User.findByIdAndDelete(userId);
