@@ -5,8 +5,8 @@
   "scripts": {
   "client": "cd client && yarn dev",
   "server": "cd server && node server.js",
-  "dev": "concurrently \"yarn client\" \"yarn server\""
-  },
+  "dev": "yarn --cwd client dev" 
+ },
   "keywords": [],
   "author": "",
   "license": "ISC",
