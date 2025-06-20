@@ -1047,7 +1047,7 @@
   resolved "https://registry.npmjs.org/@types/use-sync-external-store/-/use-sync-external-store-0.0.6.tgz#60be8d21baab8c305132eb9cb912ed497852aadc"
   integrity sha512-zFDAD+tlpf2r4asuHEj0XH6pY6i0g5NeAHPn+15wk3BV6JA69eERFXC1gyGThDkVa1zCyKr5jox1+2LbV/AMLg==
 
-"@vitejs/plugin-react@^4.3.4":
+"@vitejs/plugin-react@^4.5.2":
   version "4.5.2"
   resolved "https://registry.npmjs.org/@vitejs/plugin-react/-/plugin-react-4.5.2.tgz#8b98a8fbcefff4aa4c946966fbec560dc66d2bd9"
   integrity sha512-QNVT3/Lxx99nMQWJWF7K4N6apUEuT0KlZA3mx/mVaoGj3smm/8rc8ezz15J1pcbcjDK0V15rpHetVfya08r76Q==
@@ -1314,7 +1314,7 @@ classnames@2.5.1:
     autoprefixer "^10.4.20"
     axios "^1.7.9"
     chart.js "^4.4.7"
-    client "file:C:/Users/sadaq/AppData/Local/Yarn/Cache/v6/npm-client-0.0.0-296cd599-f2ec-40ce-8593-21ac7095bcb5-1750446831243/node_modules/client"
+    client "file:C:/Users/sadaq/AppData/Local/Yarn/Cache/v6/npm-client-0.0.0-1f942853-e77a-4b46-8f44-3a3f7aba52f0-1750460897285/node_modules/client"
     cloudinary "^2.6.0"
     flowbite-react "^0.10.2"
     framer-motion "^12.4.1"
