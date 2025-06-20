@@ -3,15 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-  "client": "yarn --cwd client dev",
-  "server": "yarn --cwd server dev",
-   "dev": "concurrently \"yarn client\" \"yarn server\""
- },
+    "client": "yarn --cwd client dev",
+    "server": "yarn --cwd server dev",
+    "dev": "concurrently \"yarn client\" \"yarn server\""
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
     "bitex-trading-web": "file:"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
   }
 }
