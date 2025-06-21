@@ -10,7 +10,7 @@ import {
 import isEqual from "lodash.isequal";
 import { toast } from "react-toastify";
 import { fetchUserWallet, updateUserWallets } from "../../pages/admin/DeleteUser";
-import SmallLoader from "../layout/smallLoader.jsx";
+import SmallLoader from "../layout/SmallLoader.jsx";
 
 const RemoveToken = ({ openModal, handleCloseModal, user }) => {
   const types = ["Spot", "trading", "Perpetual"];
