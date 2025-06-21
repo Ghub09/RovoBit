@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { fetchPendingOrders, placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
 import { getWallet } from "../../store/slices/assetsSlice";
-import SmallLoader from "../layout/SmallLoader.jsx";
+import SmallLoader from "../layout/smallLoader.jsx";
 
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
@@ -73,38 +73,37 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     }
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
- const handleSubmit = async () => {
-  const numericUSDT = parseFloat(usdtAmount);
+  const handleSubmit = async () => {
+    const numericUSDT = parseFloat(usdtAmount);
 
-  if (!numericUSDT || isNaN(numericUSDT) || numericUSDT <= 0) {
-    toast.error(t("enter_valid_usdt"));
-    return;
-  }
+    if (!numericUSDT || isNaN(numericUSDT) || numericUSDT <= 0) {
+      toast.error(t("enter_valid_usdt"));
+      return;
+    }
 
-  if (orderType === "limit" && (!price || parseFloat(price) <= 0)) {
-    toast.error(t("enter_valid_price"));
-    return;
-  }
+    if (orderType === "limit" && (!price || parseFloat(price) <= 0)) {
+      toast.error(t("enter_valid_price"));
+      return;
+    }
 
-  const orderData = {
-    type: side,
-    orderType,
-    price: orderType === "market" ? marketPrice : parseFloat(price),
-    usdtAmount: numericUSDT,
-    assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
-    coin: extractBase(selectedPair),
+    const orderData = {
+      type: side,
+      orderType,
+      price: orderType === "market" ? marketPrice : parseFloat(price),
+      usdtAmount: numericUSDT,
+      assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
+      coin: extractBase(selectedPair),
+    };
+
+    try {
+      dispatch(fetchPendingOrders());
+      const response = await dispatch(placeOrder(orderData)).unwrap();
+      socket.emit("placeOrder", response.trade);
+      toast.success(t("order_placed_success"));
+    } catch (error) {
+      toast.error(error.message || "Failed to place order.");
+    }
   };
-
-  try {
-    dispatch(fetchPendingOrders());
-    const response = await dispatch(placeOrder(orderData)).unwrap();
-    socket.emit("placeOrder", response.trade);
-    toast.success(t("order_placed_success"));
-  } catch (error) {
-    toast.error(error.message || "Failed to place order.");
-  }
-};
-
 
   const handleAssetsClick = (value) => {
     setAssetsAmount(value);
@@ -113,7 +112,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
 
   return (
     <Card className="  ml-2 bg-transparent  text-white w-full text-lg ">
-                        {loading && <SmallLoader />}
+      {loading && <SmallLoader />}
 
       <AnimatedHeading>
         <p className="hidden md:block m-4 text-center">{t("spot")}</p>
@@ -190,24 +189,25 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
           />
         </div>
       )}
-   
+
       <label htmlFor="usdtAmount" className="text-sm    text-gray-300 mb-1">
         <span className=" top-1/2 -translate-y-1/2  text-xs">
-      <span className="text-sm text-2xl"> Amount (</span>{side === "buy" ? "USDT" : extractBase(selectedPair)})
-  </span> </label>
-     <div className="relative mb-2 w-full max-w-xs  bg-gray-500 rounded-2xl ">
-  <input
-    type="number"
-    value={usdtAmount}
-    onChange={(e) => {
-      setUsdtAmount(e.target.value);
-      setAssetsAmount(0);
-    }}
-    className="w-full  focus:outline-none rounded-md px-3 py-2 text-white   text-sm"
-    placeholder={t("enter_quantity")}
-  />
-  
-</div>
+          <span className="text-sm text-2xl"> Amount (</span>
+          {side === "buy" ? "USDT" : extractBase(selectedPair)})
+        </span>{" "}
+      </label>
+      <div className="relative mb-2 w-full max-w-xs  bg-gray-500 rounded-2xl ">
+        <input
+          type="number"
+          value={usdtAmount}
+          onChange={(e) => {
+            setUsdtAmount(e.target.value);
+            setAssetsAmount(0);
+          }}
+          className="w-full  focus:outline-none rounded-md px-3 py-2 text-white   text-sm"
+          placeholder={t("enter_quantity")}
+        />
+      </div>
 
       <div className=" max-w-full text-sm mb-2">
         <div className="flex justify-evenly">
