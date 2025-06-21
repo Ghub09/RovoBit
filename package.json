@@ -3,10 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "client:build": "cd client && yarn build",
-    "server:install": "cd server && yarn install",
-    "build": "yarn client:build && yarn server:install",
     "start": "node server/server.js",
+    "build": "yarn --cwd client build && cd server && yarn install",
     "dev": "concurrently \"yarn --cwd client dev\" \"yarn --cwd server dev\""
   },
   "keywords": [],
