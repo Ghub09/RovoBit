@@ -18,7 +18,8 @@ const server = http.createServer(app);
 // Initialize WebSocket server for real-time updates
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL, "http://rovobit.com"],
+    // origin: [process.env.FRONTEND_URL],
+    origin:["https://rovo-bit-git-main-ghub09s-projects.vercel.app/"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

@@ -19,7 +19,7 @@ export const profitUser = async (userId) => {
   if (!userId) {
       throw { message: "User ID is required" };
     }
-    const response = await API.put(`http://localhost:5000/api/account/${userId}/toggle`,{
+    const response = await API.put(`${process.env.}/account/${userId}/toggle`,{
          withCredentials: true
          });
     // console.log("User toggled:", response.data);
