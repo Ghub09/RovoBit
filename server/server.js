@@ -19,7 +19,7 @@ const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
     // origin: [process.env.FRONTEND_URL],
-    origin:[process.env.FRONTEND_URL, "https://rovo-bit-k3i7-git-main-ghub09s-projects.vercel.app/"],
+    origin:[process.env.FRONTEND_URL, "https://ufxbit.com"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
