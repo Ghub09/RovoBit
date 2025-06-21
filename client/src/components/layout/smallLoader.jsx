@@ -10,4 +10,4 @@ const SmallLoader = () => {
   );
 };
 
-export default SmallLoader;
+export default SmallLoader; 
