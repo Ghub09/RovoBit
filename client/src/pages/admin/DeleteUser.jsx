@@ -19,7 +19,7 @@ export const profitUser = async (userId) => {
   if (!userId) {
       throw { message: "User ID is required" };
     }
-    const response = await API.put(`${process.env.}/account/${userId}/toggle`,{
+    const response = await API.put(`https://server-1-nsr1.onrender.com/api/account/${userId}/toggle`,{
          withCredentials: true
          });
     // console.log("User toggled:", response.data);
