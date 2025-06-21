@@ -57,11 +57,14 @@ app.use(
   })
 );
 
+app.get("/", (req, res) => {
+  res.send("Welcome to  UFXbit Trading API");
+})
 // Handle OPTIONS requests explicitly for Safari
-app.get('*', (req, res) => {
-  // console.log('Checking path:', path.join(__dirname, '../client/dist/index.html'));
-  res.sendFile(path.join(__dirname, ".././client/dist/index.html"));
-});
+// app.get('*', (req, res) => {
+//   // console.log('Checking path:', path.join(__dirname, '../client/dist/index.html'));
+//   res.sendFile(path.join(__dirname, ".././client/dist/index.html"));
+// });
 
 app.use(express.json());
 app.use(cookieParser());
