@@ -33,7 +33,7 @@ config({ path: envPath });
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL,"http://localhost:5173"],
+    origin: [process.env.FRONTEND_URL,"http://localhost:5173", "https://rovo-bit-k3i7-git-main-ghub09s-projects.vercel.app"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [

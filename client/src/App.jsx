@@ -40,7 +40,7 @@ import AdminChat from "./pages/admin/AdminChat.jsx";
 const App = () => {
   const dispatch = useDispatch();
     const { loading } = useSelector((state) => state.global);
-    const socket = io("http://localhost:5000");
+    const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
     
     useEffect(() => {
       // socket.on("connect", () => {
