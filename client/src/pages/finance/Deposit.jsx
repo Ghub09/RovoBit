@@ -68,65 +68,65 @@ function Deposit() {
     if (currency === "USDT") {
       switch (network) {
         case "Tron (TRC20)":
-          return "TQeJdv3B7sgBgBPgagNRqYmvBAMv5PrPVi";
+          return "TNeyU2xuVyJPwjmGKUBZ6dHeWyWc4XA3XM";
         case "Arbitrum One":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         case "Polygon POS":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         case "Ethereum (ERC20)":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         default:
           return "";
       }
     } else if (currency === "USDC") {
       switch (network) {
         case "Ethereum (ERC20)":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         case "Polygon POS":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         case "Solana":
-          return "GvpTvu7Gh5Uf92kjatksmVoy6q8sVbhtnWzHNn6AkBax";
+          return "CRMbY5QrGS5fzUypEuWuFDH4Fkkk3GosYJ7jhPHVXyua";
         case "Arbitrum One":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         default:
           return "";
       }
     } else if (currency === "ETH") {
       switch (network) {
         case "Ethereum (ERC20)":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         case "Arbitrum One":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         default:
           return "";
       }
     } else if (currency === "Solana") {
       switch (network) {
         case "Solana":
-          return "GvpTvu7Gh5Uf92kjatksmVoy6q8sVbhtnWzHNn6AkBax";
+          return "CRMbY5QrGS5fzUypEuWuFDH4Fkkk3GosYJ7jhPHVXyua";
         default:
           return "";
       }
     } else if (currency === "TRX") {
       switch (network) {
         case "Tron (TRC20)":
-          return "TQeJdv3B7sgBgBPgagNRqYmvBAMv5PrPVi";
+          return "TNeyU2xuVyJPwjmGKUBZ6dHeWyWc4XA3XM";
         case "Ethereum (ERC20)":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         default:
           return "";
       }
     } else if (currency === "POL") {
       switch (network) {
         case "Ethereum (ERC20)":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         case "Polygon POS":
-          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
+          return "0xe3cEAa5cf7c65ad5e2833b1866E5dbBF0D69657d";
         default:
           return "";
       }
     } else if (currency === "BTC") {
-      return "bc1qq3asuwkt49w4gwwpvjh6le5427e3cpq4uhz425";
+      return "bc1q74363rpqyz0u3v9ehhsmt69rjqsdzrzpgvtepq";
     }
     return "";
   };

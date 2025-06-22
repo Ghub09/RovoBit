@@ -5,7 +5,7 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [tailwindcss(), react()],
   build: {
-    outDir: '../server/public', // Changed to match Express static path
+   outDir: 'dist', 
     emptyOutDir: true,
     rollupOptions: {
       output: {
