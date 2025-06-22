@@ -21,11 +21,30 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL, "https://cryptonexus.live"],
+    origin: function(origin, callback) {
+      // Define allowed origins
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:3000", 
+        "https://ufxbit.com",
+        ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+        ...(process.env.ADDITIONAL_ORIGINS ? process.env.ADDITIONAL_ORIGINS.split(',') : [])
+      ];
+      
+      // If no origin (like from a direct HTTP request) or the origin is in allowedOrigins
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("Blocked origin:", origin);
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true, // Allow compatibility with Socket.IO v2 clients
 });
 
 // Socket.IO logic

@@ -10,7 +10,13 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "https://server-1-nsr1.onrender.com", {
+  withCredentials: true,
+  transports: ['websocket', 'polling'],
+  reconnectionAttempts: 3,
+  reconnectionDelay: 1000,
+  autoConnect: false
+});
 
 
 const ManageOrders = () => {

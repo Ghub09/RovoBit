@@ -10,8 +10,17 @@ export const generateToken = (user, message, statusCode, res) => {
 
   const cookieName = user.role === "admin" ? "adminToken" : "userToken";
 
-  const domain =
-    process.env.NODE_ENV === "production" ? ".cryptonexus.live" : "localhost";
+  // Extract domain from FRONTEND_URL if in production
+  let domain;
+  if (process.env.NODE_ENV === "production") {
+    try {
+      domain = new URL(process.env.FRONTEND_URL).hostname;
+    } catch (e) {
+      domain = undefined;  // Let the browser determine the domain
+    }
+  } else {
+    domain = "localhost";
+  }
 
   const expiresDate = new Date(Date.now() + cookieExpiryDays * 24 * 60 * 60 * 1000);
 

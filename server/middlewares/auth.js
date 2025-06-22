@@ -27,10 +27,12 @@ export const getTokenFromRequest = (req) => {
 
 // Admin Authentication Middleware
 export const isAdminAuthenticated = catchAsyncErrors(async (req, res, next) => {
-  const token = req.cookies.adminToken;
+  const token = getTokenFromRequest(req);
 
-  console.log("Admin Token (cookie):", token);
-  console.log("req",req.cookies);
+  console.log("Admin Token:", token);
+  console.log("Cookies:", req.cookies);
+  console.log("Headers:", req.headers.authorization);
+  
   if (!token) {
     return next(new ErrorHandler("Admin login required", 401));
   }

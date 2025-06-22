@@ -40,21 +40,37 @@ import AdminChat from "./pages/admin/AdminChat.jsx";
 const App = () => {
   const dispatch = useDispatch();
     const { loading } = useSelector((state) => state.global);
-    const socket = io('https://server-1-nsr1.onrender.com/');
+    const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'https://server-1-nsr1.onrender.com/', {
+      withCredentials: true,
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000,
+      autoConnect: false,
+      transports: ['websocket', 'polling']
+    });
     
     useEffect(() => {
-      // socket.on("connect", () => {
-      //   console.log("Connected",socket.id);
-      // });
+      const shouldConnect = window.location.pathname !== '/login' && window.location.pathname !== '/register';
+      
+      if (shouldConnect) {
+        socket.connect();
+        
+        socket.on("connect", () => {
+          console.log("Socket connected successfully");
+        });
+        
+        socket.on("connect_error", (err) => {
+          console.log("Socket connection error:", err.message);
+        });
 
-      // socket.on("WelCome", (message) => {
-      //   console.log(message);
-      // });
-      socket.on("user_connected", (message) => {
-        console.log("user_connected",message);
-      });
+        socket.on("user_connected", (message) => {
+          console.log("user_connected", message);
+        });
+      }
+      
       return () => {
-        socket.disconnect();
+        if (socket.connected) {
+          socket.disconnect();
+        }
       };
     }, []);
   useEffect(() => {

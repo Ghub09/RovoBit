@@ -29,11 +29,27 @@ const envPath = join(__dirname, "/config/config.env");
 
 config({ path: envPath });
 
-// Enhanced CORS configuration for Safari compatibility
-
+// Enhanced CORS configuration for Socket.IO compatibility
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL,"http://localhost:5173", "https://ufxbit.com"],
+    origin: function(origin, callback) {
+      // Define allowed origins
+      const allowedOrigins = [
+        "http://localhost:5173",
+        "http://localhost:3000", 
+        "https://ufxbit.com",
+        ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
+        ...(process.env.ADDITIONAL_ORIGINS ? process.env.ADDITIONAL_ORIGINS.split(',') : [])
+      ];
+      
+      // If no origin (like from a direct HTTP request) or the origin is in allowedOrigins
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        console.log("Blocked origin:", origin);
+        callback(new Error(`Origin ${origin} not allowed by CORS`));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [
@@ -53,9 +69,33 @@ app.use(
     ],
     exposedHeaders: ["Date", "Content-Length", "ETag", "X-Auth", "Set-Cookie"],
     optionsSuccessStatus: 200, // Use 200 instead of 204 for Safari compatibility
+    preflightContinue: false,
     maxAge: 86400, // 24 hours
   })
 );
+
+// Special handling for socket.io preflight requests
+app.options('/socket.io/*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization');
+  res.sendStatus(200);
+});
+
+// Debug CORS issues - add this right after the special handling for socket.io preflight requests
+app.get('/socket.io/debug-cors', (req, res) => {
+  res.json({
+    message: "CORS check for Socket.IO",
+    origin: req.headers.origin || 'No origin header',
+    headers: {
+      'Access-Control-Allow-Origin': req.headers.origin || '*',
+      'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+      'Access-Control-Allow-Credentials': 'true',
+    }
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("Welcome to  UFXbit Trading API");

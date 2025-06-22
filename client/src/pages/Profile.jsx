@@ -13,6 +13,8 @@ import API from "../utils/api";
 import AppearanceSettings from "../components/settings/AppearanceSettings";
 import { logout } from "../store/slices/userSlice";
 import { toast } from "react-toastify";
+import ConnectionDiagnostic from "../components/mini/ConnectionDiagnostic";
+import { FaBug } from "react-icons/fa";
 
 const Profile = () => {
   const { t } = useTranslation();
@@ -21,6 +23,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const [showAssets, setShowAssets] = useState(false);
   const [showAppearanceSettings, setShowAppearanceSettings] = useState(false);
+  const [showDiagnostic, setShowDiagnostic] = useState(false);
   const [kycStatus, setKycStatus] = useState(null);
 
   useEffect(() => {
@@ -87,6 +90,16 @@ const Profile = () => {
         <Assets type={"spot"} />
       ) : showAppearanceSettings ? (
         <AppearanceSettings onClose={() => setShowAppearanceSettings(false)} />
+      ) : showDiagnostic ? (
+        <div>
+          <button 
+            onClick={() => setShowDiagnostic(false)}
+            className="bg-blue-600 text-white px-4 py-2 rounded mb-4 hover:bg-blue-700"
+          >
+            ← Back to Profile
+          </button>
+          <ConnectionDiagnostic />
+        </div>
       ) : (
         <>
           <div className="flex justify-between items-center mb-6">
@@ -226,6 +239,24 @@ const Profile = () => {
               </div>
             </Link>
 
+            {/* Connection Diagnostic - For developers/admins */}
+            {(user.role === "admin" || import.meta.env.DEV) && (
+              <div
+                onClick={() => setShowDiagnostic(true)}
+                className="bg-[#1a1a1a] p-4 rounded-lg cursor-pointer hover:bg-[#242424] transition-all duration-200 border border-gray-800 shadow-sm flex items-center"
+              >
+                <div className="bg-[#202a1e] p-3 rounded-full mr-3">
+                  <FaBug className="text-[#ff9900] text-xl" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Connection Diagnostic</h3>
+                  <p className="text-gray-400 text-sm">
+                    Test API and Socket connections
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Logout - New Card */}
             <div
               onClick={handleLogout}
@@ -242,6 +273,15 @@ const Profile = () => {
               </div>
             </div>
           </div>
+          
+          {/* Developer Mode Indicator */}
+          {import.meta.env.DEV && (
+            <div className="mt-8 text-center bg-yellow-800 py-2 rounded-lg">
+              <p className="text-yellow-300 text-sm">
+                Development Mode Active - Environment: {import.meta.env.MODE}
+              </p>
+            </div>
+          )}
         </>
       )}
     </div>

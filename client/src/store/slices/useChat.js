@@ -2,11 +2,14 @@
   import { useEffect, useRef, useState, useCallback } from "react";
   import { io } from "socket.io-client";
 
-  const socket = io("http://localhost:5000", {
+  const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "http://localhost:5000", {
     autoConnect: false,
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
+    withCredentials: true,
+    transports: ['websocket', 'polling'], // Try WebSocket first, then polling
+    timeout: 10000
   });
 
   export default function useChat(userId) {

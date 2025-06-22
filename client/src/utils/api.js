@@ -6,10 +6,10 @@ const API = axios.create({
   headers: {
     "Content-Type": "application/json",
     Accept: "application/json",
-   },
+  },
 });
 
-// console.log(import.meta.env.VITE_API_URL);
+// console.log('API BASE URL:', import.meta.env.VITE_API_URL);
 
 // Helper to detect Safari browsers
 const isSafari = () => {
@@ -33,6 +33,10 @@ API.interceptors.request.use((config) => {
   // Always include token in Authorization header if it exists
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
+    // Log the token being sent (for debugging)
+    console.log('Sending token in header:', token.substring(0, 15) + '...');
+  } else {
+    console.log('No token found in localStorage');
   }
 
   // Special handling for Safari browsers
@@ -59,6 +63,7 @@ API.interceptors.response.use(
     // If the response includes a token, store it
     if (response.data?.token) {
       localStorage.setItem("token", response.data.token);
+      console.log('Token saved from response:', response.data.token.substring(0, 15) + '...');
     }
     return response;
   },
@@ -94,6 +99,7 @@ API.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 503) {
       // Clear token if it's invalid
       localStorage.removeItem("token");
+      console.log('Token cleared due to auth error:', error.response?.status);
     }
 
     return Promise.reject(error);

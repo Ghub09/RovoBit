@@ -128,19 +128,29 @@ function Trade() {
   // }, []);
   
   useEffect(() => {
-  const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+    const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "https://server-1-nsr1.onrender.com", {
+      withCredentials: true,
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 3,
+      reconnectionDelay: 1000
+    });
 
-  socket.on("tradeUpdate", (trade) => {
-    if (trade && typeof trade === 'object') {
-      setRecentTrades((prevTrades) => [trade, ...prevTrades.filter(Boolean).slice(0, 9)]);
-    }
-  });
+    socket.on("connect_error", (err) => {
+      console.log("Socket connection error in trade:", err.message);
+    });
 
-  return () => {
-    socket.off("tradeUpdate");
-    socket.disconnect();
-  };
-}, []);
+    socket.on("tradeUpdate", (trade) => {
+      if (trade && typeof trade === 'object') {
+        setRecentTrades((prevTrades) => [trade, ...prevTrades.filter(Boolean).slice(0, 9)]);
+      }
+    });
+
+    return () => {
+      socket.off("tradeUpdate");
+      socket.off("connect_error");
+      socket.disconnect();
+    };
+  }, []);
 
 
   const currentMarketPrice =
