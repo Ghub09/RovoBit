@@ -128,7 +128,11 @@ function Trade() {
   // }, []);
   
   useEffect(() => {
-  const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+  // const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+  const socket = io(import.meta.env.VITE_WEB_SOCKET_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
 
   socket.on("tradeUpdate", (trade) => {
     if (trade && typeof trade === 'object') {

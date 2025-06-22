@@ -41,14 +41,9 @@ const App = () => {
   const dispatch = useDispatch();
     const { loading } = useSelector((state) => state.global);
   const socket = io(import.meta.env.VITE_API_URL, {
-  path: "/socket.io",
-  transports: ["websocket"],
   withCredentials: true,
-  reconnection: true,
-  reconnectionAttempts: 5,
-  reconnectionDelay: 1000
+  transports: ["websocket", "polling"] // Important for fallback
 });
-
  
     
     useEffect(() => {

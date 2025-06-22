@@ -33,7 +33,7 @@ config({ path: envPath });
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL,"http://localhost:5173", "https://ufxbit.com"],
+    origin: [process.env.FRONTEND_URL],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: [

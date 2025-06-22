@@ -2,18 +2,24 @@
   import { useEffect, useRef, useState, useCallback } from "react";
   import { io } from "socket.io-client";
 
-  const socket = io("http://localhost:5000", {
-    autoConnect: false,
-    reconnection: true,
-    reconnectionAttempts: 5,
-    reconnectionDelay: 1000,
-  });
+  // const socket = io("http://localhost:5000", {
+  //   autoConnect: false,
+  //   reconnection: true,
+  //   reconnectionAttempts: 5,
+  //   reconnectionDelay: 1000,
+  // });
+const VITE_WEB_SOCKET_URL_Local='https://server-1-nsr1.onrender.com'
+
+  const socket = io(VITE_WEB_SOCKET_URL_Local, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
 
   export default function useChat(userId) {
     const [messages, setMessages] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
     const messagesRef = useRef(messages);
-    const conversationTargetRef = useRef(null);
+    // const conversationTargetRef = useRef(null);
 
     useEffect(() => {
       messagesRef.current = messages;
@@ -22,7 +28,7 @@
     // Add function to request specific conversation
   const fetchConversation = useCallback((targetUserId = "admin") => {
   const isRegularUser = userId !== "admin";
-  const actualTargetId = isRegularUser ? "admin" : targetUserId;
+  // const actualTargetId = isRegularUser ? "admin" : targetUserId;
   
   socket.emit("get_conversation_history", {
     adminId: isRegularUser ? "admin" : userId,

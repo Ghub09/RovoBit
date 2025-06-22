@@ -7,7 +7,11 @@ import { toast } from "react-toastify";
 import { io } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
 
-const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+// const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+const socket = io(import.meta.env.VITE_WEB_SOCKET_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
 
 const LiquidateOpenTrades = () => {
   const dispatch = useDispatch();

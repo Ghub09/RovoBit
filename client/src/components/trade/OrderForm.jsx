@@ -10,7 +10,10 @@ import AnimatedHeading from "../animation/AnimateHeading";
 import { getWallet } from "../../store/slices/assetsSlice";
 import SmallLoader from "../layout/smallLoader.jsx";
 
-const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+ const socket = io(import.meta.env.VITE_WEB_SOCKET_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
 
 const OrderForm = ({ marketPrice, selectedPair }) => {
   const { t } = useTranslation();

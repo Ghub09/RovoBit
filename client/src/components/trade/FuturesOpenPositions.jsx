@@ -10,8 +10,10 @@ import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import AutoLiquidate from "../../pages/admin/AutoLiquidate";
 
-const socket = io(import.meta.env.VITE_API_URL);
-const getProfitPercentage = (trade) => {
+const socket = io(import.meta.env.VITE_API_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});const getProfitPercentage = (trade) => {
   if (!trade?.openTime || !trade?.expiryTime) return 0;
   
   const openTime = new Date(trade.openTime).getTime();
