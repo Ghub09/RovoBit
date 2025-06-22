@@ -16,7 +16,7 @@
     const [messages, setMessages] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
     const messagesRef = useRef(messages);
-    const conversationTargetRef = useRef(null);
+    // const conversationTargetRef = useRef(null);
 
     useEffect(() => {
       messagesRef.current = messages;
@@ -25,7 +25,7 @@
     // Add function to request specific conversation
   const fetchConversation = useCallback((targetUserId = "admin") => {
   const isRegularUser = userId !== "admin";
-  const actualTargetId = isRegularUser ? "admin" : targetUserId;
+  // const actualTargetId = isRegularUser ? "admin" : targetUserId;
   
   socket.emit("get_conversation_history", {
     adminId: isRegularUser ? "admin" : userId,

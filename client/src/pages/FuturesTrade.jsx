@@ -13,7 +13,10 @@ import AnimatedHeading from "../components/animation/AnimateHeading";
 import OrdersRecord from "../components/trade/OrdersRecord";
 import axios from "axios";
 
-const socket = io(import.meta.env.VITE_API_URL);
+ const socket = io(import.meta.env.VITE_API_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
 
 function FuturesTrade() {
   const [marketData, setMarketData] = useState([]);

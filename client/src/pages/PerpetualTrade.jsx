@@ -12,8 +12,11 @@ import AnimatedHeading from "../components/animation/AnimateHeading";
 import OrdersRecord from "../components/trade/OrdersRecord";
 import axios from "axios";
 
-const socket = io(import.meta.env.VITE_API_URL);
-const PerpetualTrade = () => {
+const socket = io(import.meta.env.VITE_API_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
+ const PerpetualTrade = () => {
   const [marketData, setMarketData] = useState([]);
   const [selectedPair, setSelectedPair] = useState("BTCUSDT");
   const [selectedInterval, setSelectedInterval] = useState("1h");

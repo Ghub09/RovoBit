@@ -119,7 +119,7 @@ const ManageNews = () => {
         toast.success("News updated successfully");
       } else {
         // Create new news
-        response = await axios.post(
+         await axios.post(
           `${import.meta.env.VITE_API_URL}/news`,
           formData,
           { withCredentials: true }

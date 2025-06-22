@@ -8,8 +8,10 @@ import io from "socket.io-client";
 // import { Button, Modal, Dropdown } from "flowbite-react";
 import AnimatedHeading from "../animation/AnimateHeading";
 
-const socket = io(import.meta.env.VITE_API_URL);
-
+const socket = io(import.meta.env.VITE_API_URL, {
+  withCredentials: true,
+  transports: ["websocket", "polling"] // Important for fallback
+});
 const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const dispatch = useDispatch();
   const [orderType, setOrderType] = useState("long");
