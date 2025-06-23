@@ -67,7 +67,7 @@ const Chating = ({ userId, targetId, classes }) => {
         <div className="bg-blue-600 text-white p-4  flex justify-between items-center">
           <h2 className="text-lg font-bold">
             {targetId === "admin"
-              ? "Chat with UfxBit Support"
+              ? "Chat with RovoBit Support"
               : `Chat with User ${targetId.slice(0, 5)}`}
           </h2>
           <div className="flex items-center gap-2">

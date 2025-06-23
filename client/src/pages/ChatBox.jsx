@@ -16,7 +16,7 @@ const ChatBox = () => {
       targetId="admin"
       messages={messages}
       sendMessage={sendMessage}
-      classes={"w-full h-[100vh] bg-gray-800"} />
+      classes={"w-full h-[80vh] bg-gray-800"} />
     </div>
   )
 }

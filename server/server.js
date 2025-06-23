@@ -1,5 +1,6 @@
 import http from "http";
 import { Server } from "socket.io";
+import WebSocket from "ws";
 import axios from "axios";
 import dotenv from "dotenv";
 import app from "./app.js";
@@ -18,30 +19,11 @@ const server = http.createServer(app);
 // Initialize WebSocket server for real-time updates
 const io = new Server(server, {
   cors: {
-    origin: function(origin, callback) {
-      // Define allowed origins
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:3000", 
-        "https://ufxbit.com",
-        ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
-        ...(process.env.ADDITIONAL_ORIGINS ? process.env.ADDITIONAL_ORIGINS.split(',') : [])
-      ];
-      
-      // If no origin (like from a direct HTTP request) or the origin is in allowedOrigins
-      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-        callback(null, true);
-      } else {
-        console.log("Blocked origin:", origin);
-        callback(new Error(`Origin ${origin} not allowed by CORS`));
-      }
-    },
+    origin: [process.env.FRONTEND_URL, "https://cryptonexus.live"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
   },
-  transports: ['websocket', 'polling'],
-  allowEIO3: true, // Allow compatibility with Socket.IO v2 clients
 });
 
 // Handle socket connections
@@ -66,7 +48,73 @@ export const emitTradeUpdate = (trade) => {
 // Market prices storage
 const marketPrices = {};
 
- 
+// 🔥 WebSocket: Connect to CryptoCompare (Avoid Binance Rate Limits)
+let ws;
+const connectWebSocket = () => {
+  try {
+    const tradingPairs = [
+      "BTC-USD",
+      "ETH-USD",
+      "BNB-USD",
+      "SOL-USD",
+      "XRP-USD",
+      "ADA-USD",
+      "DOGE-USD",
+      "MATIC-USD",
+      "DOT-USD",
+      "LTC-USD",
+    ];
+    const subs = tradingPairs.map(
+      (pair) => `5~CCCAGG~${pair.replace("-", "~")}~USD`
+    );
+
+    ws = new WebSocket("wss://streamer.cryptocompare.com/v2");
+
+    ws.onopen = () => {
+      console.log("🔗 Connected to CryptoCompare WebSocket");
+
+      ws.send(
+        JSON.stringify({
+          action: "SubAdd",
+          subs,
+          api_key: process.env.CRYPTOCOMPARE_API_KEY,
+        })
+      );
+    };
+
+    ws.onmessage = async (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.TYPE === "5" && data.PRICE) {
+          const pair = `${data.FROMSYMBOL}USDT`;
+          const price = parseFloat(data.PRICE);
+
+          console.log(`📈 Market price update for ${pair}: ${price}`);
+
+          marketPrices[pair] = price;
+          io.emit("marketPriceUpdate", { pair, price });
+
+          await checkLiquidations(marketPrices);
+        }
+      } catch (error) {
+        console.error("⚠️ Error processing WebSocket message:", error);
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("❌ CryptoCompare WebSocket Error:", error.message);
+    };
+
+    ws.onclose = () => {
+      console.warn("⚠️ WebSocket disconnected. Reconnecting in 5 seconds...");
+      setTimeout(connectWebSocket, 5000);
+    };
+  } catch (error) {
+    console.error("❌ Failed to connect WebSocket:", error.message);
+  }
+};
+// Start WebSocket connection
+connectWebSocket();
 
 // 🛠️ Fallback: REST API Fetch Every 30 Seconds (In Case WebSocket Fails)
 const fetchMarketPrices = async () => {
@@ -101,7 +149,20 @@ setInterval(async () => {
 }, 60000);
 
  
- 
+// io.on("connection", (socket) => {
+//   // console.log("New socket connected:", socket.id);
+
+//   socket.emit("WelCome", `${socket.id} WelCome to the server`);
+//   socket.broadcast.emit("user_connected",` ${socket.id} is connected`);
+//   socket.on("disconnect", () => {
+//     console.log("User disconnected:", socket.id);
+//   });
+//   socket.on("sendMessage", (message) => {
+//     io.emit("message", message);
+//   });
+
+// });
+
  
   
   
@@ -136,25 +197,6 @@ io.on("connection", (socket) => {
     }
   });
 
-  socket.on("delete_conversation", async ({ userId }) => {
-  try {
-    const deletedMessages = await Messages.deleteMany({
-      $or: [
-        { sender: userId, receiver: "admin" },
-        { sender: "admin", receiver: userId },
-      ],
-    });
-
-    console.log(`🗑️ Deleted ${deletedMessages.deletedCount} messages between admin and ${userId}`);
-
-    // Notify both user and admin
-    io.to(userId).emit("conversation_deleted", { success: true });
-    io.to("admin").emit("conversation_deleted", { userId, success: true });
-  } catch (err) {
-    console.error("❌ Error deleting conversation:", err);
-    socket.emit("delete_error", { error: err.message });
-  }
-});
 
   socket.on("sendMessage", async ({ senderId, receiverId, text, tempId }) => {
     try {
@@ -215,6 +257,8 @@ io.on("connection", (socket) => {
   });
 });
 
+// console.log("process.env.PORT", process.env.PORT);
+// Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(

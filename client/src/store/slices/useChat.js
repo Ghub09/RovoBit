@@ -2,21 +2,18 @@
   import { useEffect, useRef, useState, useCallback } from "react";
   import { io } from "socket.io-client";
 
-  const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "http://localhost:5000", {
+  const socket = io("http://localhost:5000", {
     autoConnect: false,
     reconnection: true,
     reconnectionAttempts: 5,
     reconnectionDelay: 1000,
-    withCredentials: true,
-    transports: ['websocket', 'polling'], // Try WebSocket first, then polling
-    timeout: 10000
   });
 
   export default function useChat(userId) {
     const [messages, setMessages] = useState([]);
     const [isConnected, setIsConnected] = useState(false);
     const messagesRef = useRef(messages);
-    // const conversationTargetRef = useRef(null);
+    const conversationTargetRef = useRef(null);
 
     useEffect(() => {
       messagesRef.current = messages;
@@ -25,7 +22,7 @@
     // Add function to request specific conversation
   const fetchConversation = useCallback((targetUserId = "admin") => {
   const isRegularUser = userId !== "admin";
-  // const actualTargetId = isRegularUser ? "admin" : targetUserId;
+  const actualTargetId = isRegularUser ? "admin" : targetUserId;
   
   socket.emit("get_conversation_history", {
     adminId: isRegularUser ? "admin" : userId,
