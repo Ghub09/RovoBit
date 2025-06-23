@@ -44,7 +44,7 @@ const Hero = () => {
         <div className="first text-center md:text-left md:mr-12 mb-10 md:mb-0">
           <div className="heading space-y-4">
             <TypingText/>
-            <p className="text-3xl md:text-4xl ml-10 text-primary drop-shadow font-semibold">
+            <p className="text-3xl md:text-1xl ml-10 text-primary drop-shadow font-semibold">
               {t("trade_safely")}
             </p>
           </div>

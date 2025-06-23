@@ -34,8 +34,8 @@ const TypingText = () => {
   return (
     <h1
       className="
-        w-[260px]  h-[90px]   text-3xl           /* mobile */
-        sm:w-[320px] sm:h-[110px] sm:text-4xl    /* small tablets */
+        w-[350px]  h-[90px]   text-3xl          /* mobile */
+        sm:w-[400px] sm:h-[110px] sm:text-4xl    /* small tablets */
         md:w-[600px] md:h-[150px] md:text-5xl    /* laptops/desktop */
         ml-4 md:ml-10 font-extrabold text-white leading-tight
       "

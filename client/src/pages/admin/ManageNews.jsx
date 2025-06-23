@@ -12,6 +12,7 @@ import {
 } from "@material-tailwind/react";
 import { FaEdit, FaTrash, FaPlus, FaCheck, FaTimes } from "react-icons/fa";
 import { toast } from "react-toastify";
+import API from "../../utils/api";
 
 const ManageNews = () => {
   const [newsList, setNewsList] = useState([]);
@@ -119,8 +120,8 @@ const ManageNews = () => {
         toast.success("News updated successfully");
       } else {
         // Create new news
-         await axios.post(
-          `${import.meta.env.VITE_API_URL}/news`,
+         await API.post(
+          `/news`,
           formData,
           { withCredentials: true }
         );

@@ -101,20 +101,20 @@ return (
         window.scrollY > 0 ? "bg-opacity-50 backdrop-blur-lg" : "bg-transparent"
       } ${getModeColor("b")}`}
     >
-      <nav className="container mx-auto flex justify-between items-center items-center p-4 ">
+      <nav className="container mx-auto flex justify-between items-center  p-4 ">
         <div className="logo-container flex items-center ">
           <Link to={"/"} className=" h-[70px] flex items-center w-[100px]">
-                <img src={logoSrc} className="md:w-[8vw] w-[100px]" alt="Logo" />           </Link>
+                <img src={logoSrc} className="md:w-[8vw] w-[70px]" alt="Logo" />           </Link>
           {showSelectOption && (
-            <div className="flex md:hidden border border-[#fffff] items-center ml-auto">
+            <div className="flex md:hidden items-center ml-auto">
               <select
                 id="tradingPair"
                 value={location.pathname.slice(1)}
                 onChange={(e) => navigate(`/${e.target.value}`)}
-                className={` text-tertiary3 p-2 focus:outline-none mr-4
+                className={` text-tertiary3 focus:outline-none mr-1
                    ${getModeColor("b")} `}
               >
-                <option className="bg-[#1a1a1a]" value="trade">
+                <option className="bg-[#1a1a1a] " value="trade">
                   {t("spot")}
                 </option>
                 <option className="bg-[#1a1a1a]" value="perpetual">
@@ -128,7 +128,7 @@ return (
                 className="text-2xl text-gray-400 cursor-pointer"
                 onClick={() => dispatch(setShowChart(!showChart))}
               >
-                <MdCandlestickChart />
+                <MdCandlestickChart className="text-green-400" />
               </div>
             </div>
           )}
@@ -344,7 +344,7 @@ return (
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ duration: 0.5 }}
-            className="fixed top-0 right-0 h-full w-3/4 bg-[#1C1C1C] shadow-lg z-30 flex flex-col p-6   "
+            className="fixed top-0 right-0 h-full w-3/4 bg-[#1C1C1C] shadow-lg z-30 flex flex-col p-6  border "
           >
             <button onClick={toggleMenu} className="self-end text-2xl  ">
               <AiOutlineClose />
@@ -365,7 +365,7 @@ return (
             <Link to={"/market"} className="py-3" onClick={toggleMenu}>
               {t("market")}
             </Link>
-            <Link to={"/trade"} className="py-3" onClick={toggleMenu}>
+            <Link to={"/trade"} className="py-3 border border-amber-300" onClick={toggleMenu}>
               {t("spot")}
             </Link>
             <Link to={"/futures"} className="py-3" onClick={toggleMenu}>

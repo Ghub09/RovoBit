@@ -189,7 +189,7 @@ return (
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
+      {/* <div className="md:hidden space-y-4">
         {trades.map((trade, idx) => (
           <div
             key={trade._id || idx}
@@ -263,7 +263,109 @@ return (
             </div>
           </div>
         ))}
+      </div> */}
+      {/* Mobile Cards */}
+<div className="md:hidden space-y-4">
+  {[...trades]
+    .sort((a, b) => new Date(b.closedAt || b.createdAt) - new Date(a.closedAt || a.createdAt))
+    .map((trade, idx) => (
+      <div
+        key={trade._id || idx}
+        className="border-b border-[#2f2f2f] p-4 shadow-md text-sm text-white"
+      >
+        <div className="flex justify-between items-center">
+          <span className="flex items-center gap-3">
+            <img
+              src={getCoinImage(extractBase(trade.pair))}
+              alt={extractBase(trade.pair)}
+              className="w-8 h-8"
+            />
+            <h2 className="text-lg font-bold">
+              {extractBase(trade.pair).toUpperCase()}
+            </h2>
+          </span>
+          <span className="text-[#e9b43b] bg-[#37321e] text-sm px-2 py-1 rounded-md">
+            {trade.leverage}%
+          </span>
+        </div>
+
+        <div className="mt-2 space-y-1">
+          <div className="flex justify-between">
+            <span>Type</span>
+            <span className="capitalize">{trade.type}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Entry Price</span>
+            <span>${trade.entryPrice?.toFixed(2)}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Close Price</span>
+            <span>{trade.closePrice ? `$${trade.closePrice.toFixed(2)}` : "--"}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Amount ($)</span>
+            <span>{trade.assetsAmount}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>PNL (USDT)</span>
+            <span
+              className={`font-medium ${
+                trade.profitLoss > 0
+                  ? "text-green-400"
+                  : trade.profitLoss < 0
+                  ? "text-red-400"
+                  : "text-white"
+              }`}
+            >
+              {formatPnL(trade.profitLoss)}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Status</span>
+            <span
+              className={`border px-2 py-0.5 rounded-md text-xs ${
+                trade.status === "open"
+                  ? "border-green-400 text-green-400"
+                  : trade.status === "liquidated"
+                  ? "border-red-400 text-red-400"
+                  : "border-blue-400 text-blue-400"
+              }`}
+            >
+              {trade.status?.toUpperCase()}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Created</span>
+            <span>{new Date(trade.createdAt).toLocaleDateString()}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Closed</span>
+            <span>
+              {trade.closedAt
+                ? new Date(trade.closedAt).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "--"}
+            </span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Duration</span>
+            <span>{getTradeDuration(trade.createdAt, trade.closedAt)}</span>
+          </div>
+        </div>
       </div>
+    ))}
+</div>
+
     </div>
   );
 };

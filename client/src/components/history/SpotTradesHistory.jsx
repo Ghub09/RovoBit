@@ -99,56 +99,63 @@ console.log(trades)
       </div>
 
       {/* Mobile Cards */}
-      <div className="md:hidden space-y-4">
-        {trades?.map((trade, index) => (
-          <div
-            key={trade._id}
-            className=" border-b border-[#2f2f2f] p-4 shadow-md"
-          >
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-3">
-                <img
-                  src={getCoinImage(extractBase(trade.asset))}
-                  alt={extractBase(trade.asset)}
-                  className="w-8 h-8"
-                />
-                <div>
-                  <h2 className="text-lg font-bold ">
-                    {extractBase(trade.asset).toUpperCase()}
-                  </h2>
-                </div>
-              </span >
-              <span className= "text-stone-400">{new Date(trade.executedAt).toLocaleString()}</span>
-            </div>
+ <div className="md:hidden space-y-4">
+  {[...trades]
+    .sort((a, b) => new Date(b.executedAt) - new Date(a.executedAt))
+    .map((trade, index) => (
+      <div
+        key={trade._id || index}
+        className="border-b border-[#2f2f2f] p-4 shadow-md text-sm text-white"
+      >
+        <div className="flex justify-between items-center">
+          <span className="flex items-center gap-3">
+            <img
+              src={getCoinImage(extractBase(trade.asset))}
+              alt={extractBase(trade.asset)}
+              className="w-8 h-8"
+            />
+            <h2 className="text-lg font-bold">
+              {extractBase(trade.asset).toUpperCase()}
+            </h2>
+          </span>
+          <span className="text-stone-400 text-xs">
+            {new Date(trade.executedAt).toLocaleString()}
+          </span>
+        </div>
 
-            <div className="mt-2 text-white text-sm">
-              <div className="flex justify-between mt-1">
-                <span>Price</span>
-                <span>{trade.price?.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span>Quantity</span>
-                <span>{trade?.quantity?.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between mt-1">
-                <span>Total Price</span>
-                <span>{trade.totalCost?.toFixed(2)}</span>
-              </div>
-
-              <div className="flex justify-between mt-1">
-                <span className="text-white">Order Type</span>
-                <span
-                  className={`border ${
-                    trade.type === "buy" ? "border-green-500" : "border-red-500"
-                  }  px-2 py-1 rounded-md`}
-                >
-                  {trade.type.toUpperCase()}
-                </span>
-              </div>
-            </div>
+        <div className="mt-2 space-y-1">
+          <div className="flex justify-between">
+            <span>Order Type</span>
+            <span
+              className={`font-medium border px-2 py-0.5 rounded ${
+                trade.type === "buy"
+                  ? "border-green-500 text-green-400"
+                  : "border-red-500 text-red-400"
+              }`}
+            >
+              {trade.type.toUpperCase()}
+            </span>
           </div>
-        ))}
+
+          <div className="flex justify-between">
+            <span>Quantity</span>
+            <span>{trade.quantity?.toFixed(2)}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Total Cost ($)</span>
+            <span>{trade.totalCost?.toFixed(2)}</span>
+          </div>
+
+          <div className="flex justify-between">
+            <span>Price</span>
+            <span>{trade.price?.toFixed(2)}</span>
+          </div>
+        </div>
       </div>
+    ))}
+</div>
+
     </div>
   );
 };

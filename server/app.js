@@ -19,6 +19,7 @@ import newsRouter from "./routers/newsRoutes.js";
 import userManagement from "./routers/users/userManagement.js";
  
 import { safariCompatibilityMiddleware } from "./middlewares/safariCompatibility.js";
+import path from "node:path";
  
 const app = express();
 
@@ -109,7 +110,13 @@ app.get("/", (req, res) => {
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
+// app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
+app.use(
+  fileUpload({
+    useTempFiles: true,
+    tempFileDir: path.join(process.cwd(), "tmp"), // or __dirname + '/tmp'
+  })
+);
 
 // Apply Safari compatibility middleware before routes
 app.use(safariCompatibilityMiddleware);
