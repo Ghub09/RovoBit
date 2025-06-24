@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../utils/api";
 import { toast } from "react-toastify";
 import { setLoading } from "./globalSlice";
+import axios from "axios";
 
 // Async thunk for fetching users
 export const fetchUsers = createAsyncThunk(
@@ -147,7 +148,7 @@ export const liquidateTrade = createAsyncThunk(
       dispatch(setLoading(true));
 
       // Make the API call
-      await API.post(`/admin/liquidate-trade/${tradeId}`, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/admin/liquidate-trade/${tradeId}`, {
         marketPrice,
         type,
         amount,

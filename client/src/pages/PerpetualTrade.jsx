@@ -47,38 +47,52 @@ const socket = io(import.meta.env.VITE_API_URL, {
 
   useEffect(() => {
  const fetchMarketData = async () => {
+    try {
+      // Map your selected pair (like BTCUSDT) to Kraken's format
+      // const krakenPairs = {
+      //   BTCUSDT: "XXBTZUSD",
+      //   ETHUSDT: "XETHZUSD",
+      //   DOGEUSDT: "XXDGZUSD",
+      //   MATICUSDT: "MATICUSD",
+      //   BNBUSDT: "BNBUSD",
+      // };
 
-      try {
-        const response = await axios.get(
-          `https://api.binance.com/api/v3/klines`, // ✅ Global Binance
-          {
-            params: {
-              symbol: selectedPair,
-              interval: selectedInterval,
-            },
-          }
-        );
-    
-        const formattedData = response.data.map((candle) => ({
-          time: Math.floor(candle[0] / 1000),
-          open: parseFloat(candle[1]),
-          high: parseFloat(candle[2]),
-          low: parseFloat(candle[3]),
-          close: parseFloat(candle[4]),
-          volume: parseFloat(candle[5]),
-        }));
-    
-        // console.log("Fetched candles:", response.data);
-        setMarketData(formattedData);
-    
-        // If using a chart ref (like Lightweight Charts):
-        if (candleSeriesRef?.current) {
-          candleSeriesRef.current.setData(formattedData);
-        }
-      } catch (error) {
-        console.error("Error fetching market data:", error?.message);
+      const krakenPair = tradingPairs[selectedPair] || "XXBTZUSD";
+
+      // Interval mapping: Kraken accepts minutes (e.g., 60 = hourly, 1440 = daily)
+      const interval = selectedInterval === "1d" ? 1440 : 60;
+
+      const response = await axios.get("https://api.kraken.com/0/public/OHLC", {
+        params: {
+          pair: krakenPair,
+          interval,
+        },
+      });
+
+      const ohlcData = response.data.result[krakenPair];
+
+      if (!Array.isArray(ohlcData)) {
+        throw new Error("Invalid OHLC data format from Kraken");
       }
-    };
+
+      const formattedData = ohlcData.map((entry) => ({
+        time: Number(entry[0]), // UNIX timestamp in seconds
+        open: parseFloat(entry[1]),
+        high: parseFloat(entry[2]),
+        low: parseFloat(entry[3]),
+        close: parseFloat(entry[4]),
+        volume: parseFloat(entry[6]), // Volume from Kraken data
+      }));
+
+      setMarketData(formattedData);
+
+      if (candleSeriesRef?.current) {
+        candleSeriesRef.current.setData(formattedData);
+      }
+    } catch (error) {
+      console.error("Error fetching market data from Kraken:", error.message);
+    }
+  };
     
     fetchMarketData();
     const interval = setInterval(fetchMarketData, 60000);

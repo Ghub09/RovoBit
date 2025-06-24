@@ -18,28 +18,65 @@ const OrderBook = ({ selectedPair }) => {
     const base = pair.slice(0, 3);
     return `${base}`;
   };
+  const getKrakenSymbol = (pair) => {
+  const mapping = {
+    BTCUSDT: "XBTUSD",     // Kraken uses "XBT" instead of "BTC"
+    ETHUSDT: "ETHUSD",
+    DOGEUSDT: "DOGEUSD",
+    MATICUSDT: "MATICUSD", // Might be unavailable depending on Kraken
+    BNBUSDT: "BNBUSD",     // Might be unavailable
+  };
+  return mapping[pair] || "XBTUSD";
+};
 
-  useEffect(() => {
-    if (wsRef.current) {
-      wsRef.current.close();
+
+   
+useEffect(() => {
+  const fetchPrice = async () => {
+    try {
+      const krakenSymbol = getKrakenSymbol(selectedPair);
+
+      const response = await fetch(`https://api.kraken.com/0/public/Ticker?pair=${krakenSymbol}`);
+      const data = await response.json();
+
+      const tickerKey = Object.keys(data.result)[0]; // e.g., "XXBTZUSD"
+      const price = parseFloat(data.result[tickerKey].c[0]); // last trade closed
+
+      if (price) {
+        const fakeBids = Array.from({ length: 7 }, (_, i) => [
+          (price - (i + 1) * 0.5).toFixed(2),
+          (Math.random() * 2 + 0.1).toFixed(4),
+        ]);
+        const fakeAsks = Array.from({ length: 7 }, (_, i) => [
+          (price + (i + 1) * 0.5).toFixed(2),
+          (Math.random() * 2 + 0.1).toFixed(4),
+        ]);
+
+        setBids(fakeBids);
+        setAsks(fakeAsks);
+      }
+    } catch (err) {
+      console.error("Failed to fetch Kraken price:", err.message);
     }
+  };
 
-    const ws = new WebSocket(
-      `wss://stream.binance.us:9443/ws/${selectedPair.toLowerCase()}@depth`
-    );
-    wsRef.current = ws;
+  fetchPrice();
+  const interval = setInterval(fetchPrice, 3000); // refresh every 3s
+  return () => clearInterval(interval);
+}, [selectedPair]);
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setBids(data.b.slice(0, 7)); // Top 7 bid orders
-      setAsks(data.a.slice(0, 7)); // Top 7 ask orders
-    };
 
-    ws.onclose = () => console.log("Order book WebSocket closed");
-    return () => ws.close();
-  }, [selectedPair]);
-
-  const maxBidAmount = Math.max(
+const getCoinGeckoId = (pair) => {
+  const mapping = {
+    BTCUSDT: "bitcoin",
+    ETHUSDT: "ethereum",
+    DOGEUSDT: "dogecoin",
+    MATICUSDT: "matic-network",
+    BNBUSDT: "binancecoin",
+  };
+  return mapping[pair] || "bitcoin";
+};
+   const maxBidAmount = Math.max(
     ...bids.map(([, amount]) => parseFloat(amount)),
     1
   );
@@ -47,9 +84,8 @@ const OrderBook = ({ selectedPair }) => {
     ...asks.map(([, amount]) => parseFloat(amount)),
     1
   );
-
-  return (
-    <div className="w-full p-4">
+   return (
+    <div className="w-full p-4 ">
       <span className="text-[.85rem] text-gray-500 flex justify-between md:hidden">
         <p>{t("price_usdt")}</p>
         <p>{`${t("amount")} (${extractBase(selectedPair)})`}</p>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
@@ -19,6 +19,8 @@ function Trade() {
   const [selectedInterval, setSelectedInterval] = useState("1h");
   const [recentTrades, setRecentTrades] = useState([]);
   const showChart = useSelector((state) => state.global.showChart);
+    const candleSeriesRef = useRef(null);
+  
   const tradingPairs = [
     "BTCUSDT",
     "ETHUSDT",
@@ -90,27 +92,60 @@ function Trade() {
      }, [selectedPair, selectedInterval]);
    
      // WebSocket for real-time updates
-     useEffect(() => {
-       const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`);
-   
-   
-       ws.onmessage = (event) => {
-         const response = JSON.parse(event.data);
-         const kline = response.k;
-         const newCandle = {
-           time: Math.floor(kline.t / 1000),
-           open: parseFloat(kline.o),
-           high: parseFloat(kline.h),
-           low: parseFloat(kline.l),
-           close: parseFloat(kline.c),
-           volume: parseFloat(kline.v),
-         };
-   
-         setMarketData((prevData) => [...prevData, newCandle]);
-       };
-   
-       return () => ws.close();
-     }, [selectedPair, selectedInterval]);
+    useEffect(() => {
+  const fetchMarketData = async () => {
+    try {
+      // Map your selected pair (like BTCUSDT) to Kraken's format
+      // const krakenPairs = {
+      //   BTCUSDT: "XXBTZUSD",
+      //   ETHUSDT: "XETHZUSD",
+      //   DOGEUSDT: "XXDGZUSD",
+      //   MATICUSDT: "MATICUSD",
+      //   BNBUSDT: "BNBUSD",
+      // };
+
+      const krakenPair = tradingPairs[selectedPair] || "XXBTZUSD";
+
+      // Interval mapping: Kraken accepts minutes (e.g., 60 = hourly, 1440 = daily)
+      const interval = selectedInterval === "1d" ? 1440 : 60;
+
+      const response = await axios.get("https://api.kraken.com/0/public/OHLC", {
+        params: {
+          pair: krakenPair,
+          interval,
+        },
+      });
+
+      const ohlcData = response.data.result[krakenPair];
+
+      if (!Array.isArray(ohlcData)) {
+        throw new Error("Invalid OHLC data format from Kraken");
+      }
+
+      const formattedData = ohlcData.map((entry) => ({
+        time: Number(entry[0]), // UNIX timestamp in seconds
+        open: parseFloat(entry[1]),
+        high: parseFloat(entry[2]),
+        low: parseFloat(entry[3]),
+        close: parseFloat(entry[4]),
+        volume: parseFloat(entry[6]), // Volume from Kraken data
+      }));
+
+      setMarketData(formattedData);
+
+      if (candleSeriesRef?.current) {
+        candleSeriesRef.current.setData(formattedData);
+      }
+    } catch (error) {
+      console.error("Error fetching market data from Kraken:", error.message);
+    }
+  };
+
+  fetchMarketData();
+  const intervalId = setInterval(fetchMarketData, 60000); // Refresh every 60s
+
+  return () => clearInterval(intervalId);
+}, [selectedPair, selectedInterval]);
    
 
   // WebSocket for real-time trade updates

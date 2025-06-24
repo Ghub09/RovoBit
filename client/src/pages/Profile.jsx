@@ -84,7 +84,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen text-white p-4 md:p-6 max-w-7xl mx-auto">
+    <div className="min-h-screen text-white p-4 md:p-6 max-w-7xl mx-auto ">
       {/* Header */}
       {showAssets ? (
         <Assets type={"spot"} />
@@ -227,7 +227,7 @@ const Profile = () => {
 
             {/* Help */}
             <Link
-              to={"mailto:bitex.helpdesk@gmail.com"}
+              to={"/chat"}
               className="bg-[#1a1a1a] p-4 rounded-lg cursor-pointer hover:bg-[#242424] transition-all duration-200 border border-gray-800 shadow-sm flex items-center"
             >
               <div className="bg-[#1e2a20] p-3 rounded-full mr-3">

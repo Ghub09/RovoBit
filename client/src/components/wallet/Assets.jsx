@@ -16,8 +16,7 @@ const Assets = ({ type }) => {
   const [walletValue, setWalletValue] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [isApplePlatform, setIsApplePlatform] = useState(false);
-
-  // Detect if user is on iOS/macOS
+   // Detect if user is on iOS/macOS
   useEffect(() => {
     const userAgent = navigator.userAgent.toLowerCase();
     const isApple = /(mac|iphone|ipad|ipod)/i.test(userAgent);
@@ -136,6 +135,7 @@ const Assets = ({ type }) => {
   };
 
   const calculateValue = (price, quantity) => {
+    console.log(price, quantity)
     if (!price || !quantity) return 0;
     return price * quantity;
   };
@@ -556,8 +556,7 @@ const Assets = ({ type }) => {
                         coinData?.current_price,
                         holding.quantity
                       );
-
-                      return (
+                       return (
                         <tr
                           key={index}
                           className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"

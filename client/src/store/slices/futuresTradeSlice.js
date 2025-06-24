@@ -10,7 +10,8 @@ export const fetchOpenPositions = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.get("/futures/positions");
-
+       
+      // console.log(response.data.trades)
       return response.data.trades;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -43,11 +44,12 @@ export const openFuturesTrade = createAsyncThunk(
         },
         { withCredentials: true }
       );
-      
-       return response.data;
+            // dispatch(fetchOpenPositions());
+
+      return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
-    } 
+    }
   }
 );
 
@@ -58,7 +60,7 @@ export const closeFuturesTrade = createAsyncThunk(
     try {
       dispatch(setLoading(true));
 
-       const response = await API.post(
+      const response = await API.post(
         "/futures/close",
         { tradeId, closePrice },
         { withCredentials: true }
@@ -99,6 +101,8 @@ const initialState = {
   error: null,
 };
 
+ 
+
 // Futures Slice
 const futuresTradeSlice = createSlice({
   name: "futures",
@@ -108,11 +112,18 @@ const futuresTradeSlice = createSlice({
     builder
       .addCase(fetchOpenPositions.pending, (state) => {
         state.status = "loading";
+        
       })
       .addCase(fetchOpenPositions.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.openPositions = action.payload;
+        const now = new Date();
+
+        state.openPositions = action.payload.filter(
+          (trade) => !trade.expiryTime || new Date(trade.expiryTime) > now
+        );
       })
+
       .addCase(fetchOpenPositions.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;

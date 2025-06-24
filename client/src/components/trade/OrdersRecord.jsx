@@ -25,6 +25,7 @@ const [activeTab, setActiveTab] = useState("history");
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
   // console.log(perpetualsHistoryTrades)
 //  console.log(openOrders)
+console.log(futuresHistoryTrades)
  useEffect(() => {
   const fetchData = () => {
     if (type === "spot") {
@@ -50,7 +51,7 @@ const [activeTab, setActiveTab] = useState("history");
       {/* Tab Navigation */}
         {/* {loading && <Loader />} */}
 
-      <div className="flex border-b border-gray-700 mb-4">
+      <div className="flex border-b border-gray-700 mb-4 border">
         <button
           className={`px-4 py-2 text-sm font-semibold ${
             activeTab === "pending"

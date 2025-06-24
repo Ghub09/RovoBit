@@ -6,22 +6,73 @@ import { setLoading } from "./globalSlice";
 import { useEffect } from "react";
 
 // Fetch coin market data
+// export const fetchCoinData = createAsyncThunk(
+//   "trade/fetchCoinData",
+//   async (coinId) => {
+//     const response = await axios.get(
+//       `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
+//       {
+//         params: {
+//           vs_currency: "usd",
+//           days: "1",
+//           interval: "hourly",
+//         },
+//       }
+//     );
+//     return response.data;
+//   }
+// );
+
 export const fetchCoinData = createAsyncThunk(
   "trade/fetchCoinData",
-  async (coinId) => {
-    const response = await axios.get(
-      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
-      {
+  async (symbol, { rejectWithValue }) => {
+    try {
+      // Mapping common crypto pairs to Kraken format
+      const krakenPairs = {
+        BTCUSDT: "XXBTZUSD",
+        ETHUSDT: "XETHZUSD",
+        DOGEUSDT: "XXDGZUSD",
+        MATICUSDT: "MATICUSD",
+        BNBUSDT: "BNBUSD",
+      };
+
+      const krakenPair = krakenPairs[symbol] || "XXBTZUSD";
+
+      const interval = 60; // 60 minutes = hourly (as CoinGecko)
+
+      const response = await axios.get("https://api.kraken.com/0/public/OHLC", {
         params: {
-          vs_currency: "usd",
-          days: "1",
-          interval: "hourly",
+          pair: krakenPair,
+          interval,
         },
+      });
+
+      const data = response.data.result[krakenPair];
+
+      if (!Array.isArray(data)) {
+        throw new Error("Invalid OHLC data from Kraken");
       }
-    );
-    return response.data;
+
+      const formattedData = data.map((item) => ({
+        time: Number(item[0]), // UNIX timestamp (seconds)
+        open: parseFloat(item[1]),
+        high: parseFloat(item[2]),
+        low: parseFloat(item[3]),
+        close: parseFloat(item[4]),
+        volume: parseFloat(item[6]), // Volume
+      }));
+
+      return {
+        raw: data,
+        formatted: formattedData,
+      };
+    } catch (error) {
+      console.error("Kraken fetch error:", error.message);
+      return rejectWithValue(error.message || "Failed to fetch Kraken data");
+    }
   }
 );
+
 
 // Place a new order (User Side)
 export const placeOrder = createAsyncThunk(

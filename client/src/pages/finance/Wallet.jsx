@@ -69,6 +69,8 @@ const Wallet = () => {
   const [showAssets, setShowAssets] = useState(false);
   const [assetsType, setAssetsType] = useState("");
   const [transferAsset, setTransferAsset] = useState("USDT");
+    const [usdtData, setUsdtData] = useState(null);
+
   const [totalValue, setTotalValue] = useState(0);
   const [walletValueSpot, setWalletValueSpot] = useState(0);
   const [walletValueFutures, setWalletValueFutures] = useState(0);
@@ -97,11 +99,28 @@ const Wallet = () => {
 
     return () => clearInterval(interval); // Cleanup
   }, [dispatch]);
+    console.log("Assets",Assets)
 
   useEffect(() => {
     calculateTotalValue();
     calculateWalletValues();
   }, [coins, wallet]);
+  const getCoinData = (symbol) => {
+    if (!symbol || !coins || !coins.length) return null;
+    return coins.find(
+      (coin) =>
+        coin &&
+        coin.symbol &&
+        symbol &&
+        coin.symbol.toUpperCase() === symbol.toUpperCase()
+    );
+  };
+  useEffect(() => {
+    if (coins && coins.length > 0) {
+      setUsdtData(getCoinData("USDT"));
+    }
+  }, [coins]);
+
 
   // const handleSwapPercent = (percent) => {
   //   const balance = wallet?.[fromAsset.toLowerCase() + "Wallet"] || 0;
@@ -112,18 +131,33 @@ const Wallet = () => {
    
   
 
-  const handleSwapPercent = (percent) => {
-    if (!fromAsset) {
-      toast.error("Please select a 'From' asset first");
-      return;
-    }
-    
-    const walletKey = fromAsset.toLowerCase() + "Wallet";
-    const balance = wallet?.spotWallet || 0;
-    const calculated = (balance * percent) / 100;
-    setAmount(calculated.toFixed(4));
-    setSwapPercent(percent);
-  };
+ const handleSwapPercent = (percent, from) => {
+  if (!from) {
+    toast.error("Please select a 'From' asset first");
+    return;
+  }
+
+  // Step 1: Check if it's a special wallet asset (like USDT)
+  let balance = 0;
+
+  if (from.toUpperCase() === "USDT") {
+    balance = wallet?.spotWallet || 0;
+  } else {
+    // Step 2: Otherwise, find in holdings
+    const found = wallet?.holdings?.find(
+      (coin) => coin.asset?.toUpperCase() === from.toUpperCase()
+    );
+    balance = found?.quantity || 0;
+  }
+
+  // Step 3: Calculate and apply percentage
+  const calculated = (balance * percent) / 100;
+  setAmount(calculated.toFixed(4));
+  setSwapPercent(percent);
+};
+
+  
+  
   const handleTransferPercent = (percent) => {
     if (!fromWallet) {
       toast.error("Please select a 'From' wallet first");
@@ -304,6 +338,10 @@ const Wallet = () => {
     localStorage.removeItem("selectedWalletType");
     localStorage.removeItem("showAssets");
   };
+  const calculateValue = (price, quantity) => {
+     if (!price || !quantity) return 0;
+    return price * quantity;
+  };
   // console.log(wallet)
   // console.log(showAssets)
   // console.log(wallet?.withdrawalHistory);
@@ -434,19 +472,52 @@ const Wallet = () => {
                         <tr className="text-gray-400 border-b border-gray-700">
                           <th className="py-2">Asset</th>
                           <th className="py-2">Quantity</th>
+                          <th className="py-2">USDT</th>
                         </tr>
                       </thead>
                       <tbody>
-                        {wallet.holdings.map((holding, index) => (
+                        {wallet?.spotWallet > 0 && (
+                      <tr className="border-b border-gray-700 font-semibold">
+                        <td className="py-2 flex items-center gap-2">
+                          <img
+                            src={usdtData?.image}
+                            alt="USDT"
+                            className="w-6 h-6 mx-2"
+                          />
+                          USDT
+                        </td>
+                        <td className="py-2">
+                          {wallet.spotWallet?.toFixed(2)}
+                        </td>
+                        <td className="py-2">
+                          {wallet.spotWallet?.toFixed(2)}
+                        </td>
+                      </tr>
+                    )}
+                        {wallet.holdings.map((holding, index) => 
+                        
+                        {
+
+                          const coinData = getCoinData(holding.asset);
+                      const assetValue = calculateValue(
+                        coinData?.current_price,
+                        holding.quantity
+                      );
+                           return(
                           <tr
                             key={index}
                             className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"
                           >
-                            <td className="py-2">{holding.asset}</td>
+                            <td className="py-2 flex">
+                               <img
+                              src={coinData?.image}
+                               className="w-6 h-6 mx-2"
+                            />
+                              {holding.asset}</td>
                             <td className="py-2">{holding.quantity}</td>
-                            {/* <td className="py-2">${holding.value.toFixed(2)}</td> */}
+                            <td className="py-2">{assetValue.toFixed(2)}</td>
                           </tr>
-                        ))}
+                        )})}
                       </tbody>
                     </table>
                   ) : (
@@ -858,7 +929,7 @@ const Wallet = () => {
           </option>
         ))}
       </select>
-    </div>
+    </div>  
 
     {/* Amount Input with Percentage Options */}
     <div className="mb-4">
@@ -871,7 +942,7 @@ const Wallet = () => {
                 ? 'bg-blue-500 text-white' 
                 : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
             }`}
-            onClick={() => handleSwapPercent(percent)}
+            onClick={() => handleSwapPercent(percent, fromAsset)}
           >
             {percent}%
           </button>

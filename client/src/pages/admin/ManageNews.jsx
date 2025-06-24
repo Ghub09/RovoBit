@@ -112,8 +112,8 @@ const ManageNews = () => {
 
       if (currentNews) {
         // Update existing news
-        response = await axios.put(
-          `${import.meta.env.VITE_API_URL}/news/${currentNews._id}`,
+        response = await API.put(
+          `/news/${currentNews._id}`,
           formData,
           { withCredentials: true }
         );
@@ -140,8 +140,8 @@ const ManageNews = () => {
     if (!currentNews) return;
 
     try {
-      await axios.delete(
-        `${import.meta.env.VITE_API_URL}/news/${currentNews._id}`,
+      await API.delete(
+        `/news/${currentNews._id}`,
         { withCredentials: true }
       );
 
@@ -156,8 +156,8 @@ const ManageNews = () => {
 
   const handleToggleActive = async (news) => {
     try {
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/news/${news._id}`,
+      await API.put(
+        `/news/${news._id}`,
         { isActive: !news.isActive },
         { withCredentials: true }
       );

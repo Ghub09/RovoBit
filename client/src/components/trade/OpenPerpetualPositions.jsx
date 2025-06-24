@@ -13,8 +13,8 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
   const { coins } = useSelector((state) => state.market);
   const [pnlData, setPnlData] = useState({});
   const [socketMarketPrice, setSocketMarketPrice] = useState();
-
-  const getCoinData = (symbol) => {
+  // console.log(marketPrice)
+   const getCoinData = (symbol) => {
     return coins.find(
       (coin) => coin.symbol.toUpperCase() === symbol.toUpperCase()
     );

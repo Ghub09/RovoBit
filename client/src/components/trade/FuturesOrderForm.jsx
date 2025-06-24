@@ -61,6 +61,8 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     if (quantity <= 0 || leverage < 1) {
       return toast.error("Invalid trade details");
     }
+
+     
    dispatch(
       openFuturesTrade({
         pair: selectedPair,
@@ -73,7 +75,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     ).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
          socket.emit("newPosition", result.payload);
-         console.log(result.payload)
+         console.log("result.payload",result.payload)
        }
       // toast.dismiss();
       toast.success("Trade is open successfully");
@@ -83,7 +85,10 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
 
       toast.error("Some thing is wrong");
 
-    })
+    }).finally(() => {
+      setQuantity("");
+      setUsdtAmount("");
+     })
      
   };
  
@@ -95,7 +100,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         socket.off("liquidationUpdate");
         socket.off("newPosition");
       };
-    }, [dispatch]);
+    }, [dispatch,quantity]);
    
 
   const assetsOptions = [25, 50, 75, 100];

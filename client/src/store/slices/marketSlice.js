@@ -56,6 +56,66 @@ export const fetchMarketData = createAsyncThunk(
   }
 );
 
+// const krakenPairs = ["XBTUSD", "ETHUSD", "DOGEUSD", "MATICUSD", "BNBUSD"];
+
+// export const fetchMarketData = createAsyncThunk(
+//   "market/fetchMarketData",
+//   async (_, { rejectWithValue }) => {
+//     try {
+//       const pairString = krakenPairs.join(",");
+//       const response = await axios.get(
+//         `https://api.kraken.com/0/public/Ticker`,
+//         {
+//           params: {
+//             pair: pairString,
+//           },
+//           timeout: 15000,
+//           headers: {
+//             Accept: "application/json",
+//             "Content-Type": "application/json",
+//           },
+//         }
+//       );
+
+//       const data = response.data.result;
+
+//       if (!data || typeof data !== "object") {
+//         throw new Error("Invalid response from Kraken");
+//       }
+
+//       // Map Kraken's data structure to your expected format
+//       const processedData = Object.entries(data).map(([key, value]) => {
+//         const symbolMap = {
+//           XXBTZUSD: "BTC",
+//           XETHZUSD: "ETH",
+//           DOGEUSD: "DOGE",
+//           MATICUSD: "MATIC",
+//           BNBUSD: "BNB",
+//         };
+
+//         const symbol = symbolMap[key] || key;
+
+//         return {
+//           id: symbol.toLowerCase(),
+//           symbol,
+//           name: symbol, // Kraken doesn’t provide names directly
+//           image: "", // Kraken doesn't provide images
+//           current_price: parseFloat(value.c[0]),
+//           market_cap: 0, // Kraken doesn't provide this
+//           market_cap_rank: 0, // Not available
+//           total_volume: parseFloat(value.v[1]), // Last 24h volume
+//           price_change_percentage_24h: 0, // Kraken doesn't support this
+//           sparkline_in_7d: { price: [] }, // Not available
+//         };
+//       });
+
+//       return processedData;
+//     } catch (error) {
+//       console.error("Kraken market fetch error:", error?.message);
+//       return rejectWithValue(error.message || "Failed to fetch market data from Kraken");
+//     }
+//   }
+// );
 const marketSlice = createSlice({
   name: "market",
   initialState: {

@@ -61,97 +61,108 @@ function FuturesTrade() {
       socket.off("newPosition");
     };
   }, [dispatch]);
+ 
 
-  // useEffect(() => {
-  //   const fetchMarketData = async () => {
-  //     try {
-  //       const response = await fetch(
-  //         `https://api.binance.us/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
-  //       );
-  //       const data = await response.json();
+//  useEffect(() => {
+//   const fetchMarketData = async () => {
+//     try {
+//       const response = await axios.get(
+//         `https://api.coingecko.com/api/v3/coins/bitcoin/market_chart`, // You can replace 'bitcoin'
+//         {
+//           params: {
+//             vs_currency: "usd",
+//             days: "1", // 1 = past 24h
+//             interval: selectedInterval === "1d" ? "daily" : "hourly",
+//           },
+//         }
+//       );
 
-  //       const formattedData = data.map((candle) => ({
-  //         time: Math.floor(candle[0] / 1000),
-  //         open: parseFloat(candle[1]),
-  //         high: parseFloat(candle[2]),
-  //         low: parseFloat(candle[3]),
-  //         close: parseFloat(candle[4]),
-  //         volume: parseFloat(candle[5]),
-  //       }));
+//       const prices = response.data.prices;
+//       const volumes = response.data.total_volumes;
 
-  //       setMarketData(formattedData);
-  //     } catch (error) {
-  //       console.error("Error fetching market data:", error);
-  //     }
-  //   };
-  //   fetchMarketData();
-  //   const interval = setInterval(fetchMarketData, 60000);
-  //   return () => clearInterval(interval);
-  // }, [selectedPair, selectedInterval]);
-  // // WebSocket for real-time updates
-  // useEffect(() => {
-  //   const ws = new WebSocket(
-  //     `wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
-  //   );
+//       // Simulate candlestick data from prices
+//       const formattedData = prices.map((entry, index) => {
+//         const time = Math.floor(entry[0] / 1000); // UNIX timestamp
+//         const open = entry[1];
+//         const close = prices[index + 1]?.[1] || entry[1];
+//         const high = Math.max(open, close);
+//         const low = Math.min(open, close);
+//         const volume = volumes[index]?.[1] || 0;
 
-  //   ws.onmessage = (event) => {
-  //     const response = JSON.parse(event.data);
-  //     const kline = response.k;
-  //     const newCandle = {
-  //       time: Math.floor(kline.t / 1000),
-  //       open: parseFloat(kline.o),
-  //       high: parseFloat(kline.h),
-  //       low: parseFloat(kline.l),
-  //       close: parseFloat(kline.c),
-  //       volume: parseFloat(kline.v),
-  //     };
+//         return { time, open, high, low, close, volume };
+//       });
 
-  //     setMarketData((prevData) => [...prevData, newCandle]);
-  //   };
+//       setMarketData(formattedData);
 
-  //   return () => ws.close();
-  // }, [selectedPair, selectedInterval]);
+//       if (candleSeriesRef?.current) {
+//         candleSeriesRef.current.setData(formattedData);
+//       }
+//     } catch (error) {
+//       console.error("Error fetching market data from CoinGecko:", error.message);
+//     }
+//   };
 
-  useEffect(() => {
-    const fetchMarketData = async () => {
-   
-         try {
-           const response = await axios.get(
-             `https://api.binance.com/api/v3/klines`, // ✅ Global Binance
-             {
-               params: {
-                 symbol: selectedPair,
-                 interval: selectedInterval,
-               },
-             }
-           );
-       
-           const formattedData = response.data.map((candle) => ({
-             time: Math.floor(candle[0] / 1000),
-             open: parseFloat(candle[1]),
-             high: parseFloat(candle[2]),
-             low: parseFloat(candle[3]),
-             close: parseFloat(candle[4]),
-             volume: parseFloat(candle[5]),
-           }));
-       
-           // console.log("Fetched candles:", response.data);
-           setMarketData(formattedData);
-       
-           // If using a chart ref (like Lightweight Charts):
-           if (candleSeriesRef?.current) {
-             candleSeriesRef.current.setData(formattedData);
-           }
-         } catch (error) {
-           console.error("Error fetching market data:", error?.message);
-         }
-       };
-       
-       fetchMarketData();
-       const interval = setInterval(fetchMarketData, 60000);
-   
-       return () => clearInterval(interval);
-     }, [selectedPair, selectedInterval]);
+//   fetchMarketData();
+//   const interval = setInterval(fetchMarketData, 60000); // Refresh every 60s
+
+//   return () => clearInterval(interval);
+// }, [selectedPair, selectedInterval]);
+useEffect(() => {
+  const fetchMarketData = async () => {
+    try {
+      // Map your selected pair (like BTCUSDT) to Kraken's format
+      const krakenPairs = {
+        BTCUSDT: "XXBTZUSD",
+        ETHUSDT: "XETHZUSD",
+        DOGEUSDT: "XXDGZUSD",
+        MATICUSDT: "MATICUSD",
+        BNBUSDT: "BNBUSD",
+      };
+
+      const krakenPair = krakenPairs[selectedPair] || "XXBTZUSD";
+
+      // Interval mapping: Kraken accepts minutes (e.g., 60 = hourly, 1440 = daily)
+      const interval = selectedInterval === "1d" ? 1440 : 60;
+
+      const response = await axios.get("https://api.kraken.com/0/public/OHLC", {
+        params: {
+          pair: krakenPair,
+          interval,
+        },
+      });
+
+      const ohlcData = response.data.result[krakenPair];
+
+      if (!Array.isArray(ohlcData)) {
+        throw new Error("Invalid OHLC data format from Kraken");
+      }
+
+      const formattedData = ohlcData.map((entry) => ({
+        time: Number(entry[0]), // UNIX timestamp in seconds
+        open: parseFloat(entry[1]),
+        high: parseFloat(entry[2]),
+        low: parseFloat(entry[3]),
+        close: parseFloat(entry[4]),
+        volume: parseFloat(entry[6]), // Volume from Kraken data
+      }));
+
+      setMarketData(formattedData);
+
+      if (candleSeriesRef?.current) {
+        candleSeriesRef.current.setData(formattedData);
+      }
+    } catch (error) {
+      console.error("Error fetching market data from Kraken:", error.message);
+    }
+  };
+
+  fetchMarketData();
+  const intervalId = setInterval(fetchMarketData, 60000); // Refresh every 60s
+
+  return () => clearInterval(intervalId);
+}, [selectedPair, selectedInterval]);
+
+
    
      // WebSocket for real-time updates
      useEffect(() => {
@@ -177,8 +188,9 @@ function FuturesTrade() {
      }, [selectedPair, selectedInterval]);
   const currentMarketPrice =
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
-  return (
-    <div className="min-h-screen max-w-7xl mx-auto md:px-4">
+
+   return (
+    <div className="min-h-screen max-w-7xl mx-auto md:px-4 ">
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -246,9 +258,7 @@ function FuturesTrade() {
     </div>
   );
 }
-
 export default FuturesTrade;
-
 
 // import React, { useEffect, useState } from "react";
 // import { useDispatch, useSelector } from "react-redux";

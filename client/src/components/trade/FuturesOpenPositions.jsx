@@ -9,6 +9,7 @@ import { Button } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import AutoLiquidate from "../../pages/admin/AutoLiquidate";
+import SmallLoader from "../layout/smallLoader";
 
 const socket = io(import.meta.env.VITE_API_URL, {
   withCredentials: true,
@@ -193,7 +194,7 @@ useEffect(() => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
-
+ 
   const handleCloseTrade = (tradeId) => {
     if (!tradeId) {
       toast.error("Please select a trade to close!");
@@ -286,7 +287,7 @@ useEffect(() => {
       </div>
 
       <div className="md:hidden">
-        {status === "loading" && <span className="ml-2 animate-spin">⏳</span>}
+        {status === "loading" && <SmallLoader/>}
         {openPositions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openPositions.map((trade) => {

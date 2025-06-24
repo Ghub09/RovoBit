@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { CandlestickSeries, createChart } from "lightweight-charts";
+import axios from "axios";
 
 const TradingChart = ({
   selectedPair,
@@ -15,7 +16,7 @@ const TradingChart = ({
   const [marketData, setMarketData] = useState([]);
   const [ohlc, setOhlc] = useState(null);
   const [savedRange, setSavedRange] = useState(null); // Define savedRange state
-
+  
   const timeIntervals = ["1m", "5m", "15m", "1h", "1d"];
 
   const formatTradingPair = (pair) => {
@@ -29,36 +30,27 @@ const TradingChart = ({
   // Function to fetch historical market data (initial chart load)
  
 const fetchMarketData = async () => {
-  try {
-    const response = await axios.get(
-      `https://corsproxy.io/?https://api.binance.com/api/v3/klines`,
-      {
-        params: {
-          symbol: selectedPair,
-          interval: selectedInterval,
-        },
-      }
-    );
+    try {
+      const response = await fetch(
+        `https://api.binance.us/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
+      );
+      const data = await response.json();
 
-    const formattedData = response.data.map((candle) => ({
-      time: Math.floor(candle[0] / 1000),
-      open: parseFloat(candle[1]),
-      high: parseFloat(candle[2]),
-      low: parseFloat(candle[3]),
-      close: parseFloat(candle[4]),
-      volume: parseFloat(candle[5]),
-    }));
+      const formattedData = data.map((candle) => ({
+        time: Math.floor(candle[0] / 1000),
+        open: parseFloat(candle[1]),
+        high: parseFloat(candle[2]),
+        low: parseFloat(candle[3]),
+        close: parseFloat(candle[4]),
+        volume: parseFloat(candle[5]),
+      }));
 
-    console.log("Market data:", formattedData);
-    setMarketData(formattedData);
-
-    if (candleSeriesRef?.current) {
+      setMarketData(formattedData);
       candleSeriesRef.current.setData(formattedData);
+    } catch (error) {
+      console.error("Error fetching historical market data:", error);
     }
-  } catch (error) {
-    console.error("Full Error:", error);
-  }
-};
+  };
 
   
 
@@ -158,10 +150,9 @@ const fetchMarketData = async () => {
     ws.onclose = () => console.log("WebSocket closed");
     return () => ws.close(); // Cleanup WebSocket on unmount
   }, [selectedPair, selectedInterval]);
-
-  return (
+   return (
     <div>
-      <div className="md:flex justify-between items-center border-b-[.3px]  hidden md:block">
+      <div className="  rounded-2xl bg-gray-500  justify-between items-center   hidden md:block">
         <div className=" flex gap-4 w-fit">
           <div>
             <select
@@ -204,7 +195,7 @@ const fetchMarketData = async () => {
       <div className="w-full text-gray-400 border-b-[.3px] border-gray-600 ">
         <h3>Chart</h3>
       </div>
-      <div className="flex justify-evenly border-b-[.3px] border-gray-600 ">
+      <div className="flex justify-evenly border-b-[.3px]  border-gray-600 ">
         {timeIntervals.map((timeInterval, index) => (
           <p
             key={index}
@@ -220,7 +211,7 @@ const fetchMarketData = async () => {
         ))}
       </div>
       {ohlc && (
-        <div className="w-full py-1 flex justify-evenly  ">
+        <div className="w-full py-1 flex justify-evenly bg-red-400 ">
           <p className="text-secondary font-semibold text-[.8rem] ">
             <span className="text-gray-600 text-[.7rem]">O: </span> {ohlc.open}
           </p>
