@@ -99,8 +99,7 @@ const Wallet = () => {
 
     return () => clearInterval(interval); // Cleanup
   }, [dispatch]);
-    console.log("Assets",Assets)
-
+  
   useEffect(() => {
     calculateTotalValue();
     calculateWalletValues();

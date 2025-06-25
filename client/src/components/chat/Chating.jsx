@@ -67,7 +67,7 @@ const Chating = ({ userId, targetId, classes }) => {
         <div className="bg-blue-600 text-white p-4  flex justify-between items-center">
           <h2 className="text-lg font-bold">
             {targetId === "admin"
-              ? "Chat with RovoBit Support"
+              ? "Chat with UfxBit Support"
               : `Chat with User ${targetId.slice(0, 5)}`}
           </h2>
           <div className="flex items-center gap-2">
@@ -105,7 +105,7 @@ const Chating = ({ userId, targetId, classes }) => {
                 <div className="flex justify-between items-start mb-1">
                   <span className="font-semibold">
                     {msg.sender === userId ? "You" :
-                      targetId === "admin" ? "RovoBit Support" : "User"}
+                      targetId === "admin" ? "UfxBit Support" : "User"}
                   </span>
                   <span className="text-xs text-gray-300">
                     {formatTime(msg.createdAt || Date.now())}

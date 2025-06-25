@@ -26,26 +26,26 @@ const Faqs = () => {
       id: 2,
       question: "  What is a cryptocurrency exchange?",
       answer:
-        "Cryptocurrency exchanges are digital marketplaces that enable users to buy and sell cryptocurrencies like Bitcoin, Ethereum, and Tether. The Crypto Nexus exchange is the largest crypto exchange by trade volume.",
+        "Cryptocurrency exchanges are digital marketplaces that enable users to buy and sell cryptocurrencies like Bitcoin, Ethereum, and Tether. The UfxBit exchange is the largest crypto exchange by trade volume.",
     },
     {
       id: 3,
       question:
         " How do I buy Bitcoin and other crypto currencies on this platform?",
       answer:
-        "Easily buy Bitcoin or other crypto currencies within minutes with  USDT. Crypto Nexus supports payments through USDT Deposite . Want to buy, sell, or hold other coins that are gaining traction in the crypto ecosystem? Kickstart your journey with Crypto Nexus and explore prices and other information for cryptos such as Bitcoin (BTC), Ethereum (ETH) and more!",
+        "Easily buy Bitcoin or other crypto currencies within minutes with  USDT. UfxBit supports payments through USDT Deposite . Want to buy, sell, or hold other coins that are gaining traction in the crypto ecosystem? Kickstart your journey with UfxBit and explore prices and other information for cryptos such as Bitcoin (BTC), Ethereum (ETH) and more!",
     },
     {
       id: 4,
       question: "How to track cryptocurrency prices?",
       answer:
-        "The easiest way to track the latest cryptocurrency prices, trading volumes, trending altcoins, and market cap is the Crypto Nexus Cryptocurrency Directory. Click on the coins to know historical coin prices, 24-hour trading volume, and the price of cryptocurrencies like Bitcoin, Ethereum, BNB and others in real-time.",
+        "The easiest way to track the latest cryptocurrency prices, trading volumes, trending altcoins, and market cap is the UfxBit Cryptocurrency Directory. Click on the coins to know historical coin prices, 24-hour trading volume, and the price of cryptocurrencies like Bitcoin, Ethereum, BNB and others in real-time.",
     },
     {
       id: 5,
-      question: " How to trade cryptocurrencies on Crypto Nexus",
+      question: " How to trade cryptocurrencies on UfxBit",
       answer:
-        "You can trade hundreds of cryptocurrencies on Crypto Nexus via the Spot, Futures, and Options markets. To begin trading, users need to register an account, complete identity verification, buy/deposit crypto, and start trading.",
+        "You can trade hundreds of cryptocurrencies on UfxBit via the Spot, Futures, and Options markets. To begin trading, users need to register an account, complete identity verification, buy/deposit crypto, and start trading.",
     },
   ];
 

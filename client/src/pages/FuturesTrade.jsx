@@ -111,13 +111,13 @@ useEffect(() => {
   const fetchMarketData = async () => {
     try {
       // Map your selected pair (like BTCUSDT) to Kraken's format
-      const krakenPairs = {
-        BTCUSDT: "XXBTZUSD",
-        ETHUSDT: "XETHZUSD",
-        DOGEUSDT: "XXDGZUSD",
-        MATICUSDT: "MATICUSD",
-        BNBUSDT: "BNBUSD",
-      };
+        const krakenPairs = {
+          BTCUSDT: "XXBTZUSD",
+          ETHUSDT: "XETHZUSD",
+          DOGEUSDT: "XXDGZUSD",
+          MATICUSDT: "MATICUSD",
+          BNBUSDT: "BNBUSD",
+        };
 
       const krakenPair = krakenPairs[selectedPair] || "XXBTZUSD";
 

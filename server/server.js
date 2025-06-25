@@ -19,7 +19,7 @@ const server = http.createServer(app);
 // Initialize WebSocket server for real-time updates
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL, "https://cryptonexus.live"],
+    origin: [process.env.FRONTEND_URL],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],

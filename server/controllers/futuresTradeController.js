@@ -187,7 +187,7 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Update trade
   trade.status = "closed";
   trade.closedAt = new Date();
-  trade.profitLoss = profitLoss; // ✅ now strictly 10, -10, etc.
+  trade.profitLoss = profitLoss;  
   trade.closePrice = parsedClosePrice;
   await trade.save();
 

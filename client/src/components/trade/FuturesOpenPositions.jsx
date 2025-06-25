@@ -1,4 +1,4 @@
- import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOpenPositions,
@@ -9,12 +9,10 @@ import { Button } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 import PropTypes from "prop-types";
 import AutoLiquidate from "../../pages/admin/AutoLiquidate";
-import SmallLoader from "../layout/smallLoader";
+import Loader from "../layout/Loader";
 
-const socket = io(import.meta.env.VITE_API_URL, {
-  withCredentials: true,
-  transports: ["websocket", "polling"] // Important for fallback
-});const getProfitPercentage = (trade) => {
+const socket = io(import.meta.env.VITE_API_URL);
+const getProfitPercentage = (trade) => {
   if (!trade?.openTime || !trade?.expiryTime) return 0;
   
   const openTime = new Date(trade.openTime).getTime();
@@ -194,7 +192,7 @@ useEffect(() => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
- 
+
   const handleCloseTrade = (tradeId) => {
     if (!tradeId) {
       toast.error("Please select a trade to close!");
@@ -287,7 +285,8 @@ useEffect(() => {
       </div>
 
       <div className="md:hidden">
-        {status === "loading" && <SmallLoader/>}
+        {status === "loading" &&<Loader />
+        }
         {openPositions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openPositions.map((trade) => {
@@ -349,16 +348,15 @@ useEffect(() => {
                     <div className="flex justify-between mt-1">
                       <span className="text-yellow-400">Time Remaining</span>
                       <span className="border border-yellow-400 px-2 py-1 rounded-md">
-                        {formatCountdown(countdowns[trade._id], trade) === "0s" ? (
-                          "Liquidating..."
-                        ) : (
+                        {formatCountdown(countdowns[trade._id], trade) === "0s" ?(
+                          "Closed"
+                        ): (
                           formatCountdown(countdowns[trade._id], trade)
                         )}
                       </span>
                     </div>
                     
-                    {/* AutoLiquidate for mobile */}
-                    {formatCountdown(countdowns[trade._id], trade) === "0s" && (
+                     {formatCountdown(countdowns[trade._id], trade) === "0s" && (
                       <AutoLiquidate trade={trade} marketPrice={marketPrice} />
                     )}
 
@@ -390,4 +388,4 @@ FuturesOpenPosition.propTypes = {
   showBtn: PropTypes.bool,
 };
 
-export default FuturesOpenPosition;
+export default FuturesOpenPosition; 

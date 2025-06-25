@@ -1,7 +1,7 @@
 import React from "react";
 
 const WithdrawalHistory = ({ transactions, adminWithDraw }) => {
-  console.log(transactions);
+  // console.log(transactions);
 
   const renderWalletChanges = (changesArray) => {
     if (!changesArray?.length) return null;

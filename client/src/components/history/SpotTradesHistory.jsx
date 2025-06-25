@@ -24,7 +24,7 @@ const SpotTradesHistory = ({ trades }) => {
     const base = asset.slice(0, 3);
     return `${base}`;
   };
-console.log(trades)
+// console.log(trades)
   return (
     <div className="rounded-lg shadow-lg ">
       {/* Desktop Table */}

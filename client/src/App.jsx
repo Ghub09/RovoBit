@@ -40,7 +40,7 @@ import AdminChat from "./pages/admin/AdminChat.jsx";
 const App = () => {
   const dispatch = useDispatch();
     const { loading } = useSelector((state) => state.global);
-    const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || 'https://server-1-nsr1.onrender.com/', {
+    const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || import.meta.env.VITE_WEB_SOCKET_URL, {
       withCredentials: true,
       reconnectionAttempts: 3,
       reconnectionDelay: 1000,

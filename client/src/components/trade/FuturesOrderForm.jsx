@@ -75,7 +75,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     ).then((result) => {
       if (result.meta.requestStatus === "fulfilled") {
          socket.emit("newPosition", result.payload);
-         console.log("result.payload",result.payload)
+        //  console.log("result.payload",result.payload)
        }
       // toast.dismiss();
       toast.success("Trade is open successfully");
@@ -88,6 +88,8 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     }).finally(() => {
       setQuantity("");
       setUsdtAmount("");
+      dispatch(fetchOpenPositions());
+      
      })
      
   };

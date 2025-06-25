@@ -54,6 +54,28 @@ export const openFuturesTrade = createAsyncThunk(
 );
 
 // Close a Trade
+// export const closeFuturesTrade = createAsyncThunk(
+//   "futures/closeTrade",
+//   async ({ tradeId, closePrice }, { dispatch, rejectWithValue }) => {
+//     try {
+//       dispatch(setLoading(true));
+
+//       const response = await API.post(
+//         "/futures/close",
+//         { tradeId, closePrice },
+//         { withCredentials: true }
+//       );
+//       // toast.success("Trade Closed Successfully");
+//       return response.data;
+//     } catch (error) {
+//       console.log(error.response?.data?.message || "Failed to close trade");
+//       return rejectWithValue(error.response.data);
+//     } finally {
+//       dispatch(setLoading(false)); // Stop loading after request
+//     }
+//   }
+// );
+
 export const closeFuturesTrade = createAsyncThunk(
   "futures/closeTrade",
   async ({ tradeId, closePrice }, { dispatch, rejectWithValue }) => {
@@ -65,13 +87,15 @@ export const closeFuturesTrade = createAsyncThunk(
         { tradeId, closePrice },
         { withCredentials: true }
       );
-      // toast.success("Trade Closed Successfully");
+       console.log(response.data.trades)
+
+  
       return response.data;
     } catch (error) {
       console.log(error.response?.data?.message || "Failed to close trade");
       return rejectWithValue(error.response.data);
     } finally {
-      dispatch(setLoading(false)); // Stop loading after request
+      dispatch(setLoading(false));
     }
   }
 );
@@ -118,7 +142,7 @@ const futuresTradeSlice = createSlice({
         state.status = "succeeded";
         state.openPositions = action.payload;
         const now = new Date();
-
+        
         state.openPositions = action.payload.filter(
           (trade) => !trade.expiryTime || new Date(trade.expiryTime) > now
         );

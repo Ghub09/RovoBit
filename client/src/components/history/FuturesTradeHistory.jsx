@@ -7,13 +7,13 @@ import { fetchFuturesTradesHistory } from "../../store/slices/futuresTradeSlice"
 const FuturesTradeHistory = ({ trades }) => {
   const dispatch = useDispatch();
   const { coins } = useSelector((state) => state.market);
+  // const { futuresHistoryTrades } = useSelector((state) => state.futures);
 
-  useEffect(() => {
+   useEffect(() => {
     dispatch(fetchMarketData());
     dispatch(fetchFuturesTradesHistory());
   }, [dispatch]);
-
-  const getCoinImage = (symbol) => {
+   const getCoinImage = (symbol) => {
     let foundCoin = coins.find(
       (coin) => coin.symbol.toUpperCase() === symbol.toUpperCase()
     );
@@ -187,6 +187,7 @@ return (
           </tbody>
         </table>
       </div>
+
 
       {/* Mobile Cards */}
       {/* <div className="md:hidden space-y-4">

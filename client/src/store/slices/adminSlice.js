@@ -148,7 +148,7 @@ export const liquidateTrade = createAsyncThunk(
       dispatch(setLoading(true));
 
       // Make the API call
-      await axios.post(`${import.meta.env.VITE_API_URL}/admin/liquidate-trade/${tradeId}`, {
+      await API.post(`/admin/liquidate-trade/${tradeId}`, {
         marketPrice,
         type,
         amount,

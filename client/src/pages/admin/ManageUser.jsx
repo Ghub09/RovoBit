@@ -45,7 +45,7 @@ const ManageUser = () => {
       const res = await deleteUser(user._id);
       const updatedUsers = update.filter((item) => item._id !== user._id);
       setUpdate(updatedUsers);
-      console.log(`Deleted user: ${user._id}`);
+      // console.log(`Deleted user: ${user._id}`);
       toast.success(res.message || "User deleted successfully");
       
     } catch (err) {

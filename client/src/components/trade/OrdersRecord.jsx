@@ -9,8 +9,7 @@ import OpenPerpetualPositions from "./OpenPerpetualPositions";
 import FuturesTradeHistory from "../history/FuturesTradeHistory";
 import PerpetualsTradeHistory from "../history/PerpetualsTradeHistory";
 import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
-// import Loader from "../layout/Loader";
-
+ 
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
 const [activeTab, setActiveTab] = useState("history");
@@ -23,10 +22,8 @@ const [activeTab, setActiveTab] = useState("history");
   // console.log(openOrders)
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
   const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
-  // console.log(perpetualsHistoryTrades)
-//  console.log(openOrders)
-console.log(futuresHistoryTrades)
- useEffect(() => {
+  
+  useEffect(() => {
   const fetchData = () => {
     if (type === "spot") {
       dispatch(fetchSpotTradesHistory());
@@ -39,19 +36,14 @@ console.log(futuresHistoryTrades)
   };
 
   fetchData(); 
-
-  const interval = setInterval(fetchData, 5000); // Reload every 5 seconds
-
-  return () => clearInterval(interval); // Cleanup on unmount
 }, [dispatch, type]);
-
-
-  return (
-    <div className="p-4 text-white shadow-lg w-full">
+ 
+   return (
+    <div className="p-4 text-white shadow-lg w-full ">
       {/* Tab Navigation */}
         {/* {loading && <Loader />} */}
 
-      <div className="flex border-b border-gray-700 mb-4 border">
+      <div className="flex border-b border-gray-700 mb-4  ">
         <button
           className={`px-4 py-2 text-sm font-semibold ${
             activeTab === "pending"
@@ -73,7 +65,6 @@ console.log(futuresHistoryTrades)
           {type === "spot" ? "Orders Record" : "Historical Orders"}
         </button>
       </div>
-
       {/* Orders Table */}
       <div className="overflow-x-auto ">
         <table className="w-full text-sm">

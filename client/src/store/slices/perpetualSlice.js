@@ -38,7 +38,7 @@ export const closePerpetualTrade = createAsyncThunk(
         { tradeId, closePrice },
         { withCredentials: true }
       );
-      toast.success("Perpetual trade closed successfully!");
+      toast.success("Perpetual trade closed successfully!"); 
       return response.data;
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to close trade");
