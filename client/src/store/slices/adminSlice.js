@@ -29,7 +29,7 @@ export const fetchRequests = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.get("/admin/all-requests");
-
+     console.log(response.data)
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

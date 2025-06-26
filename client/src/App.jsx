@@ -2,7 +2,7 @@ import { useEffect} from "react";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import Home from "./pages/Home";
 import LogIn from "./pages/LogIn";
 import SignUp from "./pages/SignUp";
@@ -49,6 +49,8 @@ const App = () => {
     });
     
     useEffect(() => {
+        toast.info("WebSite is in Development Mode If any issue You can chat UFXBIT");
+      
       const shouldConnect = window.location.pathname !== '/login' && window.location.pathname !== '/register';
       
       if (shouldConnect) {
@@ -72,6 +74,8 @@ const App = () => {
           socket.disconnect();
         }
       };
+
+
     }, []);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));

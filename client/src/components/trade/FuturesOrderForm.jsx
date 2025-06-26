@@ -26,10 +26,13 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   
 
  
-  const handleAssetsClick = (value) => {
-    setAssetsAmount(value);
-    setUsdtAmount((wallet.futuresWallet / 100) * value);
-  };
+ const handleAssetsClick = (value) => {
+  const calculatedAmount = (wallet.futuresWallet / 100) * value;
+  setAssetsAmount(value);
+  setUsdtAmount(calculatedAmount);
+  setQuantity(calculatedAmount); // ✅ Sync quantity
+};
+
  
  
    const extractBase = (pair) => {

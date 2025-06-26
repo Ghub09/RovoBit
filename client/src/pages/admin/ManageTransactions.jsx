@@ -5,6 +5,7 @@ import {
   rejectTransaction,
   approveWithDrawRequest,
   changeWithdrawRequestStatus,
+  fetchUsers,
 } from "../../store/slices/adminSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "flowbite-react";
@@ -12,8 +13,12 @@ import { Button } from "flowbite-react";
 const ManageTransactions = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { transactions } = useSelector((state) => state.admin);
-  useEffect(() => {
+  const { transactions,users } = useSelector((state) => state.admin);
+
+ useEffect(() => {
+    dispatch(fetchUsers());
+  }, [dispatch]);  console.log(users)
+   useEffect(() => {
     dispatch(fetchRequests());
   }, [dispatch]);
 
@@ -86,6 +91,12 @@ const ManageTransactions = () => {
               </p>
               <p className="mb-2 text-gray-500">
                 <strong>Amount:</strong> {tx.amount}
+              </p>
+               <p className="mb-2 text-gray-500">
+                <strong>Email:</strong> {tx.userId?.email}
+              </p>
+              <p className="mb-2 text-gray-500">
+                <strong>Name:</strong> {users.find(user=>tx.userId?._id=== user._id)?.firstName}{" "}{users.find(user=>tx.userId?._id=== user._id)?.lastName}
               </p>
               <div className="flex justify-between mt-4 ">
                 {tx.type === "deposit" ? (

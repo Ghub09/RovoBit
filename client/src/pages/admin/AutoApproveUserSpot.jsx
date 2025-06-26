@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { approveOrder, rejectOrder } from "../../store/slices/tradeSlice";
+import { setLoading } from "../../store/slices/globalSlice";
 // import {
 //   approveSpotTrade,
 //   rejectSpotTrade,
@@ -9,8 +10,8 @@ import { approveOrder, rejectOrder } from "../../store/slices/tradeSlice";
 const AutoApproveSingleTrade = ({ trade }) => {
   const dispatch = useDispatch();
   const [processed, setProcessed] = useState(false);
-
   useEffect(() => {
+    setLoading(false)
     const autoProcess = async () => {
       if (!trade || processed || trade?.status !== "pending") return;
 

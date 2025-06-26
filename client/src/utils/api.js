@@ -32,9 +32,9 @@ API.interceptors.request.use((config) => {
 
   // Always include token in Authorization header if it exists
   if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+    config.headers.Authorization = `Bearer ${token}`; 
     // Log the token being sent (for debugging)
-    console.log('Sending token in header:', token.substring(0, 15) + '...');
+    // console.log('Sending token in header:', token.substring(0, 15) + '...');
   } else {
     console.log('No token found in localStorage');
   }

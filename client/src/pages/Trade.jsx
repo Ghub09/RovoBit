@@ -1,16 +1,15 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
+import {useParams } from "react-router-dom";
+import {  useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import TradingChart from "../components/trade/TradingChart";
 import OrderForm from "../components/trade/OrderForm";
-import RecentTrades from "../components/trade/RecentTrades";
+// import RecentTrades from "../components/trade/RecentTrades";
 import OrderBook from "../components/trade/OrderBook";
-import io, { WebSocket } from "socket.io-client";
+import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
-import { MdCandlestickChart } from "react-icons/md";
+// import { MdCandlestickChart } from "react-icons/md";
 import OrdersRecord from "../components/trade/OrdersRecord";
-import Loader from "../components/layout/Loader";
 import axios from "axios";
 
 function Trade() {
@@ -34,8 +33,7 @@ function Trade() {
     "LTCUSDT",
   ];
 
-  console.log(recentTrades)
-  const formatTradingPair = (pair) => {
+   const formatTradingPair = (pair) => {
     if (pair.length <= 4) return pair; // Handle edge cases (e.g., "USDT")
 
     const index = pair.length - 4; // Find the index where "/" should be inserted
@@ -149,18 +147,18 @@ function Trade() {
    
 
   // WebSocket for real-time trade updates
-  // useEffect(() => {
-  //   const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
+  useEffect(() => {
+    const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
  
-  //   socket.on("tradeUpdate", (trade) => {
-  //     setRecentTrades((prevTrades) => [trade, ...prevTrades.slice(0, 9)]);
-  //   });
+    socket.on("tradeUpdate", (trade) => {
+      setRecentTrades((prevTrades) => [trade, ...prevTrades.slice(0, 9)]);
+    });
 
-  //   return () => {
-  //     socket.off("tradeUpdate");
-  //     socket.disconnect();
-  //   };
-  // }, []);
+    return () => {
+      socket.off("tradeUpdate");
+      socket.disconnect();
+    };
+  }, []);
   
   useEffect(() => {
     const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "https://server-1-nsr1.onrender.com", {

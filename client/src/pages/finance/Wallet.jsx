@@ -151,7 +151,7 @@ const Wallet = () => {
 
   // Step 3: Calculate and apply percentage
   const calculated = (balance * percent) / 100;
-  setAmount(calculated.toFixed(4));
+  setAmount(calculated);
   setSwapPercent(percent);
 };
 
@@ -165,7 +165,7 @@ const Wallet = () => {
     
     const balance = wallet?.[fromWallet] || 0;
     const calculated = (balance * percent) / 100;
-    setTransferAmount(calculated.toFixed(2));
+    setTransferAmount(calculated);
     setTransferPercent(percent);
   };
   const calculateWalletValues = () => {
@@ -258,7 +258,7 @@ const Wallet = () => {
       toast.error("Please enter an amount");
       return;
     }
-
+    console.log(transferAmount)
     try {
       // Wait for exchange rate to be fetched
       const exchangeRate = await dispatch(

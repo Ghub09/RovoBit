@@ -9,21 +9,23 @@ import OpenPerpetualPositions from "./OpenPerpetualPositions";
 import FuturesTradeHistory from "../history/FuturesTradeHistory";
 import PerpetualsTradeHistory from "../history/PerpetualsTradeHistory";
 import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
+import Loader from "../layout/Loader";
  
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
-const [activeTab, setActiveTab] = useState("history");
-  //  const { loading } = useSelector((state) => state.global);
-  //  const { user } = useSelector((state) => state.user);
-  //  console.log("OrderRecord.jsx",user.isActive)
-  const { openOrders, spotHistoryTrades } = useSelector(
+  const [activeTab, setActiveTab] = useState("pending");
+   const { loading } = useSelector((state) => state.global);
+   const { user } = useSelector((state) => state.user);
+   const { futuresHistoryTrades } = useSelector((state) => state.futures);
+  const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
+   const { openOrders, spotHistoryTrades } = useSelector(
     (state) => state.trade
   );
-  // console.log(openOrders)
-  const { futuresHistoryTrades } = useSelector((state) => state.futures);
-  const { perpetualsHistoryTrades } = useSelector((state) => state.perpetual);
+
+
+
   
-  useEffect(() => {
+   useEffect(() => {
   const fetchData = () => {
     if (type === "spot") {
       dispatch(fetchSpotTradesHistory());
@@ -41,7 +43,7 @@ const [activeTab, setActiveTab] = useState("history");
    return (
     <div className="p-4 text-white shadow-lg w-full ">
       {/* Tab Navigation */}
-        {/* {loading && <Loader />} */}
+        {loading && <Loader />}
 
       <div className="flex border-b border-gray-700 mb-4  ">
         <button

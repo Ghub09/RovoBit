@@ -14,29 +14,29 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
   const [pnlData, setPnlData] = useState({});
   const [socketMarketPrice, setSocketMarketPrice] = useState();
   // console.log(marketPrice)
-   const getCoinData = (symbol) => {
+  const getCoinData = (symbol) => {
     return coins.find(
       (coin) => coin.symbol.toUpperCase() === symbol.toUpperCase()
     );
   };
 
-  useEffect(() => {
-    // Fetch market price directly from Binance WebSocket
-    const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+  // useEffect(() => {
+  //   // Fetch market price directly from Binance WebSocket
+  //   const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setSocketMarketPrice(parseFloat(data.p));
-    };
+  //   ws.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     setSocketMarketPrice(parseFloat(data.p));
+  //   };
 
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
+  //   ws.onerror = (error) => {
+  //     console.error("WebSocket error:", error);
+  //   };
 
-    return () => {
-      ws.close();
-    };
-  }, []);
+  //   return () => {
+  //     ws.close();
+  //   };
+  // }, []);
 
   // useEffect(() => {
   //   if (!socketMarketPrice || openTrades.length === 0) return;
@@ -63,64 +63,70 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
   // }, [socketMarketPrice, openTrades]);
 
   useEffect(() => {
-  if (!socketMarketPrice || openTrades.length === 0) return;
+  // Fetch market price directly from Coinbase WebSocket (US-supported)
+  const ws = new WebSocket("wss://ws-feed.exchange.coinbase.com");
 
-  const newPnlData = {};
+  ws.onopen = () => {
+    ws.send(
+      JSON.stringify({
+        type: "subscribe",
+        product_ids: ["BTC-USDT"],
+        channels: ["ticker"],
+      })
+    );
+  };
 
-  openTrades.forEach((trade) => {
-    const { entryPrice, quantity, type, leverage } = trade;
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "ticker" && data.price) {
+      setSocketMarketPrice(parseFloat(data.price));
+    }
+  };
 
-    let pnl = 0;
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+  };
 
-    if (type === "long") {
-      pnl = (socketMarketPrice - entryPrice) * quantity * leverage;
-    } else if (type === "short") {
-      pnl = (entryPrice - socketMarketPrice) * quantity * leverage;
+  return () => {
+    ws.close();
+  };
+}, []);
+
+  useEffect(() => {
+    if (!socketMarketPrice || openTrades.length === 0) return;
+
+    const newPnlData = {};
+
+    openTrades.forEach((trade) => {
+      const { entryPrice, quantity, type, leverage } = trade;
+
+      let pnl = 0;
+
+      if (type === "long") {
+        pnl = (socketMarketPrice - entryPrice) * quantity * leverage;
+      } else if (type === "short") {
+        pnl = (entryPrice - socketMarketPrice) * quantity * leverage;
+      }
+
+      newPnlData[trade._id] = pnl;
+    });
+
+    setPnlData(newPnlData);
+  }, [socketMarketPrice, openTrades]);
+
+  const handleCloseTrade = (tradeId) => {
+    if (!tradeId || !socketMarketPrice) {
+      toast.error("Market price not available yet");
+      return;
     }
 
-    newPnlData[trade._id] = pnl;
-  });
-
-  setPnlData(newPnlData);
-}, [socketMarketPrice, openTrades]);
-
-  // const handleCloseTrade = (tradeId,clodePrice) => {
-  //   if (!tradeId) {
-  //     toast.error("Please select a trade to close!");
-  //     return;
-  //   }
-   
-  //   // console.log(marketPrice);
-  //   // console.log("closeTradeId,marketPrice",marketPrice)
-  //   dispatch(closePerpetualTrade({ tradeId, closePrice: clodePrice }));
-  //   dispatch(fetchOpenPerpetualTrades());
-  // };
-// const handleCloseTrade = (tradeId) => {
-//   if (!marketPrice) {
-//     toast.error("Market price not available yet");
-//     return;
-//   }
-
-//   dispatch(closePerpetualTrade({
-//     tradeId: tradeId,
-//     closePrice: marketPrice,
-//   }));
-// };
-console.log(openTrades)
-
-const handleCloseTrade = (tradeId) => {
-  if (!tradeId || !socketMarketPrice) {
-    toast.error("Market price not available yet");
-    return;
-  }
-
-  dispatch(closePerpetualTrade({ tradeId, closePrice: socketMarketPrice }));
-  dispatch(fetchOpenPerpetualTrades());
-};
+    dispatch(closePerpetualTrade({ tradeId, closePrice: socketMarketPrice }));
+    dispatch(fetchOpenPerpetualTrades());
+  };
 
   return (
     <div>
-      <div >
+      <div>
         <Card className=" bg-transparent text-white min-w-[100%] hidden md:flex">
           <table className="text-sm text-left text-gray-400">
             <thead className="text-xs text-gray-400 uppercase ">
@@ -129,7 +135,8 @@ const handleCloseTrade = (tradeId) => {
                 <th className="py-2">Type</th>
                 <th className="py-2">Leverage</th>
                 <th className="py-2">Entry Price</th>
-                <th className="py-2">Amount</th>
+                <th className="py-2">Amount(USDT)</th>
+                <th className="py-2">Fee (1%)</th>
                 <th className="py-2 hidden md:table-cell">Liquidation Price</th>
                 <th className="py-2">PNL (USDT)</th>
                 {showBtn && (
@@ -160,7 +167,12 @@ const handleCloseTrade = (tradeId) => {
                       <td className="py-2 capitalize">{trade.type}</td>
                       <td className="py-2">{trade.leverage}x</td>
                       <td className="py-2">${trade?.entryPrice?.toFixed(2)}</td>
-                      <td className="py-2">${trade?.assetsAmount?.toFixed(2)}</td>
+                      <td className="py-2">
+                        {trade?.assetsAmount?.toFixed(2)}
+                      </td>
+                      <td className="py-2">
+                        {(trade?.assetsAmount?.toFixed(2)*1)/100}
+                      </td>
                       <td className="py-2 text-red-400 hidden md:table-cell">
                         ${trade?.liquidationPrice?.toFixed(2)}
                       </td>
@@ -245,11 +257,33 @@ const handleCloseTrade = (tradeId) => {
                     <span>Entry Price</span>
                     <span>{trade.entryPrice?.toFixed(2)}</span>
                   </div>
-
+                  <div className="flex justify-between mt-1">
+                    <span>Amount (USDT)</span>
+                    <span className=" rounded-md">
+                      {trade?.assetsAmount?.toFixed(2)}
+                    </span>
+                  </div>
                   <div className="flex justify-between mt-1">
                     <span className="text-red-400">Liquidation Price</span>
                     <span className="border border-red-400 px-2 py-1 rounded-md">
                       {trade.liquidationPrice?.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center mt-1">
+                    <span>Close</span>
+                    <span className="capitalize">
+                      {showBtn && (
+                        <td className=" py-4">
+                          <Button
+                            onClick={() => handleCloseTrade(trade._id)}
+                            className={` py-2 rounded-md bg-[#ff5e5a]`}
+                            disabled={loading}
+                          >
+                            {loading ? "Closing..." : "Close"}
+                          </Button>
+                        </td>
+                      )}
                     </span>
                   </div>
                 </div>

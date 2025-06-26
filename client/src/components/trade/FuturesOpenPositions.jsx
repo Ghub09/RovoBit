@@ -76,22 +76,52 @@ useEffect(() => {
     };
   }, [dispatch]);
 
+  // useEffect(() => {
+  //   const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+
+  //   ws.onmessage = (event) => {
+  //     const data = JSON.parse(event.data);
+  //     setMarketPrice(parseFloat(data.p));
+  //   };
+
+  //   ws.onerror = (error) => {
+  //     console.error("WebSocket error:", error);
+  //   };
+
+  //   return () => {
+  //     ws.close();
+  //   };
+  // }, []);
   useEffect(() => {
-    const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+  const ws = new WebSocket("wss://ws-feed.exchange.coinbase.com");
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      setMarketPrice(parseFloat(data.p));
-    };
+  ws.onopen = () => {
+    ws.send(
+      JSON.stringify({
+        type: "subscribe",
+        product_ids: ["BTC-USDT"],
+        channels: ["ticker"],
+      })
+    );
+  };
 
-    ws.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
+  ws.onmessage = (event) => {
+    const data = JSON.parse(event.data);
+    if (data.type === "ticker" && data.price) {
+      setMarketPrice(parseFloat(data.price));
+    }
+  };
 
-    return () => {
-      ws.close();
-    };
-  }, []);
+  ws.onerror = (error) => {
+    console.error("Coinbase WebSocket error:", error);
+  };
+
+  return () => {
+    ws.close();
+  };
+}, []);
+
+  
   useEffect(() => {
   if (!marketPrice || openPositions.length === 0) return;
 
@@ -209,7 +239,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="mt-6">
+    <div className="mt-6  ">
 
       <div className="hidden md:block bg-transparent mb-4">
         {openPositions.length > 0 ? (

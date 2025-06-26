@@ -230,7 +230,7 @@ export const swapAssets = createAsyncThunk(
   ) => {
     try {
       dispatch(setLoading(true));
-
+       console.log(fromAsset, toAsset, amount, exchangeRate)
       const response = await API.post("/user/swap", {
         fromAsset,
         toAsset,

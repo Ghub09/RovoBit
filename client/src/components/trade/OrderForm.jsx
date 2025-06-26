@@ -5,11 +5,11 @@ import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
-import { fetchPendingOrders, placeOrder } from "../../store/slices/tradeSlice";
+import { fetchPendingOrders, fetchUsersOpenOrders, placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
 import { getWallet } from "../../store/slices/assetsSlice";
 import SmallLoader from "../layout/smallLoader.jsx";
-
+ 
 const socket = io(import.meta.env.VITE_SOCKET_URL || import.meta.env.VITE_API_URL || "https://server-1-nsr1.onrender.com", {
   withCredentials: true,
   transports: ['websocket', 'polling'],
@@ -80,7 +80,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
   const handleSubmit = async () => {
-    const numericUSDT = parseFloat(usdtAmount);
+    const numericUSDT = usdtAmount
 
     if (!numericUSDT || isNaN(numericUSDT) || numericUSDT <= 0) {
       toast.error(t("enter_valid_usdt"));
@@ -103,18 +103,30 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
 
     try {
       dispatch(fetchPendingOrders());
+      
       const response = await dispatch(placeOrder(orderData)).unwrap();
       socket.emit("placeOrder", response.trade);
-      toast.success(t("order_placed_success"));
-    } catch (error) {
+      // toast.success(t("order_placed_success"));
+      dispatch(fetchUsersOpenOrders());
+     } catch (error) {
       toast.error(error.message || "Failed to place order.");
-    }
+    }  
+          toast.info(t("Please check you Order in history"));
+
   };
 
-  const handleAssetsClick = (value) => {
-    setAssetsAmount(value);
-    setUsdtAmount((wallet.spotWallet / 100) * value);
-  };
+ const handleAssetsClick = (value) => {
+  setAssetsAmount(value);
+
+  if (side === "buy") {
+    const amount = ((wallet.spotWallet / 100) * value);
+    setUsdtAmount(amount);
+  } else {
+    const assetAmount = ((availableAssetAmount / 100) * value); // 6 decimals for crypto assets
+    setUsdtAmount(assetAmount); // set this to usdtAmount because input uses this value
+  }
+};
+
 
   return (
     <Card className="  ml-2 bg-transparent  text-white w-full text-lg ">

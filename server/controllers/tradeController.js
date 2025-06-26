@@ -198,7 +198,7 @@ const { fromWallet, toWallet, transferAsset: asset, amount } = req.body;
     // Validate balance for USDT transfers
     if (asset === "USDT") {
       if (wallet[fromWallet] < transferAmount) {
-        return res.status(400).json({ message: "Insufficient funds" });
+        return res.status(400).json({ message: "Insufficient funds GO check" });
       }
 
       // Process transfer with proper addition

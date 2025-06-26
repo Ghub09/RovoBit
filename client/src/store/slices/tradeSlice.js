@@ -105,7 +105,7 @@ export const fetchPendingOrders = createAsyncThunk(
       const response = await API.get("/trade/pending-orders", {
         withCredentials: true,
       });
-
+       
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -125,6 +125,8 @@ export const approveOrder = createAsyncThunk(
       const response = await API.put(`/admin/approve-order/${orderId}`, {});
       toast.dismiss();
       toast.success(response.data.message);
+      console.log(response.data)
+      
       return response.data;
     } catch (error) {
       toast.dismiss();
@@ -260,12 +262,23 @@ const tradeSlice = createSlice({
       .addCase(approveOrder.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(approveOrder.fulfilled, (state, action) => {
-        state.status = "succeeded";
-        state.pendingOrders = state.pendingOrders.filter(
-          (order) => order._id !== action.payload.trade._id
-        );
-      })
+ .addCase(approveOrder.fulfilled, (state, action) => {
+  const approvedTrade = action.payload?.trade;
+
+  if (approvedTrade?._id) {
+    // Remove from pendingOrders
+    state.pendingOrders = state.pendingOrders.filter(
+      (order) => order._id !== approvedTrade._id
+    );
+
+    // Optional: Push to history
+    state.spotHistoryTrades.unshift(approvedTrade);
+  }
+  
+  state.status = "succeeded";
+})
+
+
       .addCase(approveOrder.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
