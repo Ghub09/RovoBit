@@ -8,6 +8,9 @@ export const dbConnection = () => {
   mongoose
     .connect(process.env.MONGODB_CONNECTION_STRING, {
       dbName: "BitEx-Crypto-Trading",
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      keepAlive: true,
     })
     .then(() => {
       console.log("Database Has Been Successfully Connected");
