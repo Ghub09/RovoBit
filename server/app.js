@@ -1,8 +1,8 @@
+import { dbConnection } from "./config/dbConnection.js";
 import express from "express";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import { config } from "dotenv";
-import { dbConnection } from "./config/dbConnection.js";
 import { dirname } from "node:path";
 import { join } from "path";
 import { fileURLToPath } from "url";
@@ -37,7 +37,6 @@ app.use(
       // Define allowed origins
       const allowedOrigins = [
         "http://localhost:5173",
-        "http://localhost:3000", 
         "https://ufxbit.com",
         ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : []),
         ...(process.env.ADDITIONAL_ORIGINS ? process.env.ADDITIONAL_ORIGINS.split(',') : [])
