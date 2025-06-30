@@ -54,7 +54,9 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
       return;
     }
 
-    const amount = parseFloat(usdtAmount);
+
+    if(wallet?.perpetualsWallet > usdtAmount) {
+    const amount = usdtAmount
     const calculatedQuantity = amount / marketPrice;
     const marginUsed = (calculatedQuantity * marketPrice) / leverage;
 
@@ -72,6 +74,10 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         ...(tradeType === "limit" && { limitPrice: Number(limitPrice) }),
       })
     );
+  }else{
+    toast.error("Insufficient USDT in your perpetual wallet!");
+    return;
+  }
   };
 
   return (

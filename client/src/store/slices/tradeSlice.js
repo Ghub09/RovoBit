@@ -116,6 +116,7 @@ export const fetchPendingOrders = createAsyncThunk(
 );
 
 // Admin Approves an Order
+
 export const approveOrder = createAsyncThunk(
   "trade/approveOrder",
   async (orderId, { dispatch, rejectWithValue }) => {
@@ -178,8 +179,7 @@ export const fetchSpotTradesHistory = createAsyncThunk(
     }
   }
 );
-//  fetchSpotTradesHistory();
-
+ 
 export const fetchUsersOpenOrders = createAsyncThunk(
   "trade/fetchUsersOpenOrders",
   async (_, { dispatch, rejectWithValue }) => {

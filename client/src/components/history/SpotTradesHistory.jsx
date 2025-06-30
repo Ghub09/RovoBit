@@ -2,24 +2,29 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketData } from "../../store/slices/marketSlice"; // Adjust the import path
 import AutoApproveSingleTrade from "../../pages/admin/AutoApproveUserSpot";
-import { fetchPendingOrders } from "../../store/slices/tradeSlice";
+import { fetchPendingOrders, fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
 
 const SpotTradesHistory = ({ trades }) => {
   const dispatch = useDispatch();
   const { coins, status } = useSelector((state) => state.market);
   const pendingOrders = useSelector((state) => state.trade.pendingOrders);
-
+ 
   if (pendingOrders.length > 0) {
-    trades = [...trades, ...pendingOrders];
+    trades = [...trades, ...pendingOrders]; 
   }
   useEffect(() => {
-    dispatch(fetchMarketData());
-    dispatch(fetchPendingOrders());
+     dispatch(fetchPendingOrders());
   }, [dispatch]);
-  // setTimeout(() => {
-  //   dispatch(fetchMarketData());
-  //   dispatch(fetchPendingOrders());
-  // }, 5000); // Fetch market data every 5 seconds
+ useEffect(() => {
+  if (trades.length > 0) {
+    const timeoutId = setTimeout(() => {
+      dispatch(fetchUsersOpenOrders());
+    }, 10000); // 10 seconds
+
+    return () => clearTimeout(timeoutId); // Cleanup on unmount or dependency change
+  }
+}, [trades, dispatch]);
+  
 
   const getCoinImage = (symbol) => {
     let foundCoin = coins.find(
@@ -65,7 +70,8 @@ const SpotTradesHistory = ({ trades }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700 ">
-            {trades?.map((trade, index) => (
+            {[...trades]
+          .sort((a, b) => new Date(b.executedAt) - new Date(a.executedAt))?.map((trade, index) => (
               <>
                 <AutoApproveSingleTrade key={trade._id} trade={trade} />
                 <tr key={index} className="hover:bg-gray-800 transition-colors">

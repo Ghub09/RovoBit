@@ -11,7 +11,7 @@ import PropTypes from "prop-types";
 import AutoLiquidate from "../../pages/admin/AutoLiquidate";
 import Loader from "../layout/Loader";
 
-const socket = io(import.meta.env.VITE_API_URL);
+const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 const getProfitPercentage = (trade) => {
   if (!trade?.openTime || !trade?.expiryTime) return 0;
   

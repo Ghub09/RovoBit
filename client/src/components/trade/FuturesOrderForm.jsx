@@ -23,14 +23,13 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const [currentTime, setCurrentTime] = useState(
     new Date().toLocaleTimeString()
   );
-  
-
+ 
  
  const handleAssetsClick = (value) => {
   const calculatedAmount = (wallet.futuresWallet / 100) * value;
   setAssetsAmount(value);
   setUsdtAmount(calculatedAmount);
-  setQuantity(calculatedAmount); // ✅ Sync quantity
+  setQuantity(calculatedAmount);
 };
 
  
@@ -64,9 +63,8 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     if (quantity <= 0 || leverage < 1) {
       return toast.error("Invalid trade details");
     }
-
-     
-   dispatch(
+   if(wallet.futuresWallet > usdtAmount){ 
+  { dispatch(
       openFuturesTrade({
         pair: selectedPair,
         type: orderType,
@@ -94,8 +92,12 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
       dispatch(fetchOpenPositions());
       
      })
-     
-  };
+    }
+  }else{
+            return toast.info("Insufficient funds in futures wallet");
+
+    }
+  }
  
   useEffect(() => {
       socket.on("liquidationUpdate", () => dispatch(fetchOpenPositions()));

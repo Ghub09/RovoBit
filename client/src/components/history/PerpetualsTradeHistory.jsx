@@ -77,7 +77,9 @@ const PerpetualsTradeHistory = ({ trades }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
-            {trades.map((trade, idx) => (
+            {[...trades]
+          .sort((a, b) => new Date(b.executedAt) - new Date(a.executedAt))
+          .map((trade, idx) => (
               <tr
                 key={trade._id || idx}
                 className="hover:bg-gray-800 transition-colors"

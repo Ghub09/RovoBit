@@ -10,6 +10,7 @@ import { setLoading } from "../../store/slices/globalSlice";
 const AutoApproveSingleTrade = ({ trade }) => {
   const dispatch = useDispatch();
   const [processed, setProcessed] = useState(false);
+  
   useEffect(() => {
     setLoading(false)
     const autoProcess = async () => {
