@@ -1,9 +1,22 @@
 import mongoose from "mongoose";
 
 export const dbConnection = () => {
-  return mongoose.connect(process.env.MONGODB_CONNECTION_STRING, {
-    dbName: "BitEx-Crypto-Trading",
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  console.log(
+    "MONGODB_CONNECTION_STRING",
+    process.env.MONGODB_CONNECTION_STRING
+  );
+  mongoose
+    .connect(process.env.MONGODB_CONNECTION_STRING, {
+      dbName: "UfxBit_trading"
+      
+     })
+    .then(() => {
+      console.log("Database Has Been Successfully Connected");
+    })
+    .catch((err) => {
+      console.log(
+        "Some error occured while connecting to database",
+        err.message
+      );
+    });
 };
