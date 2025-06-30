@@ -9,8 +9,7 @@ export const dbConnection = () => {
     .connect(process.env.MONGODB_CONNECTION_STRING, {
       dbName: "BitEx-Crypto-Trading",
       useNewUrlParser: true,
-      useUnifiedTopology: true,
-      keepAlive: true,
+      useUnifiedTopology: true
     })
     .then(() => {
       console.log("Database Has Been Successfully Connected");
